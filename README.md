@@ -20,6 +20,10 @@ requirement in your application.
 dotnet add package Ava3DControl --prerelease
 ```
 
+📦 **[nuget.org/packages/Ava3DControl](https://www.nuget.org/packages/Ava3DControl)** — and every version's
+`.nupkg` is attached to its [release](https://github.com/pavel-zheltiakov/Ava3DControl/releases) here, if you
+would rather have the file than the feed.
+
 The major and minor version track the Avalonia release this is built against — `12.1.x` is for Avalonia
 12.1 — so the version answers the compatibility question directly.
 
@@ -28,8 +32,7 @@ The major and minor version track the Avalonia release this is built against —
 | | |
 | --- | --- |
 | `docs/` | The documentation site: a landing page, three concept guides with diagrams, and the generated API reference. Served at the link above; open `docs/index.html` for a local copy. |
-| `packages/` | The released NuGet package, so the demo builds offline against exactly the build the site documents. |
-| `demo/` | The demo application's full source — thirteen scenes and five platform heads. |
+| `demo/` | The demo application's full source — thirteen scenes and five platform heads. It restores `Ava3DControl` from nuget.org, exactly as your own project would. |
 | `LICENSE.md` | The licence. Read section 3 before you resell anything. |
 | `THIRD-PARTY-NOTICES.md` | What this builds on, and the fact that it ships no art assets at all. |
 
