@@ -5,21 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ava3DControl — a 3D viewport for Avalonia that works everywhere</title>
 <meta name="description" content="A metallic-roughness PBR 3D view for Avalonia. One binary renders through Metal, OpenGL, WebGL 2 or the CPU, on desktop, mobile and in the browser. Freeware, commercial use included.">
+<link rel="stylesheet" href="header.css">
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
 
-<header class="bar">
+<!--
+  The shared header. Same markup, same class names and the same header.css as the other sites in this
+  family — see header.css. The links belong on the left, beside the name they qualify; what goes right is
+  the two things that are true of the project rather than of the page: where to say something, and where
+  the source is.
+-->
+<header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="index.html">Ava3D<span>Control</span></a>
   <span class="tag">12.1.0-preview · beta</span>
-  <nav>
+  <div class="links">
     <a href="#story">The story</a>
     <a href="#concepts">How it works</a>
     <a href="#measured">Measured</a>
     <a href="#start">Quick start</a>
     <a href="api/index.html">Documentation</a>
-  </nav>
-</header>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
 
 <section class="hero">
   <div class="hero-text">
@@ -175,8 +193,8 @@
 
     </div>
 
-    <button class="nav prev" type="button" data-prev aria-label="Previous slide">‹</button>
-    <button class="nav next" type="button" data-next aria-label="Next slide">›</button>
+    <button class="slide-nav prev" type="button" data-prev aria-label="Previous slide">‹</button>
+    <button class="slide-nav next" type="button" data-next aria-label="Next slide">›</button>
     <div class="dots" data-dots role="tablist" aria-label="Choose a slide"></div>
   </div>
 </section>
@@ -431,6 +449,12 @@ View.Scene = scene;</code></pre>
   <p class="thin">
     Every screenshot on this page was produced by the demo application included in this repository, from
     geometry and textures it generates in code. Nothing here is a render from another tool.
+  </p>
+  <p class="thin">
+    <a href="api/index.html">Documentation</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
   </p>
 </footer>
 

@@ -17,22 +17,8 @@ body {
   font: 15px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* ---- top bar ---- */
-.bar {
-  display: flex; align-items: center; gap: 14px;
-  height: var(--bar); padding: 0 24px;
-  border-bottom: 1px solid var(--line); background: var(--panel);
-  position: sticky; top: 0; z-index: 20;
-}
-.brand { font-weight: 650; font-size: 16px; color: var(--text); text-decoration: none; letter-spacing: -0.01em; }
-.brand span { color: var(--accent); }
-.tag {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--accent);
-  border: 1px solid var(--accent); border-radius: 999px; padding: 2px 9px; white-space: nowrap;
-}
-.bar nav { margin-left: auto; display: flex; gap: 18px; }
-.bar nav a { color: var(--dim); text-decoration: none; font-size: 13px; }
-.bar nav a:hover { color: var(--text); }
+/* The top bar lives in ../header.css — the same file, the same markup and the same class names as the
+   landing page. It reads --bar and the palette above and nothing else. */
 
 /* ---- shell ---- */
 .shell { display: grid; grid-template-columns: 264px minmax(0, 1fr); max-width: 1360px; margin: 0 auto; }

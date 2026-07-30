@@ -125,6 +125,15 @@ masking works, blending is not ordered. Binary `.glb` only. Android builds but h
 device. OpenGL on iOS renders nothing, which is an upstream Avalonia defect rather than a device limit — the
 control selects Metal there automatically.
 
+## Feedback
+
+A beta is only worth releasing if the people using it can say something back.
+
+- **[GitHub Issues](https://github.com/pavel-zheltiakov/Ava3DControl/issues)** — a bug, a missing thing or a
+  question, in the open, where the answer helps whoever hits it next.
+- **[Telegram](https://t.me/avadevtools/199)** — the Ava3DControl topic in the AvaDevTools group, for
+  anything shorter than an issue.
+
 ## Licence
 
 Freeware. Use it for anything, including commercially, at no cost; ship it inside something you sell. What

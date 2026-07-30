@@ -17,6 +17,7 @@
   --code: #cbd4e4;
   --codebg: #0b0e14;
   --shadow: 0 8px 32px rgb(0 0 0 / 45%);
+  --bar: 58px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -68,40 +69,8 @@ pre {
 
 pre code { white-space: pre; }
 
-/* ---- top bar ---- */
-
-.bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 14px 28px;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(8px);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.brand { font-weight: 650; font-size: 17px; color: var(--text); text-decoration: none; }
-.brand span { color: var(--accent); }
-
-.tag {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  padding: 2px 9px;
-  white-space: nowrap;
-}
-
-.bar nav { display: flex; gap: 20px; flex-wrap: wrap; margin-left: auto; }
-.bar nav a { color: var(--dim); text-decoration: none; font-size: 14px; }
-.bar nav a:hover { color: var(--text); }
+/* The top bar lives in header.css — the same file, the same markup and the same class names as the other
+   sites in this family. It reads --bar and the palette above and nothing else. */
 
 /* ---- hero ---- */
 
@@ -214,7 +183,7 @@ section > .lede { max-width: 70ch; }
 .slide figcaption h3 { margin: 0 0 10px; font-size: 19px; }
 .slide figcaption p { margin: 0; color: var(--dim); }
 
-.nav {
+.slide-nav {
   position: absolute;
   top: 34%;
   width: 40px;
@@ -229,10 +198,10 @@ section > .lede { max-width: 70ch; }
   display: none;
 }
 
-.slider.live .nav { display: block; }
-.nav:hover { border-color: var(--accent); }
-.nav.prev { left: -8px; }
-.nav.next { right: -8px; }
+.slider.live .slide-nav { display: block; }
+.slide-nav:hover { border-color: var(--accent); }
+.slide-nav.prev { left: -8px; }
+.slide-nav.next { right: -8px; }
 
 .dots { display: none; gap: 8px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
 .slider.live .dots { display: flex; }
@@ -370,8 +339,8 @@ footer .thin { font-size: 13px; opacity: 0.8; }
 @media (max-width: 900px) {
   .hero { grid-template-columns: 1fr; gap: 32px; padding-top: 44px; }
   .slide { grid-template-columns: 1fr; gap: 20px; }
-  .nav { top: auto; bottom: -6px; }
-  .nav.prev { left: 0; }
-  .nav.next { right: 0; }
+  .slide-nav { top: auto; bottom: -6px; }
+  .slide-nav.prev { left: 0; }
+  .slide-nav.next { right: 0; }
   .slider.live .dots { margin-top: 20px; }
 }
