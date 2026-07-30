@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a frame happens · Ava3DControl</title>
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview · beta</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html">Documentation</a>
+  </nav>
+</header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>Concepts</summary><ul><li><a class="current" aria-current="page" href="how-a-frame-happens.html">How a frame happens</a><ul class="sub"><li><a href="#the-shape">The shape of it</a></li><li><a href="#two-threads">Two threads, one snapshot</a></li><li><a href="#what-is-cached">What survives between frames</a></li><li><a href="#the-picture">Why it composites like a control and not a hole</a></li><li><a href="#in-practice">What this means when you use it</a></li></ul></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · Concepts</p><h1>How a frame happens</h1><p class="lede">
+  You build a tree of objects on the UI thread. Something else draws it, on another thread, through a
+  graphics API you did not choose. Knowing where the handover is explains most of the API — including the
+  parts that look like restrictions and are actually the reason it works in a browser.
+</p>
+
+<h2 id="the-shape">The shape of it</h2>
+
+<div class="diagram">
+<svg viewBox="0 0 720 600" role="img" aria-labelledby="frame-title frame-desc">
+  <title id="frame-title">How one frame travels from your scene graph to the screen</title>
+  <desc id="frame-desc">
+    On the UI thread, your Scene of Nodes is collected by Ava3DView into one immutable SceneSnapshot.
+    That snapshot is posted across a thread boundary to the compositor, where SceneVisualHandler leases the
+    platform graphics API, a backend — Metal, OpenGL, WebGL 2 or Skia on the CPU — draws it, and Avalonia
+    composites the resulting image like any other control.
+  </desc>
+
+  <defs>
+    <marker id="arrow-frame" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="d-head" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <text class="d-band-label" x="14" y="22">UI thread — yours</text>
+  <rect class="d-band" x="10" y="32" width="700" height="190" rx="10"/>
+
+  <rect class="d-box-accent" x="160" y="52" width="400" height="62" rx="8"/>
+  <text class="d-title" x="180" y="78">Scene · Node · MeshNode · Material</text>
+  <text class="d-sub" x="180" y="98">Mutable. Add, move and edit whenever you like.</text>
+
+  <path class="d-edge" d="M360 114 V146" marker-end="url(#arrow-frame)"/>
+  <text class="d-note" x="372" y="134">every change asks for a new frame</text>
+
+  <rect class="d-box" x="160" y="146" width="400" height="62" rx="8"/>
+  <text class="d-title" x="180" y="172">Ava3DView</text>
+  <text class="d-sub" x="180" y="192">Walks the tree once. Produces one immutable snapshot.</text>
+
+  <path class="d-edge" d="M360 208 V268" marker-end="url(#arrow-frame)"/>
+  <path class="d-rule" d="M10 240 H710"/>
+  <text class="d-note" x="372" y="236">handed over — nothing is shared after this line</text>
+
+  <text class="d-band-label" x="14" y="284">Render thread — the compositor's</text>
+  <rect class="d-band" x="10" y="294" width="700" height="288" rx="10"/>
+
+  <rect class="d-box" x="160" y="314" width="400" height="62" rx="8"/>
+  <text class="d-title" x="180" y="340">SceneVisualHandler</text>
+  <text class="d-sub" x="180" y="360">Holds the snapshot. Leases the platform graphics API.</text>
+
+  <path class="d-edge" d="M360 376 V406" marker-end="url(#arrow-frame)"/>
+
+  <rect class="d-box-accent" x="160" y="406" width="400" height="62" rx="8"/>
+  <text class="d-title" x="180" y="432">Metal · OpenGL / WebGL 2 · Skia on the CPU</text>
+  <text class="d-sub" x="180" y="452">Whichever one the lease turned out to offer.</text>
+
+  <path class="d-edge" d="M360 468 V498" marker-end="url(#arrow-frame)"/>
+  <text class="d-note" x="372" y="490">an SKImage, not a hole in the window</text>
+
+  <rect class="d-box" x="160" y="498" width="400" height="62" rx="8"/>
+  <text class="d-title" x="180" y="524">Avalonia composites it</text>
+  <text class="d-sub" x="180" y="544">Clipping, opacity, z-order and transforms all apply.</text>
+</svg>
+</div>
+
+<p class="caption">
+  Five steps, one direction, one handover. Everything below the dashed line runs on a thread you never touch.
+</p>
+
+<h2 id="two-threads">Two threads, one snapshot</h2>
+
+<p>
+  Avalonia's compositor renders on its own thread. Your scene graph lives on the UI thread and you expect to
+  mutate it from a button handler. Those two facts cannot both be true of the same object, so they are not the
+  same object: <a href="Ava3D.Ava3DView.html">Ava3DView</a> walks the tree once per frame and produces a flat,
+  immutable snapshot — a draw list, with every transform already accumulated to world space.
+</p>
+
+<p>
+  This is why you can add a hundred nodes in a loop without a lock, without a "begin update" call, and without
+  ever seeing a half-drawn frame. It is also why the renderer never holds a reference to anything you can still
+  change: by the time it draws, what it has is a copy of a moment.
+</p>
+
+<p>
+  The cost is one tree walk per frame, which is not the expensive part of drawing a scene. The benefit is that
+  <em>no rule about which thread may touch what</em> ever reaches you.
+</p>
+
+<h2 id="what-is-cached">What survives between frames</h2>
+
+<p>
+  A snapshot per frame would be pointless if it meant re-uploading geometry per frame, so the parts that are
+  expensive are keyed on identity rather than on content:
+</p>
+
+<ul>
+  <li>
+    <strong>Meshes are cached against the <a href="Ava3D.Mesh.html">Mesh</a> instance.</strong> The demo's
+    stress scene puts one sphere on 125 nodes: one vertex buffer, 125 draw calls. Reuse the same instance and
+    you get that automatically; build a new <code>Mesh</code> every frame and you will pay for it every frame.
+    That is why <code>Mesh</code> exposes its arrays as init-only — a mutable mesh could not be cached this way
+    without a version counter nobody would remember to bump.
+  </li>
+  <li>
+    <strong>Textures decode lazily and upload a couple per frame.</strong> A
+    <a href="Ava3D.Texture.html">Texture</a> holds encoded bytes until a backend actually needs pixels. A scene
+    with forty maps appears on the first frame and sharpens over the next few, instead of allocating a hundred
+    megabytes of RGBA before anything is drawn. On a 32-bit WebAssembly heap this is the difference between
+    working and not.
+  </li>
+</ul>
+
+<h2 id="the-picture">Why it composites like a control and not a hole</h2>
+
+<p>
+  The obvious way to put 3D in a window is a native child surface. It is also the way that stops the result
+  from being a control: a child surface does not clip to a rounded corner, does not fade with its parent's
+  opacity, does not rotate, and lands on top of your UI whatever the z-order says.
+</p>
+
+<p>
+  So the backend never draws to the window. It draws into its own framebuffer and returns an image, and
+  Avalonia composites that image exactly as it would a bitmap. Put the view inside a
+  <code>Border</code> with a corner radius, animate its opacity, overlay a panel — all of it behaves, because
+  by the time the compositor sees the 3D it is already just pixels.
+</p>
+
+<p>
+  There is one rule this creates, and it is worth knowing because the error message is cryptic: while the
+  platform graphics API is leased, Skia's own canvas must not be touched. Avalonia throws
+  <em>"the underlying graphics API is currently leased"</em> if it is. The GPU backends therefore hand back an
+  <code>SKImage</code> and let the caller composite it, rather than drawing directly. The CPU backend, which
+  never takes a lease, is free to draw straight onto the canvas — which is why the two paths look different
+  inside and identical from outside.
+</p>
+
+<h2 id="in-practice">What this means when you use it</h2>
+
+<ul>
+  <li><strong>Mutate freely from the UI thread.</strong> There is no lock and no update scope.</li>
+  <li><strong>Keep your <code>Mesh</code> instances.</strong> Sharing one is how instancing happens here.</li>
+  <li><strong>Do not expect to reach the GPU.</strong> There is no device, context or command buffer in the
+      public API, because on one of the supported platforms there is no such object to hand you.</li>
+  <li><strong>Read <a href="Ava3D.RenderInfo.html">RenderInfo</a> rather than assuming.</strong> It reports
+      what actually happened this frame, including which renderer you ended up with.</li>
+</ul>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview · the reference is generated from the XML documentation comments in the source.</p>
+</footer>
+</body>
+</html>

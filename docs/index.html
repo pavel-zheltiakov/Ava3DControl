@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ava3DControl — a 3D viewport for Avalonia that works everywhere</title>
+<meta name="description" content="A metallic-roughness PBR 3D view for Avalonia. One binary renders through Metal, OpenGL, WebGL 2 or the CPU, on desktop, mobile and in the browser. Freeware, commercial use included.">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<header class="bar">
+  <a class="brand" href="index.html">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview · beta</span>
+  <nav>
+    <a href="#story">The story</a>
+    <a href="#concepts">How it works</a>
+    <a href="#measured">Measured</a>
+    <a href="#start">Quick start</a>
+    <a href="api/index.html">Documentation</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">Freeware · commercial use included</p>
+    <h1>A 3D viewport for Avalonia that actually works everywhere.</h1>
+    <p class="lede">
+      Metallic-roughness PBR, glTF loading and triangle-accurate picking, in one control that renders through
+      Metal on a Mac, OpenGL on Windows and Linux, WebGL 2 in a browser tab, and the CPU when a host offers no
+      GPU at all — chosen at runtime, from the same binary.
+    </p>
+    <pre class="install"><code>dotnet add package Ava3DControl --prerelease</code></pre>
+    <p class="beta-note">
+      <strong>This is a beta.</strong> <code>12.1.0-preview</code> is a NuGet prerelease, which is why the
+      flag is there. Everything below was measured on the code you would install; the suffix is there because
+      the API may still move in response to the first people to use it.
+    </p>
+    <p class="hero-actions">
+      <a class="button primary" href="api/index.html">Documentation</a>
+      <a class="button" href="#start">Quick start</a>
+      <a class="button" href="#story">See it</a>
+    </p>
+  </div>
+  <figure class="hero-shot">
+    <img src="shots/pbr-full.png" width="1500" height="844"
+         alt="A panelled metal drum on a plinth, showing rivets, polished plates, rough grooves and glowing cyan seams.">
+    <figcaption>All five texture channels on one material — and not a single image file. See slide 4.</figcaption>
+  </figure>
+</section>
+
+<!--
+  The story. Eight slides, in the order the argument is actually made: it is a control, then it is a
+  renderer, then it is the same renderer everywhere, then here is what it costs you.
+
+  Without JavaScript the slides stack and every image and caption is still readable, which is why the
+  single-slide behaviour is switched on from script rather than baked into the stylesheet.
+-->
+<section id="story" class="story">
+  <h2>The story, in eight pictures</h2>
+
+  <div class="slider" data-slider>
+    <div class="track">
+
+      <figure class="slide">
+        <img src="shots/primitives.png" width="1260" height="708" loading="lazy"
+             alt="A sphere, a cube and a tilted plane on a dark ground plane.">
+        <figcaption>
+          <h3>1 · It is a control, not a window</h3>
+          <p>
+            Four lines to a lit, orbitable scene: a mesh, a material, a node, done. It composites like any
+            other Avalonia control — clipping, opacity, z-order and transforms all behave, because it draws
+            into its own framebuffer and hands Skia an image rather than punching a hole through the window.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/materials.png" width="1228" height="692" loading="lazy"
+             alt="Two rows of spheres in six colours: matte above, metallic below.">
+        <figcaption>
+          <h3>2 · Metals are not just shiny plastic</h3>
+          <p>
+            The same six colours twice. Above, <code>Metallic = 0</code>: the colour is diffuse albedo and the
+            highlight is white. Below, <code>Metallic = 1</code>: no diffuse term at all, so the colour has
+            become the tint of the reflection. That is why the gold reads as gold, and why a metal in an empty
+            room reads as black.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/pbr-chart.png" width="1500" height="788" loading="lazy"
+             alt="A 7 by 7 grid of spheres, metallic increasing left to right, roughness increasing top to bottom.">
+        <figcaption>
+          <h3>3 · The chart every PBR renderer should be able to draw</h3>
+          <p>
+            Metallic across, roughness down, one base colour, no textures. Read the corners: polished plastic,
+            near-mirror metal, chalk, brushed steel. The reflected horizon blurring away down the right-hand
+            column <em>is</em> the roughness axis — GGX with height-correlated Smith visibility and Schlick
+            Fresnel, the same arithmetic on all three renderers.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/pbr-full.png" width="1500" height="844" loading="lazy"
+             alt="A panelled metal drum with rivets, polished plates, rough grooves and glowing cyan seams.">
+        <figcaption>
+          <h3>4 · Five texture channels, no asset pipeline</h3>
+          <p>
+            Base colour, metallic-roughness, normal, emissive and occlusion — all generated in about two
+            hundred lines from one height field, which is why the plates, the grooves and the rivets agree with
+            each other. The cyan seams stay lit as they rotate into shadow; the rivets are shading, not
+            geometry, and the silhouette proves it.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/gltf.png" width="1500" height="844" loading="lazy"
+             alt="Three panelled crates loaded from a generated glTF file.">
+        <figcaption>
+          <h3>5 · glTF in, scene out</h3>
+          <p>
+            <code>GltfLoader.Load(bytes)</code> gives you a scene with its node hierarchy intact, one draw call
+            per primitive, and textures left encoded until a renderer needs them. Exporters omit the tangent
+            attribute unless asked, so the loader derives tangents itself — otherwise every normal map in the
+            wild would be quietly ignored.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/stress.png" width="1228" height="692" loading="lazy"
+             alt="A five by five by five grid of coloured spheres above a ground plane.">
+        <figcaption>
+          <h3>6 · 128,002 triangles, 126 draw calls, 120 fps</h3>
+          <p>
+            One <code>Mesh</code> instance on 125 nodes. GPU buffers are cached against mesh identity, so it
+            uploads once and draws 125 times — which is why <code>Mesh</code> exposes its arrays as
+            init-only. This is the scene behind every number in the table below, and it ships in the demo so
+            you can re-measure it.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/browser.png" width="1400" height="813" loading="lazy"
+             alt="The demo running in a browser tab, reporting OpenGL through a WebGlContext at 120 fps.">
+        <figcaption>
+          <h3>7 · The same code in a browser tab</h3>
+          <p>
+            WebGL 2, 120 fps, no plugin and no separate build of the renderer. It goes through Avalonia's
+            SkiaSharp graphics lease rather than <code>OpenGlControlBase</code>, which does not exist on the
+            web platform — and it reports the one thing the browser cannot do (anisotropic filtering, whose
+            entry point is fatal under WebAssembly) instead of quietly dropping it.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/software.png" width="1500" height="844" loading="lazy"
+             alt="The panelled drum scene rendered by the CPU fallback, showing base colour but no maps.">
+        <figcaption>
+          <h3>8 · And a picture even with no GPU at all</h3>
+          <p>
+            A Vulkan host or a software-rendered window gets the CPU fallback: the same PBR arithmetic per
+            vertex instead of per pixel, through Skia's <code>DrawVertices</code>. It is slower, it has no
+            depth buffer, and it can carry only the base-colour map — all of which it tells you in
+            <code>RenderInfo</code>. What it does not do is show nothing.
+          </p>
+        </figcaption>
+      </figure>
+
+    </div>
+
+    <button class="nav prev" type="button" data-prev aria-label="Previous slide">‹</button>
+    <button class="nav next" type="button" data-next aria-label="Next slide">›</button>
+    <div class="dots" data-dots role="tablist" aria-label="Choose a slide"></div>
+  </div>
+</section>
+
+<!--
+  The one diagram worth putting on a landing page: where the handover is. Everything else that wants a
+  picture — the renderer decision, the glTF projection — lives in the guides, because it needs the paragraphs
+  around it to mean anything.
+-->
+<section id="concepts" class="concepts">
+  <h2>How it works, in one picture</h2>
+  <p class="lede">
+    You mutate a scene graph on the UI thread. A snapshot of it crosses to the render thread once a frame, and
+    what comes back is an image the compositor treats like any other content.
+  </p>
+
+  <div class="diagram">
+  <svg viewBox="0 0 1100 150" role="img" aria-labelledby="flow-title flow-desc">
+    <title id="flow-title">The path from your scene graph to a composited frame</title>
+    <desc id="flow-desc">
+      On the UI thread, your Scene and Nodes are collected into one immutable SceneSnapshot per frame. That
+      crosses to the render thread, where a backend — Metal, OpenGL or Skia on the CPU — draws it into an
+      SKImage, which Avalonia composites like any other control content.
+    </desc>
+
+    <defs>
+      <marker id="arrow-flow" viewBox="0 0 10 10" refX="9" refY="5"
+              markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="d-head" d="M0 0 L10 5 L0 10 z"/>
+      </marker>
+    </defs>
+
+    <text class="d-band-label" x="4" y="20">UI thread — yours</text>
+    <text class="d-band-label" x="459" y="20">Render thread</text>
+    <path class="d-rule" d="M437 8 V122"/>
+
+    <rect class="d-box-accent" x="4" y="36" width="190" height="68" rx="8"/>
+    <text class="d-title" x="20" y="64">Scene · Node</text>
+    <text class="d-sub" x="20" y="86">yours, mutable</text>
+
+    <path class="d-edge" d="M194 70 H230" marker-end="url(#arrow-flow)"/>
+
+    <rect class="d-box" x="230" y="36" width="190" height="68" rx="8"/>
+    <text class="d-title" x="246" y="64">SceneSnapshot</text>
+    <text class="d-sub" x="246" y="86">immutable, one per frame</text>
+
+    <path class="d-edge" d="M420 70 H459" marker-end="url(#arrow-flow)"/>
+
+    <rect class="d-box-accent" x="459" y="36" width="190" height="68" rx="8"/>
+    <text class="d-title" x="475" y="64">Metal · GL · CPU</text>
+    <text class="d-sub" x="475" y="86">whichever the host has</text>
+
+    <path class="d-edge" d="M649 70 H685" marker-end="url(#arrow-flow)"/>
+
+    <rect class="d-box" x="685" y="36" width="190" height="68" rx="8"/>
+    <text class="d-title" x="701" y="64">An SKImage</text>
+    <text class="d-sub" x="701" y="86">a picture, not a hole</text>
+
+    <path class="d-edge" d="M875 70 H911" marker-end="url(#arrow-flow)"/>
+
+    <rect class="d-box" x="911" y="36" width="185" height="68" rx="8"/>
+    <text class="d-title" x="927" y="64">Avalonia</text>
+    <text class="d-sub" x="927" y="86">composites it as a control</text>
+  </svg>
+  </div>
+
+  <p class="footnote">
+    That last box is why clipping, opacity, z-order and transforms all behave: by the time the compositor sees
+    the 3D, it is already pixels. A native child surface — the obvious way to do this — would ignore every one
+    of them.
+  </p>
+
+  <div class="cards">
+    <a class="card" href="api/how-a-frame-happens.html">
+      <h3>How a frame happens →</h3>
+      <p>
+        The diagram above, with the reasoning: why there is a snapshot at all, what survives between frames,
+        and why you never get handed a GPU device.
+      </p>
+    </a>
+    <a class="card" href="api/choosing-a-renderer.html">
+      <h3>How the renderer is chosen →</h3>
+      <p>
+        One lease, three outcomes, and no such thing as a graphics initialisation failure. Also why swapping
+        between two GPU APIs needs a relaunch and swapping to the CPU does not.
+      </p>
+    </a>
+    <a class="card" href="api/gltf-mapping.html">
+      <h3>From a .glb file to these types →</h3>
+      <p>
+        Every part of a glTF file and the type it becomes — and the parts that do not come across at all,
+        stated plainly rather than discovered later.
+      </p>
+    </a>
+  </div>
+</section>
+
+<section class="features">
+  <h2>What you get</h2>
+  <div class="grid">
+    <article>
+      <h3>The renderer is a runtime decision</h3>
+      <p>
+        A control library does not get to choose its host's graphics API, so this one asks. Metal, OpenGL or
+        the CPU, decided from what the graphics lease returns — and reported, with a reason, for every option
+        the platform cannot offer.
+      </p>
+    </article>
+    <article>
+      <h3>Metallic-roughness PBR</h3>
+      <p>
+        The glTF 2.0 model, with an analytic sky-and-ground environment so metals have something to reflect
+        without shipping a cubemap. Base colour, metallic-roughness, normal, emissive and occlusion maps.
+      </p>
+    </article>
+    <article>
+      <h3>Picking against triangles</h3>
+      <p>
+        Möller–Trumbore, rejected first by each node's bounding box. Geometry rather than pixels, so it works
+        identically on the GPU, on the CPU and in a browser where reading a pixel means a round trip.
+      </p>
+    </article>
+    <article>
+      <h3>A scene graph, not a mesh list</h3>
+      <p>
+        Nodes carry transforms and inherit their parents', so a CAD assembly stays one draw call per part and
+        identical geometry shares one upload. Mutate it freely on the UI thread; the control coalesces changes
+        into one immutable snapshot per frame.
+      </p>
+    </article>
+    <article>
+      <h3>Textures that fit in a WASM heap</h3>
+      <p>
+        Images stay encoded until a renderer wants them, then decode and upload two per frame. A scene appears
+        immediately and fills in, instead of allocating a hundred megabytes of RGBA before the first frame.
+      </p>
+    </article>
+    <article>
+      <h3>Freeware, including commercially</h3>
+      <p>
+        No fee, no seat count, no registration, no attribution requirement in your application. Ship it inside
+        something you sell. The demo's source is yours to copy outright.
+      </p>
+    </article>
+  </div>
+</section>
+
+<section id="measured" class="measured">
+  <h2>Measured, not estimated</h2>
+  <p class="lede">
+    All five figures are the same scene: 128,002 triangles in 126 draw calls, the "Stress test" scene in the
+    demo. Reproduce them by opening that scene and reading the counter — and in a browser, by adding
+    <code>?scene=stress</code> to the URL.
+  </p>
+  <div class="scroller">
+    <table>
+      <thead>
+        <tr><th>Platform</th><th>Renderer</th><th class="num">Frames per second</th><th>Note</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>macOS, Apple M3 Max</td><td>Metal</td><td class="num">119.9</td><td>Avalonia's default on macOS</td></tr>
+        <tr><td>macOS, Apple M3 Max</td><td>OpenGL 4.1</td><td class="num">120.4</td><td>host started in OpenGL mode</td></tr>
+        <tr><td>Chrome, WebAssembly</td><td>WebGL 2</td><td class="num">120.0</td><td>same binary, no plugin</td></tr>
+        <tr><td>iOS 26.5 simulator</td><td>Metal</td><td class="num">60.1</td><td>vsync-capped at 60</td></tr>
+        <tr><td>macOS, Apple M3 Max</td><td>Skia, CPU</td><td class="num">24.2</td><td>the fallback, on one core</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="footnote">
+    The first four are frame-rate limited rather than GPU limited — the renderer is waiting for the display,
+    not the other way round. The CPU figure is the honest one: it is what a Vulkan or software host gets, and
+    the reason the GPU paths exist.
+  </p>
+</section>
+
+<section id="start" class="start">
+  <h2>Quick start</h2>
+
+  <div class="two-up">
+    <div>
+      <h3>1 · Add the package</h3>
+      <pre><code>dotnet add package Ava3DControl --prerelease</code></pre>
+      <p>
+        The flag is required while this is a preview. Pin <code>12.1.0-preview</code> exactly if you would
+        rather nothing moved under you.
+      </p>
+
+      <h3>2 · Put the control somewhere</h3>
+      <pre><code>&lt;Window xmlns="https://github.com/avaloniaui"
+        xmlns:a3d="using:Ava3D"&gt;
+    &lt;a3d:Ava3DView x:Name="View" /&gt;
+&lt;/Window&gt;</code></pre>
+    </div>
+    <div>
+      <h3>3 · Give it a scene</h3>
+      <pre><code>var scene = new Scene();
+
+scene.Children.Add(new MeshNode(
+    Primitives.Sphere(0.5f),
+    new Material
+    {
+        BaseColor = new Vector4(1f, 0.77f, 0.34f, 1f),
+        Metallic  = 1f,
+        Roughness = 0.25f
+    }));
+
+View.Scene = scene;</code></pre>
+      <p>
+        That is the whole thing. The camera frames the scene by itself, orbit, pan and zoom are already wired
+        up, and the renderer is whichever one the platform can actually give you.
+      </p>
+    </div>
+  </div>
+
+  <h3>Browser builds need one extra property</h3>
+  <pre><code>&lt;PropertyGroup&gt;
+    &lt;WasmBuildNative&gt;true&lt;/WasmBuildNative&gt;
+&lt;/PropertyGroup&gt;</code></pre>
+  <p class="footnote">
+    Without it the WebAssembly runtime aborts with no exception and no message when the renderer makes its
+    first GL call: the P/Invoke trampolines for functions taking several floats are generated at native link
+    time, and that link only happens when this is set.
+  </p>
+</section>
+
+<section class="limits">
+  <h2>What it does not do</h2>
+  <p class="lede">
+    A short list is worth more than a long one you have to discover for yourself.
+  </p>
+  <ul>
+    <li><strong>No shadows.</strong> One directional light plus an environment, forward-shaded, single pass.</li>
+    <li><strong>No image-based lighting.</strong> The environment is an analytic two-colour hemisphere, so a
+        mirror reflects a smooth gradient rather than a room. It needs no assets and runs on a phone.</li>
+    <li><strong>No animation or skinning.</strong> glTF node transforms are read; animation channels are not.</li>
+    <li><strong>No transparency sorting.</strong> Alpha masking works; blended transparency is not ordered.</li>
+    <li><strong>Only binary glTF.</strong> A multi-file <code>.gltf</code> needs a URI resolver the browser
+        makes awkward. Pack it to a <code>.glb</code> first.</li>
+    <li><strong>Android is not verified.</strong> The head builds and the GL path is the same one the browser
+        uses, but nobody has run it on a device yet, and an unverified claim is not a feature.</li>
+    <li><strong>OpenGL on iOS renders nothing.</strong> An upstream defect in Avalonia's iOS GL surface, not a
+        device limit. Metal is the working GPU path there and the control picks it automatically.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>
+    <strong>Ava3DControl 12.1.0-preview</strong> — a 3D viewport control for
+    <a href="https://avaloniaui.net/">Avalonia</a>.
+    Freeware; see the licence in the repository for the exact terms.
+  </p>
+  <p class="thin">
+    Every screenshot on this page was produced by the demo application included in this repository, from
+    geometry and textures it generates in code. Nothing here is a render from another tool.
+  </p>
+</footer>
+
+<script src="site.js" defer></script>
+</body>
+</html>

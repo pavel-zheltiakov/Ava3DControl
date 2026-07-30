@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From a .glb file to these types · Ava3DControl</title>
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview · beta</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html">Documentation</a>
+  </nav>
+</header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a class="current" aria-current="page" href="gltf-mapping.html">From a .glb file to these types</a><ul class="sub"><li><a href="#the-projection">The projection</a></li><li><a href="#one-primitive">Why one primitive becomes one node</a></li><li><a href="#tangents">Tangents, and why the loader generates them</a></li><li><a href="#materials">What the five channels become</a></li><li><a href="#uvs">One thing that will bite you: UVs outside 0..1</a></li><li><a href="#glb-only">Binary .glb only</a></li></ul></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · Concepts</p><h1>From a .glb file to these types</h1><p class="lede">
+  <code>GltfLoader.Load(bytes)</code> is one line, and what comes back is an ordinary
+  <a href="Ava3D.Scene.html">Scene</a> you could have built by hand. This is which part of the file became
+  which type — worth reading once, because it tells you what survives the trip and what does not.
+</p>
+
+<h2 id="the-projection">The projection</h2>
+
+<div class="diagram">
+<svg viewBox="0 0 720 570" role="img" aria-labelledby="gltf-title gltf-desc">
+  <title id="gltf-title">How each part of a glTF file maps onto Ava3DControl's types</title>
+  <desc id="gltf-desc">
+    A glTF scene becomes a Scene; each node becomes a Node with its transform composed; each mesh primitive
+    becomes a MeshNode and one draw call; the POSITION, NORMAL, TEXCOORD_0 and TANGENT accessors become a Mesh,
+    with tangents derived when the file omits them; a material becomes a Material; and a texture with its image
+    and sampler becomes a Texture and a TextureWrap. Animations, skins, cameras, morph targets, sparse
+    accessors and multi-file .gltf are not carried over.
+  </desc>
+
+  <defs>
+    <marker id="arrow-gltf" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="d-head" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <text class="d-band-label" x="30" y="28">In the .glb file</text>
+  <text class="d-band-label" x="420" y="28">In your scene</text>
+
+  <rect class="d-box" x="30" y="44" width="270" height="64" rx="8"/>
+  <text class="d-mono" x="46" y="70">scene</text>
+  <text class="d-sub" x="46" y="92">the default one, or the first</text>
+  <path class="d-edge" d="M300 76 H420" marker-end="url(#arrow-gltf)"/>
+  <rect class="d-box-accent" x="420" y="44" width="270" height="64" rx="8"/>
+  <text class="d-title" x="436" y="70">Scene</text>
+  <text class="d-sub" x="436" y="92">Children, Camera, Light, Environment</text>
+
+  <rect class="d-box" x="30" y="120" width="270" height="64" rx="8"/>
+  <text class="d-mono" x="46" y="146">node</text>
+  <text class="d-sub" x="46" y="168">a matrix, or T / R / S</text>
+  <path class="d-edge" d="M300 152 H420" marker-end="url(#arrow-gltf)"/>
+  <rect class="d-box" x="420" y="120" width="270" height="64" rx="8"/>
+  <text class="d-title" x="436" y="146">Node</text>
+  <text class="d-sub" x="436" y="168">composed transform, hierarchy intact</text>
+
+  <rect class="d-box" x="30" y="196" width="270" height="64" rx="8"/>
+  <text class="d-mono" x="46" y="222">mesh.primitives[i]</text>
+  <text class="d-sub" x="46" y="244">one entry per material</text>
+  <path class="d-edge" d="M300 228 H420" marker-end="url(#arrow-gltf)"/>
+  <rect class="d-box-accent" x="420" y="196" width="270" height="64" rx="8"/>
+  <text class="d-title" x="436" y="222">MeshNode</text>
+  <text class="d-sub" x="436" y="244">one primitive, one node, one draw call</text>
+
+  <rect class="d-box" x="30" y="272" width="270" height="64" rx="8"/>
+  <text class="d-mono" x="46" y="296">POSITION   NORMAL</text>
+  <text class="d-mono" x="46" y="318">TEXCOORD_0   TANGENT</text>
+  <path class="d-edge" d="M300 304 H420" marker-end="url(#arrow-gltf)"/>
+  <rect class="d-box" x="420" y="272" width="270" height="64" rx="8"/>
+  <text class="d-title" x="436" y="296">Mesh</text>
+  <text class="d-sub" x="436" y="318">tangents derived if the file omits them</text>
+
+  <rect class="d-box" x="30" y="348" width="270" height="64" rx="8"/>
+  <text class="d-mono" x="46" y="374">material</text>
+  <text class="d-sub" x="46" y="396">pbrMetallicRoughness, and three more</text>
+  <path class="d-edge" d="M300 380 H420" marker-end="url(#arrow-gltf)"/>
+  <rect class="d-box" x="420" y="348" width="270" height="64" rx="8"/>
+  <text class="d-title" x="436" y="374">Material</text>
+  <text class="d-sub" x="436" y="396">Metallic, Roughness and five maps</text>
+
+  <rect class="d-box" x="30" y="424" width="270" height="64" rx="8"/>
+  <text class="d-mono" x="46" y="450">texture → image → sampler</text>
+  <text class="d-sub" x="46" y="472">embedded PNG or JPEG bytes</text>
+  <path class="d-edge" d="M300 456 H420" marker-end="url(#arrow-gltf)"/>
+  <rect class="d-box" x="420" y="424" width="270" height="64" rx="8"/>
+  <text class="d-title" x="436" y="450">Texture · TextureWrap</text>
+  <text class="d-sub" x="436" y="472">left encoded until a backend needs it</text>
+
+  <path class="d-rule" d="M30 502 H690"/>
+  <text class="d-title" x="30" y="530">Not carried over</text>
+  <text class="d-sub" x="30" y="550">animations · skins · cameras · morph targets · sparse accessors · multi-file .gltf</text>
+</svg>
+</div>
+
+<p class="caption">
+  Read it as a projection, not a translation: the parts that describe geometry and surfaces come across whole,
+  and the parts that describe motion do not come across at all.
+</p>
+
+<h2 id="one-primitive">Why one primitive becomes one node</h2>
+
+<p>
+  A glTF mesh splits into primitives wherever the material changes. Since a draw call can only have one
+  material, that split is already exactly the draw-call boundary — so a primitive becomes a
+  <a href="Ava3D.MeshNode.html">MeshNode</a> and the mapping needs no cleverness. A file with a
+  four-material mesh arrives as four sibling nodes under one parent, which is also what you would get if you
+  had authored it here by hand.
+</p>
+
+<p>
+  The practical consequence is that the draw-call count in <a href="Ava3D.RenderInfo.html">RenderInfo</a> is
+  the number of primitives in your file. If it is higher than you expected, the file has more material splits
+  than you thought, and the fix is in the exporter rather than here.
+</p>
+
+<h2 id="tangents">Tangents, and why the loader generates them</h2>
+
+<p>
+  Normal mapping needs a tangent frame, and glTF stores one in an optional <code>TANGENT</code> accessor that
+  most exporters omit unless explicitly asked. A loader that simply honoured the file would therefore ignore
+  the normal map on most models in the wild, and — worse — would do it silently, producing a picture that is
+  merely flat rather than obviously broken.
+</p>
+
+<p>
+  So when the accessor is missing, <code>Mesh.WithGeneratedTangents()</code> derives the frame from the
+  positions and UVs: per-triangle tangent and bitangent from the UV derivatives, accumulated per vertex,
+  Gram-Schmidt orthogonalised against the normal, with the handedness recovered into the <code>w</code>
+  component. Degenerate UV triangles — zero area, which a badly unwrapped model has plenty of — are skipped
+  rather than producing a division by zero that would poison the whole vertex.
+</p>
+
+<h2 id="materials">What the five channels become</h2>
+
+<table class="members">
+  <tbody>
+    <tr>
+      <td><code>pbrMetallicRoughness.baseColorFactor / Texture</code></td>
+      <td><code>BaseColor</code>, <code>BaseColorTexture</code>. The factor multiplies the texture, as the spec says.</td>
+    </tr>
+    <tr>
+      <td><code>metallicFactor</code>, <code>roughnessFactor</code>, <code>metallicRoughnessTexture</code></td>
+      <td>
+        <code>Metallic</code>, <code>Roughness</code>, <code>MetallicRoughnessTexture</code> — blue channel
+        metallic, green channel roughness, exactly as glTF packs it. <code>Roughness</code> clamps to a floor
+        of 0.03: a true zero makes the GGX highlight a single sub-pixel point that aliases into flicker.
+      </td>
+    </tr>
+    <tr>
+      <td><code>normalTexture</code>, <code>scale</code></td>
+      <td><code>NormalTexture</code>, <code>NormalScale</code>. Tangent-space, two-channel reconstruction.</td>
+    </tr>
+    <tr>
+      <td><code>emissiveFactor</code>, <code>emissiveTexture</code></td>
+      <td><code>EmissiveColor</code>, <code>EmissiveTexture</code>. Added after tone mapping's input, so emissive surfaces stay lit in shadow.</td>
+    </tr>
+    <tr>
+      <td><code>occlusionTexture</code>, <code>strength</code></td>
+      <td><code>OcclusionTexture</code>, <code>OcclusionStrength</code>. Red channel, applied to the environment term only — never to the direct light, which is what the spec intends and what stops occlusion maps from looking like dirt.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="uvs">One thing that will bite you: UVs outside 0..1</h2>
+
+<p>
+  Nothing in glTF constrains texture coordinates to the unit square, and real models routinely exceed it —
+  Khronos's own <em>DamagedHelmet</em> has a V range of 1.0005 to 1.9987. Whether that tiles or clamps is
+  decided by the sampler's wrap mode, so wrap mode is load-bearing rather than a detail, and
+  <a href="Ava3D.TextureWrap.html">TextureWrap</a> is read from the file rather than assumed.
+</p>
+
+<p>
+  This is subtler than it sounds on OpenGL. Since GL 3.3, a sampler object bound to a texture unit
+  <em>overrides every filtering and wrap parameter set on the texture itself</em> — and Skia leaves its own
+  sampler objects bound when it hands over the context. A renderer that sets wrap mode on the texture and
+  trusts it will therefore be quietly overruled, with no GL error, because GL is faithfully obeying someone
+  else's instructions. The GL backend unbinds the sampler on every unit each frame for exactly this reason.
+</p>
+
+<h2 id="glb-only">Binary .glb only</h2>
+
+<p>
+  A multi-file <code>.gltf</code> references its buffers and images by URI, which means resolving relative
+  paths against whatever the file came from — a directory, an archive, a web server, a stream. In a browser
+  that is an asynchronous fetch per resource, from a loader whose only input was a byte array. Packing to
+  <code>.glb</code> first removes the entire question, and every exporter can do it.
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview · the reference is generated from the XML documentation comments in the source.</p>
+</footer>
+</body>
+</html>

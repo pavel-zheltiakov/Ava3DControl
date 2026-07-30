@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rendering.Gl.PlatformSupport · Ava3DControl</title>
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview · beta</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html">Documentation</a>
+  </nav>
+</header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group" open><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a class="current" aria-current="page" href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a><ul class="sub"><li><a href="#properties">Properties</a></li></ul></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · Renderers</p><h1>Rendering.Gl.PlatformSupport</h1><pre class="decl"><code>public static class Rendering.Gl.PlatformSupport</code></pre><p>The guard rail around the GL entry points that are fatal under WebAssembly.</p><p>Emscripten publishes those symbols, so <code>GetProcAddress</code> hands back a real, non-null address — and calling one terminates the runtime. There is no exception to catch, no GL error to check and no console message; the page simply stops. Nine were found by calling the whole engine-relevant ES surface one entry point at a time, and the fault is the browser backend rather than any binding library, so no amount of care at the call site makes them safe.</p><p>The response is therefore not &quot;handle the failure&quot; but &quot;never make the call&quot;. Code asks <a href="Ava3D.Rendering.Gl.PlatformSupport.html"><code>PlatformSupport.Allows</code></a> first; everywhere but the browser the answer is yes and the feature behaves as written. In the browser the answer is no, the renderer takes its documented fallback, and — when warnings are on — the developer gets an IDE-style diagnostic naming the feature, what it costs and what to do instead. Silent degradation is the outcome worth avoiding: it is how you ship a browser build that looks subtly worse and never find out.</p><h2 id="properties">Properties</h2><table class="members"><tbody><tr><td><pre><code>static bool IsBrowser { get; }</code></pre></td><td><p>True when this process is WebAssembly in a browser, where the fatal entry points live.</p></td></tr><tr><td><pre><code>static IReadOnlyList&lt;string&gt; Skipped { get; }</code></pre></td><td><p>Features skipped so far. Safe to read from any thread.</p></td></tr><tr><td><pre><code>static string Summary { get; }</code></pre></td><td><p>One line for a diagnostics panel.</p></td></tr><tr><td><pre><code>static bool Warnings { get; set; }</code></pre></td><td><p>Whether skipped features are announced. On by default in Debug builds, off in Release — the same convention as any other development-time diagnostic. Set it explicitly to inspect a published build.</p></td></tr></tbody></table>
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview · the reference is generated from the XML documentation comments in the source.</p>
+</footer>
+</body>
+</html>

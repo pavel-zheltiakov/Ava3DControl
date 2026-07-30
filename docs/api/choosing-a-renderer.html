@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the renderer is chosen · Ava3DControl</title>
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview · beta</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html">Documentation</a>
+  </nav>
+</header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a class="current" aria-current="page" href="choosing-a-renderer.html">How the renderer is chosen</a><ul class="sub"><li><a href="#the-question">One question, three answers</a></li><li><a href="#no-failure">There is no &quot;graphics initialisation failed&quot;</a></li><li><a href="#asking">Asking for a different one</a></li><li><a href="#reasons">Why &quot;unavailable&quot; always comes with a reason</a></li><li><a href="#same-picture">The picture is the same either way</a></li></ul></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · Concepts</p><h1>How the renderer is chosen</h1><p class="lede">
+  A control library does not get to choose its host's graphics API. The application chose it, at
+  <code>AppBuilder</code> time, before any control existed. So this one does not choose — it asks what it was
+  given, and tells you what the answer was.
+</p>
+
+<h2 id="the-question">One question, three answers</h2>
+
+<div class="diagram">
+<svg viewBox="0 0 720 400" role="img" aria-labelledby="pick-title pick-desc">
+  <title id="pick-title">How the renderer is selected at runtime</title>
+  <desc id="pick-desc">
+    The control leases the platform graphics API once. A Metal context selects the Metal backend on macOS and
+    iOS; an OpenGL context selects the GL backend on Windows, Linux, Android and the browser; no context at all
+    selects the Skia CPU backend. RenderInfo then reports which one was chosen and why the others were not.
+  </desc>
+
+  <defs>
+    <marker id="arrow-pick" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path class="d-head" d="M0 0 L10 5 L0 10 z"/>
+    </marker>
+  </defs>
+
+  <rect class="d-box-accent" x="210" y="20" width="300" height="54" rx="8"/>
+  <text class="d-mono-accent" x="226" y="46">TryLeasePlatformGraphicsApi()</text>
+  <text class="d-sub" x="226" y="64">asked once, on the render thread</text>
+
+  <path class="d-edge" d="M360 74 V104"/>
+  <path class="d-edge" d="M130 104 H590"/>
+  <path class="d-edge" d="M130 104 V142" marker-end="url(#arrow-pick)"/>
+  <path class="d-edge" d="M360 104 V142" marker-end="url(#arrow-pick)"/>
+  <path class="d-edge" d="M590 104 V142" marker-end="url(#arrow-pick)"/>
+
+  <text class="d-mono" x="130" y="98" text-anchor="middle">a Metal context</text>
+  <text class="d-mono" x="360" y="98" text-anchor="middle">a GL context</text>
+  <text class="d-mono" x="590" y="98" text-anchor="middle">nothing at all</text>
+
+  <rect class="d-box" x="30" y="150" width="200" height="80" rx="8"/>
+  <text class="d-title" x="46" y="176">Metal</text>
+  <text class="d-sub" x="46" y="196">macOS, iOS</text>
+  <text class="d-sub" x="46" y="214">full PBR, all five maps</text>
+
+  <rect class="d-box" x="260" y="150" width="200" height="80" rx="8"/>
+  <text class="d-title" x="276" y="176">OpenGL / WebGL 2</text>
+  <text class="d-sub" x="276" y="196">Windows, Linux, Android,</text>
+  <text class="d-sub" x="276" y="214">the browser · full PBR</text>
+
+  <rect class="d-box" x="490" y="150" width="200" height="80" rx="8"/>
+  <text class="d-title" x="506" y="176">Skia, on the CPU</text>
+  <text class="d-sub" x="506" y="196">Vulkan hosts, software</text>
+  <text class="d-sub" x="506" y="214">windows · base colour only</text>
+
+  <path class="d-edge" d="M130 230 V262 H360" />
+  <path class="d-edge" d="M590 230 V262 H360" />
+  <path class="d-edge" d="M360 230 V274" marker-end="url(#arrow-pick)"/>
+
+  <rect class="d-box" x="30" y="282" width="660" height="98" rx="8"/>
+  <text class="d-title" x="46" y="308">RenderInfo — what actually happened</text>
+  <text class="d-sub" x="46" y="330">ActiveBackend · the one you got, this frame</text>
+  <text class="d-sub" x="46" y="350">AvailableBackends · every option, each with a plain-language reason</text>
+  <text class="d-sub" x="46" y="370">PreferredBackend · what you asked for, if you asked</text>
+</svg>
+</div>
+
+<p class="caption">
+  One lease, three outcomes, and a readout. There is no configuration step and no initialisation failure.
+</p>
+
+<h2 id="no-failure">There is no "graphics initialisation failed"</h2>
+
+<p>
+  Every branch above ends in something that draws. That is deliberate, and it is the reason the CPU backend
+  exists at all: a control that renders nothing on a Vulkan host, or inside a remote desktop session, or on a
+  VM with no GPU passthrough, is a control you cannot ship in a general-purpose application. The fallback is
+  slower — 24 fps against 120 on the benchmark scene — and it carries only the base-colour map, and it says so
+  in <a href="Ava3D.RenderInfo.html">RenderInfo</a>. What it does not do is show a blank rectangle.
+</p>
+
+<h2 id="asking">Asking for a different one</h2>
+
+<p>
+  <code>Ava3DView.PreferredBackend</code> is a request, not an instruction, and what happens when you set it
+  depends on what you are asking for:
+</p>
+
+<ul>
+  <li>
+    <strong>GPU to CPU, or back, takes effect on the next frame.</strong> Both live inside the same lease, so
+    the control simply stops using one and starts using the other.
+  </li>
+  <li>
+    <strong>One GPU API to another cannot happen in a running process.</strong> Avalonia fixes its graphics
+    API when the application is built, long before your control is constructed. Nothing a control can do will
+    change it. The demo handles this by relaunching itself with a different switch — see
+    <code>IEngineRelauncher</code> in the demo source — which is the honest solution, and the reason
+    <a href="Ava3D.BackendAvailability.html">BackendAvailability</a> has a
+    <code>RequiresRestart</code> value distinct from <code>Unavailable</code>.
+  </li>
+</ul>
+
+<h2 id="reasons">Why "unavailable" always comes with a reason</h2>
+
+<p>
+  <a href="Ava3D.BackendOption.html">BackendOption</a> carries a sentence, not just a boolean, because the
+  reasons are genuinely different in kind and a user staring at a greyed-out menu item deserves to know which
+  one applies:
+</p>
+
+<table class="members">
+  <tbody>
+    <tr>
+      <td><code>Metal</code>, on Windows</td>
+      <td>Does not exist on this platform. Nothing can be done about it, ever.</td>
+    </tr>
+    <tr>
+      <td><code>OpenGL</code>, on macOS</td>
+      <td>Exists and works, but the host was built for Metal. Restart it with <code>AVA3D_GL=1</code>.</td>
+    </tr>
+    <tr>
+      <td><code>OpenGL</code>, on iOS</td>
+      <td>
+        Present, and renders nothing. This is an upstream defect in Avalonia's iOS GL surface rather than a
+        device limit — iOS hardware runs GL ES perfectly well. Metal is selected there automatically.
+      </td>
+    </tr>
+    <tr>
+      <td>Anisotropic filtering, in a browser</td>
+      <td>
+        Reported by <a href="Ava3D.Rendering.Gl.PlatformSupport.html">PlatformSupport</a> as absent, because
+        calling its entry point under WebAssembly aborts the runtime rather than returning an error.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="same-picture">The picture is the same either way</h2>
+
+<p>
+  Metal and OpenGL run the same arithmetic — Cook-Torrance with GGX, height-correlated Smith visibility and
+  Schlick Fresnel, an analytic sky-and-ground environment, and an ACES tone map — and agree to a mean channel
+  difference of 0.002 across a full frame. The MSL and GLSL are separate files for the obvious reason, but they
+  are transcriptions of each other, and a screenshot from one is a valid reference for the other.
+</p>
+
+<p>
+  The CPU backend is the deliberate exception. It shades per vertex rather than per pixel, has no depth buffer,
+  and samples only the base-colour map. It is a fallback that keeps its promises small, not a fourth renderer
+  pretending to be the other three.
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview · the reference is generated from the XML documentation comments in the source.</p>
+</footer>
+</body>
+</html>

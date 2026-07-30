@@ -2,13 +2,12 @@
 
 **Version 1.0**
 
-> **Before publishing:** replace every `<LICENSOR>` below with the legal name of the
-> copyright holder, and `<JURISDICTION>` with the governing jurisdiction. Both are
-> deliberately left blank — a EULA that names the wrong entity is worse than none.
-> This note is the only part of the file meant to be deleted.
+> **This licence covers a pre-release (beta) version.** The Software is published for
+> evaluation and feedback. Its API may change before a stable release, and section 6
+> (no warranty) matters more than it would for a finished product.
 
 This End User License Agreement (the "Agreement") is a legal agreement between you
-(either an individual or a single legal entity, "You") and `<LICENSOR>` ("Licensor")
+(either an individual or a single legal entity, "You") and Pavel Zheltiakov ("Licensor")
 for the software product **Ava3DControl** — the compiled library, its NuGet package,
 its documentation, its sample and demo source code, and any updates Licensor makes
 available under this Agreement (collectively, the "Software").
@@ -121,12 +120,15 @@ section 1.3 may continue to be used by those end users.
 You are responsible for complying with all applicable laws in Your use of the
 Software, including export control, sanctions, and data protection laws.
 
-## 11. Governing law
+## 11. Severability
 
-This Agreement is governed by the laws of `<JURISDICTION>`, without regard to its
-conflict-of-laws rules. If any provision is held unenforceable, it shall be modified
-to the minimum extent necessary to make it enforceable, and the remaining provisions
-stay in full force.
+If any provision of this Agreement is held unenforceable, it shall be modified to the
+minimum extent necessary to make it enforceable, and the remaining provisions stay in
+full force.
+
+This Agreement names no governing jurisdiction. The Software is provided free of
+charge and no fee is exchanged, so the mandatory consumer and contract law of Your own
+jurisdiction applies to it as it would to any other gratuitous grant.
 
 ## 12. Entire agreement
 
@@ -138,6 +140,6 @@ received the Software under continues to govern that copy.
 
 ---
 
-Copyright © 2026 `<LICENSOR>`. All rights reserved.
+Copyright © 2026 Pavel Zheltiakov. All rights reserved.
 
 *Ava3DControl* is a 3D viewport control for [Avalonia](https://avaloniaui.net/).

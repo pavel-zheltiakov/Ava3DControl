@@ -1,7 +1,9 @@
-# Ava3DControl
+# Ava3DControl · 12.1.0-preview
 
 A 3D viewport control for [Avalonia](https://avaloniaui.net/) that works on every platform Avalonia
 targets — including the browser.
+
+📖 **[Documentation and API reference](https://pavel-zheltiakov.github.io/Ava3DControl/)**
 
 Metallic-roughness PBR, glTF loading and triangle-accurate picking, in one control that renders through
 Metal on a Mac, OpenGL on Windows and Linux, WebGL 2 in a browser tab, and the CPU when a host offers no GPU
@@ -10,15 +12,22 @@ at all — chosen at runtime, from the same binary.
 **Freeware, commercial use included.** No fee, no seat count, no registration, and no attribution
 requirement in your application.
 
+> **This is a beta.** `12.1.0-preview` is a NuGet prerelease: it will not appear in a default package search
+> and needs `--prerelease` to install. Everything documented is measured and working; the suffix is there
+> because the API may still move in response to early use. Pin the exact version.
+
 ```
-dotnet add package Ava3DControl
+dotnet add package Ava3DControl --prerelease
 ```
+
+The major and minor version track the Avalonia release this is built against — `12.1.x` is for Avalonia
+12.1 — so the version answers the compatibility question directly.
 
 ## What is in this repository
 
 | | |
 | --- | --- |
-| `site/` | The documentation site: a landing page and the generated API reference. Open `site/index.html`. |
+| `docs/` | The documentation site: a landing page, three concept guides with diagrams, and the generated API reference. Served at the link above; open `docs/index.html` for a local copy. |
 | `packages/` | The released NuGet package, so the demo builds offline against exactly the build the site documents. |
 | `demo/` | The demo application's full source — thirteen scenes and five platform heads. |
 | `LICENSE.md` | The licence. Read section 3 before you resell anything. |

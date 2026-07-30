@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NodeCollection · Ava3DControl</title>
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview · beta</span>
+  <nav>
+    <a href="../index.html">Home</a>
+    <a href="index.html">Documentation</a>
+  </nav>
+</header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group" open><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a class="current" aria-current="page" href="Ava3D.NodeCollection.html">NodeCollection</a><ul class="sub"><li><a href="#properties">Properties</a></li><li><a href="#methods">Methods</a></li></ul></li><li><a href="Ava3D.Camera.html">Camera</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · The scene</p><h1>NodeCollection</h1><pre class="decl"><code>public sealed class NodeCollection</code></pre><p>The children of a <a href="Ava3D.Node.html"><code>Node</code></a>. Mutating it invalidates the scene.</p><h2 id="properties">Properties</h2><table class="members"><tbody><tr><td><pre><code>int Count { get; }</code></pre></td><td><p>Number of children.</p></td></tr><tr><td><pre><code>Node Item { get; }</code></pre></td><td><p>The child at <code>index</code>.</p></td></tr></tbody></table><h2 id="methods">Methods</h2><table class="members"><tbody><tr><td><pre><code>void Add(Node node)</code></pre></td><td><p>Adds a child, detaching it from any previous parent first.</p></td></tr><tr><td><pre><code>void AddRange(IEnumerable&lt;Node&gt; nodes)</code></pre></td><td><p>Adds several children in one go, invalidating the scene once rather than per node.</p></td></tr><tr><td><pre><code>void Clear()</code></pre></td><td><p>Removes every child.</p></td></tr><tr><td><pre><code>List&lt;Node&gt; GetEnumerator()</code></pre></td><td><p>A struct enumerator, so walking the graph allocates nothing.</p></td></tr><tr><td><pre><code>bool Remove(Node node)</code></pre></td><td><p>Removes a child. Returns false when it was not one.</p></td></tr></tbody></table>
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview · the reference is generated from the XML documentation comments in the source.</p>
+</footer>
+</body>
+</html>
