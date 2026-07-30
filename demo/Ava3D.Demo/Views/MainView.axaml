@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:a3d="using:Ava3D"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
+             x:Class="Ava3D.Demo.Views.MainView">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="Foreground" Value="#8A93A6" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.mono">
+            <Setter Property="FontFamily" Value="monospace" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Toolbar. A WrapPanel rather than a fixed row so a phone in portrait folds it instead of
+             clipping it — the same layout has to serve a 390pt screen and a 27" one. -->
+        <Border Grid.Row="0" Background="#12151C" Padding="10,8">
+            <WrapPanel ItemSpacing="10" LineSpacing="8">
+
+                <TextBlock Classes="label" Text="SCENE" />
+                <ComboBox x:Name="SceneList" MinWidth="180" />
+                <Button x:Name="PrevButton" Content="‹" ToolTip.Tip="Previous scene" />
+                <Button x:Name="NextButton" Content="›" ToolTip.Tip="Next scene" />
+                <ToggleSwitch x:Name="TourToggle" OnContent="Touring" OffContent="Manual"
+                              ToolTip.Tip="Advance through the scenes automatically" />
+
+                <Border Width="1" Background="#262B36" Margin="4,0" />
+
+                <TextBlock Classes="label" Text="ENGINE" />
+                <ComboBox x:Name="EngineList" MinWidth="150" />
+                <Button x:Name="FitButton" Content="Fit view" />
+            </WrapPanel>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <!-- The control. Same code path on desktop, browser, Android and iOS. -->
+            <a3d:Ava3DView x:Name="View" />
+
+            <!--
+                Overlaid rather than beside, on purpose: it is the cheapest demonstration that the control
+                composites like any other Avalonia control instead of punching a hole through the window.
+            -->
+            <Border VerticalAlignment="Top" HorizontalAlignment="Left"
+                    Margin="12" Padding="14,12" MaxWidth="420"
+                    Background="#D9141821" CornerRadius="8"
+                    BoxShadow="0 4 16 0 #40000000"
+                    IsVisible="{Binding !#NotesToggle.IsChecked}">
+                <StackPanel Spacing="8">
+                    <TextBlock x:Name="SceneTitle" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+                    <ScrollViewer MaxHeight="176" HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock x:Name="SceneNotes" FontSize="12" LineHeight="17"
+                                   Foreground="#C3CAD8" TextWrapping="Wrap" />
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!-- Diagnostics. Bottom-left so it never covers the toolbar or the notes. -->
+            <Border VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                    Margin="12" Padding="14,12" MinWidth="280"
+                    Background="#D9141821" CornerRadius="8"
+                    BoxShadow="0 4 16 0 #40000000">
+                <StackPanel Spacing="6">
+                    <TextBlock x:Name="Renderer" Classes="mono" FontSize="12" Foreground="#7FD8A0" />
+                    <TextBlock x:Name="Stats" Classes="mono" Foreground="#D8DCE6" />
+                    <TextBlock x:Name="Limits" Classes="mono" Foreground="#9AA3B5" />
+                    <TextBlock x:Name="EngineNote" Classes="mono" Foreground="#E8C07D" IsVisible="False" />
+                    <TextBlock x:Name="Errors" Classes="mono" FontSize="12" Foreground="#FF8A8A"
+                               IsVisible="False" />
+                    <TextBlock x:Name="Picked" FontSize="11" Foreground="#C7B7FF" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <ToggleButton x:Name="NotesToggle" Content="Hide notes"
+                          VerticalAlignment="Top" HorizontalAlignment="Right" Margin="12"
+                          FontSize="11" Padding="8,4" />
+        </Grid>
+    </Grid>
+</UserControl>

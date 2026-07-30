@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MeshNode · Ava3DControl</title>
+<link rel="stylesheet" href="./api.css">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
+  <nav><a href="./index.html">API reference</a></nav>
+</header>
+<main>
+<p class="crumb"><a href="index.html">API reference</a> · Ava3D</p><h1>MeshNode</h1><pre class="decl"><code>public sealed class MeshNode : Node</code></pre><p>A node that draws geometry.</p><h2>Constructors</h2><table class="members"><tbody><tr><td><pre><code>MeshNode(Mesh mesh, Material material = null)</code></pre></td><td><p>A node with geometry and, optionally, a material. Without one it gets a plain white default.</p><dl class="params"><dt><code>mesh</code></dt><dd><p>The geometry to draw.</p></dd><dt><code>material</code></dt><dd><p>How to shade it, or null for the default.</p></dd></dl></td></tr></tbody></table><h2>Properties</h2><table class="members"><tbody><tr><td><pre><code>bool IsPickable { get; set; }</code></pre></td><td><p>Set false to keep this node out of <a href="Ava3D.Ava3DView.html"><code>Ava3DView.Pick</code></a> results — right for gizmos and ground planes, which should be visible but not selectable.</p></td></tr><tr><td><pre><code>BoundingBox LocalBounds { get; }</code></pre></td><td><p>The mesh's own extent, before this node's transform.</p></td></tr><tr><td><pre><code>Material Material { get; set; }</code></pre></td><td><p>How the geometry is shaded. Assigning null restores a default rather than throwing.</p></td></tr><tr><td><pre><code>Mesh Mesh { get; set; }</code></pre></td><td><p>The geometry. Null draws nothing.</p></td></tr><tr><td><pre><code>object Tag { get; set; }</code></pre></td><td><p>Arbitrary payload, handed back on a pick. The scene graph never looks at it.</p></td></tr></tbody></table><h2>Also in Ava3D</h2><p class="siblings"><a href="Ava3D.Ava3DView.html">Ava3DView</a> · <a href="Ava3D.BackendAvailability.html">BackendAvailability</a> · <a href="Ava3D.BackendOption.html">BackendOption</a> · <a href="Ava3D.BoundingBox.html">BoundingBox</a> · <a href="Ava3D.Camera.html">Camera</a> · <a href="Ava3D.DirectionalLight.html">DirectionalLight</a> · <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a> · <a href="Ava3D.GltfLoader.html">GltfLoader</a> · <a href="Ava3D.Material.html">Material</a> · <a href="Ava3D.Mesh.html">Mesh</a> · <a href="Ava3D.Node.html">Node</a> · <a href="Ava3D.NodeCollection.html">NodeCollection</a> · <a href="Ava3D.PickEventArgs.html">PickEventArgs</a> · <a href="Ava3D.PickResult.html">PickResult</a> · <a href="Ava3D.Primitives.html">Primitives</a> · <a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a> · <a href="Ava3D.RenderInfo.html">RenderInfo</a> · <a href="Ava3D.Scene.html">Scene</a> · <a href="Ava3D.Texture.html">Texture</a> · <a href="Ava3D.TextureWrap.html">TextureWrap</a></p>
+</main>
+<footer>
+  <p>Ava3DControl 1.0.0 · generated from the XML documentation comments in the source.</p>
+</footer>
+</body>
+</html>

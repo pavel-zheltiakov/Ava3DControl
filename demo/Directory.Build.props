@@ -1,0 +1,16 @@
+<Project>
+    <!--
+        The switch that makes this copy of the demo build against the released package instead of against a
+        source tree that is not here. The same csproj files, unmodified, build both ways — see the comment
+        beside the reference in Ava3D.Demo.csproj.
+    -->
+    <PropertyGroup>
+        <Ava3DFromPackage>true</Ava3DFromPackage>
+
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+</Project>

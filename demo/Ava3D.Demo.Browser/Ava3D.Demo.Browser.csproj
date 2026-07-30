@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0-browser</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Nullable>enable</Nullable>
+    <!--
+      Relink the runtime natively. Ava3D calls GL entry points whose signatures are not in the
+      prebuilt WebAssembly trampoline table — glClearColor's four floats, for one — and calling those
+      aborts the runtime with no exception and no message. Relinking generates the missing trampolines
+      from the app's own P/Invoke set. Costs about a minute of build time and needs the wasm-tools
+      workload; without it the browser build dies on the first frame.
+    -->
+    <WasmBuildNative>true</WasmBuildNative>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ava3D.Demo\Ava3D.Demo.csproj" />
+  </ItemGroup>
+</Project>

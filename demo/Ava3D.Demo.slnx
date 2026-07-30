@@ -1,0 +1,11 @@
+﻿<Solution>
+  <Project Path="Ava3D.Demo.Android/Ava3D.Demo.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="Ava3D.Demo.Browser/Ava3D.Demo.Browser.csproj" />
+  <Project Path="Ava3D.Demo.Desktop/Ava3D.Demo.Desktop.csproj" />
+  <Project Path="Ava3D.Demo.iOS/Ava3D.Demo.iOS.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="Ava3D.Demo/Ava3D.Demo.csproj" />
+</Solution>
