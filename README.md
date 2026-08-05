@@ -1,42 +1,28 @@
 # Ava3DControl · 12.1.0-preview.2
 
-A 3D viewport control for [Avalonia](https://avaloniaui.net/) that works on every platform Avalonia
-targets — including the browser.
+A 3D viewport control for [Avalonia](https://avaloniaui.net/). Metallic-roughness PBR, glTF loading and
+triangle-accurate picking, in one binary that renders through Metal, OpenGL, WebGL 2 or the CPU — chosen at
+runtime from whatever the host can offer.
 
-📗 **[3D Guide](https://pavel-zheltiakov.github.io/Ava3DControl/api/a-scene-from-nothing.html)** ·
-📖 **[API reference](https://pavel-zheltiakov.github.io/Ava3DControl/api/#reference)** ·
-🗒 **[Releases](https://pavel-zheltiakov.github.io/Ava3DControl/releases.html)**
+[Live demo](https://pavel-zheltiakov.github.io/Ava3DControl/demo.html) ·
+[3D Guide](https://pavel-zheltiakov.github.io/Ava3DControl/api/a-scene-from-nothing.html) ·
+[API reference](https://pavel-zheltiakov.github.io/Ava3DControl/api/#reference) ·
+[Releases](https://pavel-zheltiakov.github.io/Ava3DControl/releases.html)
 
-Metallic-roughness PBR, glTF loading and triangle-accurate picking, plus sprites, lines, point clouds and
-up to four lights, in one control that renders through Metal on a Mac, OpenGL on Windows and Linux, WebGL 2
-in a browser tab, and the CPU when a host offers no GPU at all — chosen at runtime, from the same binary.
-
-**Freeware, commercial use included.** No fee, no seat count, no registration, and no attribution
-requirement in your application.
-
-> **This is a beta.** `12.1.0-preview.2` is a NuGet prerelease: it will not appear in a default package search
-> and needs `--prerelease` to install. Everything documented is measured and working; the suffix is there
-> because the API may still move in response to early use. Pin the exact version.
+Freeware, commercial use included. Preview release — pin the exact version.
 
 ```
 dotnet add package Ava3DControl --prerelease
 ```
 
-📦 **[nuget.org/packages/Ava3DControl](https://www.nuget.org/packages/Ava3DControl)** — and every version's
-`.nupkg` is attached to its [release](https://github.com/pavel-zheltiakov/Ava3DControl/releases) here, if you
-would rather have the file than the feed.
+The major and minor version track the Avalonia release this is built against, so 12.1.x is for Avalonia 12.1.
 
-The major and minor version track the Avalonia release this is built against — `12.1.x` is for Avalonia
-12.1 — so the version answers the compatibility question directly.
+## In this repository
 
-## What is in this repository
-
-| | |
-| --- | --- |
-| `docs/` | The documentation site: a landing page, a book that teaches 3D from nothing, three concept guides with diagrams, the release history, and the generated API reference. Served at the link above; open `docs/index.html` for a local copy. |
-| `demo/` | The demo application's full source — twenty-four scenes and five platform heads. It restores `Ava3DControl` from nuget.org, exactly as your own project would. |
-| `LICENSE.md` | The licence. Read section 3 before you resell anything. |
-| `THIRD-PARTY-NOTICES.md` | What this builds on, and the fact that it ships no art assets at all. |
+- `docs/` — the documentation site, and the browser demo it hosts.
+- `demo/` — the demo application in full: twenty-six scenes and five platform heads. It restores
+  Ava3DControl from nuget.org, exactly as your own project would.
+- `LICENSE.md`, `THIRD-PARTY-NOTICES.md`.
 
 The library's own source is not here. This repository is the released package, its documentation, and a demo
 you can copy from.
@@ -49,41 +35,15 @@ dotnet run --project Ava3D.Demo.Desktop        # macOS, Windows, Linux
 dotnet run --project Ava3D.Demo.Browser        # a browser tab
 ```
 
-Twenty-four scenes, in the order they build on each other. First the fundamentals: one cube, geometry, the
-transform tree, materials, lighting, textures, normal mapping. Then ten that do exactly one thing each, with
-the feature on and off in the same frame wherever that is possible — bump mapping, raw-pixel textures,
-unlit, culling, blending and render order, sprites, lines, points, Fresnel rim and night-side emissive, and
-four lights at once. Then what a viewer control is actually asked for: picking, animation, a
-128,002-triangle benchmark, a glTF round trip, the metallic-roughness chart and a fully textured PBR
-surface.
+Twenty-six scenes in the order they build on each other, each a single self-contained file under
+`demo/Ava3D.Demo/Scenes/` that copies into your own project without untangling. Last is Contact — a
+sixty-second film on a loop, with a story, a shot list and a camera that flies itself.
 
-Last is **Contact**: a sixty-second film on a loop, with a story, a shot list and a camera that flies
-itself. Ships on Catmull–Rom paths that bank from the curvature of their own turn, tracers, an explosion
-that is a fireball, a debris cloud and a shockwave ring, and a docking — everything the ten scenes before it
-showed one at a time, doing a job.
+Switch scenes from the toolbar, or turn on Touring to have them advance by themselves. The Engine picker
+switches renderer. Switches, on every head: AVA3D_SCENE, AVA3D_TOUR, AVA3D_GL, AVA3D_SOFTWARE, AVA3D_PROBE.
+In a browser the first two are query-string parameters instead.
 
-Each is a single self-contained file under `demo/Ava3D.Demo/Scenes/` that you can copy into your own project
-without untangling it from the demo shell. Contact is the exception, at five files, and says at the top of
-itself why.
-
-Switch scenes from the toolbar, or turn on **Touring** to have them advance by themselves. The **Engine**
-picker switches renderer: GPU to CPU takes effect on the next frame, and swapping between GPU APIs relaunches
-the desktop demo — because Avalonia fixes its graphics API when the application is built, which a control
-cannot change from inside a running process.
-
-Useful switches, on every head:
-
-| | |
-| --- | --- |
-| `AVA3D_SCENE=pbr` | open on a scene, by index or by name |
-| `AVA3D_TOUR=1` | start touring |
-| `AVA3D_GL=1` | desktop: ask Avalonia for OpenGL instead of Metal |
-| `AVA3D_SOFTWARE=1` | desktop: ask for no GPU context at all |
-| `AVA3D_PROBE=8` | render for eight seconds, print what the renderer did, exit |
-
-In a browser the first two are query-string parameters instead: `?scene=stress&tour=1`.
-
-## Using it in your own application
+## Using it
 
 ```xml
 <Window xmlns="https://github.com/avaloniaui"
@@ -107,9 +67,8 @@ scene.Children.Add(new MeshNode(
 View.Scene = scene;
 ```
 
-The camera frames the scene by itself, orbit, pan and zoom are wired up, and the renderer is whichever one
-the platform can actually provide. `View.Info` reports which one that turned out to be, at what frame rate,
-and what the platform could not offer.
+The camera frames the scene by itself; orbit, pan and zoom are already wired up. View.Info reports which
+renderer you got, at what frame rate, and what the platform could not offer.
 
 Browser builds need one extra property, or the WebAssembly runtime aborts with no message on the first GL
 call:
@@ -120,39 +79,21 @@ call:
 </PropertyGroup>
 ```
 
-## Measured
+## Limits
 
-One scene — 128,002 triangles in 126 draw calls, the demo's "Stress test" — on the same code:
-
-| Platform | Renderer | fps |
-| --- | --- | --- |
-| macOS, Apple M3 Max | Metal | 119.9 |
-| macOS, Apple M3 Max | OpenGL 4.1 | 120.4 |
-| Chrome, WebAssembly | WebGL 2 | 120.0 |
-| iOS 26.5 simulator | Metal | 60.1 (vsync-capped) |
-| macOS, Apple M3 Max | Skia, CPU | 24.2 |
-
-Open that scene in the demo and read the counter to reproduce any of them.
-
-## What it does not do
-
-No shadows. No image-based lighting — the environment is an analytic two-colour hemisphere, so a mirror
-reflects a smooth gradient rather than a room. No animation or skinning. No transparency sorting; alpha
-masking works, blending is not ordered. Binary `.glb` only. Android builds but has not been verified on a
-device. OpenGL on iOS renders nothing, which is an upstream Avalonia defect rather than a device limit — the
-control selects Metal there automatically.
-
-## Feedback
-
-A beta is only worth releasing if the people using it can say something back.
-
-- **[GitHub Issues](https://github.com/pavel-zheltiakov/Ava3DControl/issues)** — a bug, a missing thing or a
-  question, in the open, where the answer helps whoever hits it next.
-- **[Telegram](https://t.me/avadevtools/199)** — the Ava3DControl topic in the AvaDevTools group, for
-  anything shorter than an issue.
+- No shadows, no image-based lighting, no animation or skinning.
+- Transparency is ordered per object, not per triangle.
+- Binary .glb only.
+- Android builds but has not been run on a device.
+- OpenGL on iOS renders nothing, which is an upstream Avalonia defect. Metal is used there instead.
 
 ## Licence
 
-Freeware. Use it for anything, including commercially, at no cost; ship it inside something you sell. What
-you may not do is resell the library itself. The demo's source is yours to copy outright, without
-attribution. See [`LICENSE.md`](LICENSE.md) for the exact terms.
+Freeware. Use it for anything, including commercially, at no cost, and ship it inside something you sell.
+What you may not do is resell the library itself. The demo's source is yours to copy outright, without
+attribution. See [LICENSE.md](LICENSE.md) for the exact terms.
+
+## Feedback
+
+[GitHub Issues](https://github.com/pavel-zheltiakov/Ava3DControl/issues), or the
+[Telegram topic](https://t.me/avadevtools/199) for anything shorter.
