@@ -19,7 +19,7 @@
  *   nav.*        the header links
  *   fb.*         the feedback popup
  *   hero.*       the first screen
- *   story.*      the nine slides — `.h` is a heading, `.p` the paragraph under it
+ *   story.*      the eleven slides — `.h` is a heading, `.p` the paragraph under it
  *   concepts.*   the diagram section and the three guide cards
  *   book.*       the invitation to the book
  *   features.*   the six cards

@@ -50,6 +50,15 @@ public partial class MainView : UserControl
     private Scene _currentScene = null!;
 
     /// <summary>
+    /// An untouched camera, read for its defaults when a scene switch hands the next scene a clean one.
+    ///
+    /// A camera rather than four literals, so this cannot drift out of step with the control: whatever
+    /// <see cref="Camera"/> considers a sensible field of view and clip range is by definition what a
+    /// scene that sets neither should get. See <see cref="Select"/>.
+    /// </summary>
+    private static readonly Camera CameraDefaults = new();
+
+    /// <summary>
     /// The frame clock's reading when the current scene opened, and whether we have one yet.
     ///
     /// Not a wall-clock time. See <see cref="Frame"/> — the difference is the whole reason animation
@@ -410,12 +419,22 @@ public partial class MainView : UserControl
         // there is no honest way to take one from here.
         _haveStart = false;
 
-        // Roll is the one piece of camera state no scene sets, so it is the one piece that survives a
-        // switch. Contact's shots leave it at up to forty degrees; leave the film mid-shot and every
-        // chart scene after it reads at an angle, with nothing in the demo able to put it back. Cleared
-        // here rather than in each scene's Frame, because "the camera a scene is handed is level" is a
-        // property of switching scenes, not something twenty-four scenes should each have to remember.
-        _view.Camera.Roll = 0f;
+        // Everything a scene did not ask for goes back to what a fresh Camera would have. Only about half
+        // the scenes set a field of view or a clip range, so the other half inherit whatever the last one
+        // left — and Contact leaves the worst of it: a near plane at 5 and a far plane three million out,
+        // because its sun is nine hundred thousand units away. Wrap the tour from the film to Hello cube
+        // and AutoFit puts the camera 4.6 units from a one-unit box that is not drawn nearer than 5, so
+        // the front half is clipped off and the cube is seen from the inside. Roll is the same failure a
+        // scene switch away: the film's shots leave it at up to forty degrees.
+        //
+        // Reset here rather than in each scene's Frame, because "the camera a scene is handed is the one
+        // the control would have made" is a property of switching scenes, not something twenty-six scenes
+        // should each have to remember.
+        var camera = _view.Camera;
+        camera.Roll = CameraDefaults.Roll;
+        camera.FieldOfView = CameraDefaults.FieldOfView;
+        camera.NearPlane = CameraDefaults.NearPlane;
+        camera.FarPlane = CameraDefaults.FarPlane;
 
         // Angle first, then the scene: AutoFit runs when the first snapshot arrives and sets only the
         // target and distance, so a scene's chosen yaw and pitch survive being framed.

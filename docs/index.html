@@ -105,21 +105,25 @@
 </div>
 
 <!--
-  The story. Nine slides, in the order the argument is actually made: it is a control, then it is a
+  The story. Eleven slides, in the order the argument is actually made: it is a control, then it is a
   renderer, then it is the same renderer everywhere, then here is what it costs you.
+
+  Every picture is a capture of the demo taken at twice this display's scale and framed on its own
+  content — see docs/site-images.md. Retaking one changes its size, and the width and height attributes
+  below have to change with it or the page reflows while it loads.
 
   Without JavaScript the slides stack and every image and caption is still readable, which is why the
   single-slide behaviour is switched on from script rather than baked into the stylesheet.
 -->
 <section id="story" class="story">
-  <h2 data-i18n="story.h">The story, in nine pictures</h2>
+  <h2 data-i18n="story.h">The story, in eleven pictures</h2>
 
   <div class="slider" data-slider>
     <div class="track">
 
       <figure class="slide">
-        <img src="shots/primitives.png" width="1196" height="672" loading="lazy"
-             alt="A sphere, a cube and a tilted plane on a dark ground plane.">
+        <img src="shots/primitives.jpg" width="2592" height="1304" loading="lazy"
+             alt="A sphere, a cube, a cylinder, a second cylinder, a cone and a torus in a row on a ground plane.">
         <figcaption>
           <h3 data-i18n="story.s1.h">1 · It is a control, not a window</h3>
           <p data-i18n="story.s1.p">
@@ -131,7 +135,7 @@
       </figure>
 
       <figure class="slide">
-        <img src="shots/materials.png" width="2592" height="1304" loading="lazy"
+        <img src="shots/materials.jpg" width="2198" height="1106" loading="lazy"
              alt="Two rows of spheres in six colours: matte above, metallic below.">
         <figcaption>
           <h3 data-i18n="story.s2.h">2 · Metals are not just shiny plastic</h3>
@@ -145,7 +149,7 @@
       </figure>
 
       <figure class="slide">
-        <img src="shots/pbr-chart.png" width="1500" height="788" loading="lazy"
+        <img src="shots/pbr-chart.jpg" width="2592" height="1304" loading="lazy"
              alt="A 7 by 7 grid of spheres, metallic increasing left to right, roughness increasing top to bottom.">
         <figcaption>
           <h3 data-i18n="story.s3.h">3 · The chart every PBR renderer should be able to draw</h3>
@@ -159,8 +163,8 @@
       </figure>
 
       <figure class="slide">
-        <img src="shots/pbr-full.png" width="2592" height="1304" loading="lazy"
-             alt="A panelled metal drum with rivets, polished plates, rough grooves and glowing cyan seams.">
+        <img src="shots/pbr-full.jpg" width="2592" height="1304" loading="lazy"
+             alt="A panelled metal sphere with rivets and glowing cyan seams, standing on a tiled plinth between four pillars.">
         <figcaption>
           <h3 data-i18n="story.s4.h">4 · Five texture channels, no asset pipeline</h3>
           <p data-i18n="story.s4.p">
@@ -173,11 +177,58 @@
       </figure>
 
       <figure class="slide">
-        <img src="shots/contact.png" width="5184" height="2608" loading="lazy"
+        <img src="shots/pixel-textures.jpg" width="2592" height="1304" loading="lazy"
+             alt="Three glowing panels: a sixteen-pixel grid magnified, concentric rainbow rings, and a soft field of coloured lights.">
+        <figcaption>
+          <h3 data-i18n="story.s5.h">5 · A texture is an array of numbers</h3>
+          <p data-i18n-html="story.s5.p">
+            Left is sixteen pixels — sixty-four bytes of RGBA written as a literal and handed to
+            <code>Texture.FromPixels</code>. Middle is 256×256 filled in a loop. Right is thrown away and
+            rebuilt from a new seed every second and a half, and the demo prints what each rebuild cost. The
+            alternative is encoding a PNG in your own application so the renderer can immediately decode it
+            again, which for four 1024×512 maps is over a second of stall in a WebAssembly heap.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/model.jpg" width="1980" height="996" loading="lazy"
+             alt="A black rangefinder camera with a leather strap, lit from three sides against a dark background.">
+        <figcaption>
+          <h3 data-i18n="story.s6.h">6 · Somebody else's model, exactly as it shipped</h3>
+          <p data-i18n-html="story.s6.p">
+            A CC0 camera from Poly Haven, modelled in Blender and baked to maps years before this renderer
+            existed: packed metallic-roughness with occlusion in the red channel, OpenGL-convention normal
+            maps, separate materials for body, lens and strap, and a node hierarchy that exists for rigging
+            reasons. <code>GltfLoader.Load(bytes)</code> maps all of it onto <code>Material</code> and leaves
+            the hierarchy alone. Exporters omit tangents unless asked, so the loader derives them — otherwise
+            every normal map in the wild would be quietly ignored.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/sprites.jpg" width="2592" height="1304" loading="lazy"
+             alt="A field of grass under a cloudy sky with a brick wall standing in the middle of it.">
+        <figcaption>
+          <h3 data-i18n="story.s7.h">7 · Grass, cloud and a wall, out of quads</h3>
+          <p data-i18n-html="story.s7.p">
+            Two hundred and forty tufts and eight clouds, each one a <code>SpriteNode</code> — a quad that
+            turns to face the camera. A field of grass as geometry is millions of triangles for something you
+            only read as a shape; as sprites it is 240 four-vertex draws, and the alpha edge stays sharp where
+            geometry that thin would be eaten by the depth buffer. Size is in world units, so the far tufts
+            shrink like everything else. Behind the wall are two lamps: the depth-tested one disappears, the
+            one with <code>DepthTest = false</code> never does.
+          </p>
+        </figcaption>
+      </figure>
+
+      <figure class="slide">
+        <img src="shots/contact-slide.jpg" width="2592" height="1304" loading="lazy"
              alt="A raider exploding in orbit: a fireball, a shockwave ring and a debris burst over a planet with city lights on its night side, with a freighter, a station and a starfield.">
         <figcaption>
-          <h3 data-i18n="story.s5.h">5 · Everything that is not a lit triangle</h3>
-          <p data-i18n-html="story.s5.p">
+          <h3 data-i18n="story.s8.h">8 · Everything that is not a lit triangle</h3>
+          <p data-i18n-html="story.s8.p">
             One frame of <em>Contact</em>, a sixty-second film in the demo. The stars are 1,660 points held at
             two pixels each however far the sphere they sit on actually is. The panel lines are line segments
             over the hulls; the glows, the fireball and the tracers are camera-facing sprites — the ships'
@@ -191,25 +242,11 @@
       </figure>
 
       <figure class="slide">
-        <img src="shots/gltf.png" width="1500" height="844" loading="lazy"
-             alt="Three panelled crates loaded from a generated glTF file.">
-        <figcaption>
-          <h3 data-i18n="story.s6.h">6 · glTF in, scene out</h3>
-          <p data-i18n-html="story.s6.p">
-            <code>GltfLoader.Load(bytes)</code> gives you a scene with its node hierarchy intact, one draw call
-            per primitive, and textures left encoded until a renderer needs them. Exporters omit the tangent
-            attribute unless asked, so the loader derives tangents itself — otherwise every normal map in the
-            wild would be quietly ignored.
-          </p>
-        </figcaption>
-      </figure>
-
-      <figure class="slide">
-        <img src="shots/stress.png" width="1228" height="692" loading="lazy"
+        <img src="shots/stress.jpg" width="2592" height="1304" loading="lazy"
              alt="A five by five by five grid of coloured spheres above a ground plane.">
         <figcaption>
-          <h3 data-i18n="story.s7.h">7 · 128,002 triangles, 126 draw calls, 120 fps</h3>
-          <p data-i18n-html="story.s7.p">
+          <h3 data-i18n="story.s9.h">9 · 128,002 triangles, 126 draw calls, 120 fps</h3>
+          <p data-i18n-html="story.s9.p">
             One <code>Mesh</code> instance on 125 nodes. GPU buffers are cached against mesh identity, so it
             uploads once and draws 125 times. Rewrite the vertices and call <code>InvalidateGeometry()</code>
             and it refills that one buffer instead. This is the scene behind every number in the table below,
@@ -219,29 +256,31 @@
       </figure>
 
       <figure class="slide">
-        <img src="shots/browser.png" width="1400" height="813" loading="lazy"
-             alt="The demo running in a browser tab, reporting OpenGL ES 3.0 at 120 fps.">
+        <img src="shots/browser.jpg" width="2592" height="1304" loading="lazy"
+             alt="The demo running in a browser tab: the Contact film mid-explosion, with the toolbar and a panel reporting OpenGL ES 3.0 at 34.6 frames per second.">
         <figcaption>
-          <h3 data-i18n="story.s8.h">8 · The same code in a browser tab</h3>
-          <p data-i18n-html="story.s8.p">
-            WebGL 2, 120 fps, no plugin and no separate build of the renderer. It goes through Avalonia's
-            SkiaSharp graphics lease rather than <code>OpenGlControlBase</code>, which does not exist on the
-            web platform — and it reports the one thing the browser cannot do (anisotropic filtering, whose
-            entry point is fatal under WebAssembly) instead of quietly dropping it.
+          <h3 data-i18n="story.s10.h">10 · The same code in a browser tab</h3>
+          <p data-i18n-html="story.s10.p">
+            The film, in Chrome, on WebGL 2 — 111 draws and 17,354 triangles a frame with no plugin and no
+            separate build of the renderer. It goes through Avalonia's SkiaSharp graphics lease rather than
+            <code>OpenGlControlBase</code>, which does not exist on the web platform. Twelve of thirteen
+            features: the missing one is anisotropic filtering, whose entry point terminates the WebAssembly
+            runtime, and the panel says so rather than quietly dropping it.
+            <a href="demo.html" data-i18n="story.s10.a">Run it yourself →</a>
           </p>
         </figcaption>
       </figure>
 
       <figure class="slide">
-        <img src="shots/software.png" width="1500" height="844" loading="lazy"
-             alt="The panelled drum scene rendered by the CPU fallback, showing base colour but no maps.">
+        <img src="shots/software.png" width="1698" height="854" loading="lazy"
+             alt="The same panelled sphere and plinth rendered by the CPU fallback, showing base colour but no maps.">
         <figcaption>
-          <h3 data-i18n="story.s9.h">9 · And a picture even with no GPU at all</h3>
-          <p data-i18n-html="story.s9.p">
-            A Vulkan host or a software-rendered window gets the CPU fallback: the same PBR arithmetic per
+          <h3 data-i18n="story.s11.h">11 · And a picture even with no GPU at all</h3>
+          <p data-i18n-html="story.s11.p">
+            The fourth slide's scene again, in a window with no GPU context: the same PBR arithmetic per
             vertex instead of per pixel, through Skia's <code>DrawVertices</code>. It is slower, it has no
-            depth buffer, and it can carry only the base-colour map — all of which it tells you in
-            <code>RenderInfo</code>. What it does not do is show nothing.
+            depth buffer, and it can carry only the base-colour map — four of thirteen features, all of which
+            it tells you in <code>RenderInfo</code>. What it does not do is show nothing.
           </p>
         </figcaption>
       </figure>
