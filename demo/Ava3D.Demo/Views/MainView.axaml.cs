@@ -425,12 +425,18 @@ public partial class MainView : UserControl
         // because its sun is nine hundred thousand units away. Wrap the tour from the film to Hello cube
         // and AutoFit puts the camera 4.6 units from a one-unit box that is not drawn nearer than 5, so
         // the front half is clipped off and the cube is seen from the inside. Roll is the same failure a
-        // scene switch away: the film's shots leave it at up to forty degrees.
+        // scene switch away: the film's shots leave it at up to forty degrees. So are the angles — a scene
+        // that names none was being shown from wherever the last shot happened to end, which is why the
+        // same cube looked different depending on which second of the film you left.
         //
-        // Reset here rather than in each scene's Frame, because "the camera a scene is handed is the one
-        // the control would have made" is a property of switching scenes, not something twenty-six scenes
-        // should each have to remember.
+        // This runs before Frame, so a scene that does name an angle still wins; a scene that does not
+        // gets Camera's own 0.7 and 0.35, which is the three-quarter view it was written for. Reset here
+        // rather than in each scene's Frame, because "the camera a scene is handed is the one the control
+        // would have made" is a property of switching scenes, not something twenty-six scenes should each
+        // have to remember.
         var camera = _view.Camera;
+        camera.Yaw = CameraDefaults.Yaw;
+        camera.Pitch = CameraDefaults.Pitch;
         camera.Roll = CameraDefaults.Roll;
         camera.FieldOfView = CameraDefaults.FieldOfView;
         camera.NearPlane = CameraDefaults.NearPlane;

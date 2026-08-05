@@ -5,7 +5,7 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
   "mainAssemblyName": "Ava3D.Demo.Browser",
   "applicationEnvironment": "Development",
   "resources": {
-    "hash": "sha256-+/Ax2ozzu78M5uaEgg/5GYF+SPwMNiHW+3OJehBexGM=",
+    "hash": "sha256-snINOBB1WASx+l+6iqk8xoUwo/BjbmiM3v94L2Sv4J8=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.8jjnwwrov9.js"
@@ -1224,40 +1224,40 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "Ava3D.Demo.wasm",
-        "name": "Ava3D.Demo.216gm5uyon.wasm",
-        "hash": "sha256-huxwOwrShKUb9wPZ4uZ+mVKckeKK+tAMFvxg//Ar7fw=",
+        "name": "Ava3D.Demo.8p6c616mho.wasm",
+        "hash": "sha256-FAluH2/a0QuipB4f6/zJu7BDyCv+fm9YSW9K7LxS7Zg=",
         "cache": "force-cache"
       },
       {
         "virtualPath": "Ava3D.wasm",
-        "name": "Ava3D.8fz9nifw0s.wasm",
-        "hash": "sha256-lAruuoYMFdM1oactNUtTusQOzlKx6C8rMnGWS23o5nk=",
+        "name": "Ava3D.gn1elz69hv.wasm",
+        "hash": "sha256-JL8PKutCHimRBOpQ2lNiZXkUfcJ3Lx9AUuQJXX0gqxs=",
         "cache": "force-cache"
       },
       {
         "virtualPath": "Ava3D.Demo.Browser.wasm",
-        "name": "Ava3D.Demo.Browser.dhqbm9oe4m.wasm",
-        "hash": "sha256-Lwt35FdsgBXEtlbWxcprg/C0r9V8R6oA1ozPTanDoKc=",
+        "name": "Ava3D.Demo.Browser.3gnf10ckp0.wasm",
+        "hash": "sha256-c4XPfX4AAjwYvbFl/iuhHC3d6j+iGyUVURkxxjWoqtY=",
         "cache": "force-cache"
       }
     ],
     "pdb": [
       {
         "virtualPath": "Ava3D.Demo.pdb",
-        "name": "Ava3D.Demo.f2see6w77n.pdb",
-        "hash": "sha256-aRRmr5npFNq+Dp9IX3H9MB/VQP+v7ciRDIQlcXzhWIE=",
+        "name": "Ava3D.Demo.374m2jf212.pdb",
+        "hash": "sha256-QWNLxH8AZlO+8wea2sEfi/5WZGNu5Ncee/UgAmazFJg=",
         "cache": "force-cache"
       },
       {
         "virtualPath": "Ava3D.pdb",
-        "name": "Ava3D.9ub3z72t7v.pdb",
-        "hash": "sha256-sT0svlqTpnRceSm3p+9NVFOe4w2Plnyw+ZcEYDmA5K0=",
+        "name": "Ava3D.tqnu4hr9eo.pdb",
+        "hash": "sha256-S9Q53ugJPdvBy1OsNl3mDP3V69uSXLI1iCDVz2IGPNs=",
         "cache": "force-cache"
       },
       {
         "virtualPath": "Ava3D.Demo.Browser.pdb",
-        "name": "Ava3D.Demo.Browser.7gkl1jr9z0.pdb",
-        "hash": "sha256-xxe9xbXiU0xC/ZrTrcdFYGGdVC6FCH4rlVjUuUok9Y4=",
+        "name": "Ava3D.Demo.Browser.bzkk6k7vyn.pdb",
+        "hash": "sha256-yZIxri27Qouo5g53ohXrrWucZt/uYR8N54yvAG5nfvo=",
         "cache": "force-cache"
       }
     ]
