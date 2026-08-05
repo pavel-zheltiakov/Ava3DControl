@@ -262,14 +262,25 @@ figcaption { color: var(--dim); font-size: 13px; margin-top: 10px; }
    The stage takes what is left rather than a fixed height, because "what is left" is the only answer that
    is right on a laptop, on a phone in either orientation, and on the two-row bar in between. */
 
+/* height, not min-height. A flex column sized only by min-height has no definite height to hand down, so
+   the percentage below has nothing to resolve against — and an iframe with no resolvable height falls back
+   to its default of 150 pixels, which is what a three-dimensional scene squeezed into a letterbox at the
+   top of a black page looks like. */
 body.demo-page {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100svh;
+  height: 100vh;
+  height: 100svh;
 }
 
-.stage { flex: 1 1 auto; min-height: 460px; }
+/* Grid with one explicit row, for the same reason. A flex item's used height is not definite enough for a
+   percentage child in every browser; 1fr of a definite container is. */
+.stage {
+  flex: 1 1 auto;
+  min-height: 320px;
+  display: grid;
+  grid-template-rows: 1fr;
+}
 
 .stage-frame {
   display: block;
