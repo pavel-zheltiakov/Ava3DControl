@@ -37,39 +37,26 @@
   The demo itself, in a frame.
 
   A frame rather than the application inlined into this document, because what is under demo/ is exactly
-  what `dotnet publish` produced and nothing here has to know how a .NET WebAssembly application boots. It
-  also means the app's stylesheet and this site's cannot collide, which they would: both define a splash and
-  both style the whole page.
+  what the browser head's own build produced and nothing here has to know how a .NET WebAssembly application
+  boots. It also means the app's stylesheet and this site's cannot collide, which they would: both define a
+  splash and both style the whole page.
 
-  The query string is the demo's own switch set — see Ava3D.Demo.Browser/Program.cs. It opens on the film
-  and leaves Auto running, so the tour walks the remaining twenty-five scenes afterwards.
+  The query string is the demo's own switch set — see Ava3D.Demo.Browser/Program.cs. It opens on the film,
+  leaves Auto running so the tour walks the remaining twenty-five scenes afterwards, and asks for WebGL 2,
+  which is the only GPU renderer a browser has.
 
-  engine=software, and not by preference. It asks for WebGL 2 wherever WebGL 2 works, and in a *published*
-  WebAssembly build it does not: the runtime traps during startup with an ExitStatus carrying no message,
-  Avalonia takes the canvas and then draws nothing, and the whole interface is black. Three things pin it
-  down. The same source run unpublished — dotnet run, Debug, untrimmed — draws perfectly on WebGL 2. The
-  same published build with engine=software draws perfectly too, thousands of calls a second. And the
-  failure is identical on the live site, in Chrome and in Safari, so it is neither the harness nor a driver.
-
-  A published build differs from a run one by Release optimisation and by IL trimming, and trimming cannot
-  be turned off here: PublishTrimmed=false desynchronises the wasm runtime, and TrimMode=partial breaks
-  Avalonia's compiled XAML. Rooting Ava3D against the trimmer did not help either. So the cause is known to
-  be in that gap and is not yet narrowed further.
-
-  The CPU renderer shades per vertex and runs the film at about eleven frames a second. It is also the
-  difference between a demo and a black rectangle. When the GL path is fixed this becomes engine=opengl.
+  What is under demo/ is a *build* rather than a publish, and that is load-bearing — see tools/build-demo.sh.
 -->
 <main class="stage">
   <iframe class="stage-frame"
-          src="demo/index.html?scene=Contact&amp;tour=1&amp;engine=software"
+          src="demo/index.html?scene=Contact&amp;tour=1&amp;engine=opengl"
           title="The Ava3DControl demo"
           allow="fullscreen"></iframe>
 </main>
 
 <p class="stage-note" data-i18n-html="demo.note">
-  <strong>Contact</strong> first, then the other twenty-five scenes. Drawn live in this tab by the control
-  itself, compiled to WebAssembly — on the CPU renderer, because WebGL 2 does not survive a published
-  WebAssembly build in this preview. On a desktop it is a hundred and twenty frames a second.
+  <strong>Contact</strong> first, then the other twenty-five scenes. Drawn live in this tab, on WebGL 2, by
+  the same control you would install — compiled to WebAssembly.
 </p>
 
 <script src="site.js" defer></script>
