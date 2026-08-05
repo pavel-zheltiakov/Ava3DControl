@@ -1,3 +1,4 @@
+using System;
 using Ava3D;
 
 namespace Ava3D.Demo.Scenes;
@@ -8,7 +9,9 @@ namespace Ava3D.Demo.Scenes;
 /// Every scene in this folder is a single file with no dependencies on the others, so it can be read on
 /// its own and copied into a real application without untangling it from the demo shell. That is the point
 /// of the shape: the interesting part of a demo is the twenty lines that build the scene, and those lines
-/// should not be buried in a switch statement.
+/// should not be buried in a switch statement. The one exception is <c>Contact/</c>, which is a
+/// sixty-second film rather than a demonstration of anything in particular, and says so at the top of
+/// itself.
 ///
 /// A scene is built once when it is selected and then, if it animates, nudged each frame. It keeps
 /// references to whatever nodes it wants to move in its own fields — which is why these are classes rather
@@ -51,7 +54,7 @@ public abstract class DemoScene
     /// </summary>
     public virtual bool FramesItself => false;
 
-    /// <summary>Whether this scene wants <see cref="Update"/> called.</summary>
+    /// <summary>Whether this scene wants <see cref="Update(Scene, double)"/> called.</summary>
     public virtual bool Animates => false;
 
     /// <param name="scene">The scene returned by <see cref="Build"/>.</param>
@@ -59,8 +62,77 @@ public abstract class DemoScene
     public virtual void Update(Scene scene, double elapsed) { }
 
     /// <summary>
+    /// The per-frame hook for a scene that moves the camera as well as the scene — a scripted shot,
+    /// a chase cam, anything that is a film rather than a turntable.
+    ///
+    /// It defaults to the two-argument overload, so a scene that only animates its own nodes overrides
+    /// that one and never sees this. Override this one instead and set <see cref="DrivesCamera"/>.
+    /// </summary>
+    public virtual void Update(Scene scene, Camera camera, double elapsed) => Update(scene, elapsed);
+
+    /// <summary>
+    /// Whether the camera is scene-driven. The shell pushes the camera to the renderer every frame when
+    /// it is, and leaves it entirely to mouse input when it is not — which is the right default, and one
+    /// frame of work per frame that a static camera should not pay for.
+    /// </summary>
+    public virtual bool DrivesCamera => false;
+
+    /// <summary>
+    /// A line of text over the bottom of the viewport, polled every frame. Null for no caption.
+    ///
+    /// This is for a scene that is telling a story and needs to say where you are in it. A scene whose
+    /// explanation does not change belongs in <see cref="Notes"/>, which is laid out to be read.
+    /// </summary>
+    public virtual string? Caption => null;
+
+    /// <summary>
+    /// How long Auto holds on this scene before moving to the next one.
+    ///
+    /// Nine seconds is long enough to watch a turntable go round, which is what most of these are. A
+    /// scene with a script sets this to the length of the script instead, so Auto does not advance on a
+    /// timeout at all — it advances when the scene is over. Contact runs sixty seconds and asks for
+    /// sixty-two.
+    /// </summary>
+    public virtual TimeSpan TourDuration => TimeSpan.FromSeconds(9);
+
+    /// <summary>
     /// Whether clicking should highlight what was hit. Off for most scenes so a stray click during the
     /// automatic tour does not leave a recoloured object behind.
     /// </summary>
     public virtual bool WantsPicking => false;
+
+    /// <summary>
+    /// How the notes panel should dress itself for this scene. See <see cref="SceneLook"/>.
+    /// </summary>
+    public virtual SceneLook Look => SceneLook.Plain;
+}
+
+/// <summary>
+/// The four dresses the notes overlay wears.
+///
+/// One style for every scene made all twenty-six of them look like the film, which is the only one that
+/// earned the look. A scene about back-face culling is a diagram; a scene about roughness is a lit still
+/// life; Hello cube is a manual page. Matching the frame to what is inside it costs one property and
+/// stops the demo reading as though every subject were the same subject.
+///
+/// Four rather than twenty-six on purpose: a look that is unique to one scene is decoration, and a look
+/// shared by a group is a statement that the group belongs together. These four are the groups the
+/// catalogue is already ordered by.
+/// </summary>
+public enum SceneLook
+{
+    /// <summary>Neutral grey card. The fundamentals, and the ones that are about the control rather than
+    /// about shading — picking, animation, the stress test.</summary>
+    Plain,
+
+    /// <summary>Drawing-office blue with a visible edge. The scenes that are a comparison or a diagram:
+    /// culling, blending, lines, points, sprites, and the two kinds of surface detail.</summary>
+    Blueprint,
+
+    /// <summary>Warm neutral. Materials, lighting, textures, models and the PBR scenes — everything whose
+    /// subject is a lit object.</summary>
+    Studio,
+
+    /// <summary>Near-black with a cold green title. The two scenes that are in space.</summary>
+    Cosmic
 }

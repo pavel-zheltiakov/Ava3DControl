@@ -1,18 +1,20 @@
-# Ava3DControl · 12.1.0-preview
+# Ava3DControl · 12.1.0-preview.2
 
 A 3D viewport control for [Avalonia](https://avaloniaui.net/) that works on every platform Avalonia
 targets — including the browser.
 
-📖 **[Documentation and API reference](https://pavel-zheltiakov.github.io/Ava3DControl/)**
+📗 **[3D Guide](https://pavel-zheltiakov.github.io/Ava3DControl/api/a-scene-from-nothing.html)** ·
+📖 **[API reference](https://pavel-zheltiakov.github.io/Ava3DControl/api/#reference)** ·
+🗒 **[Releases](https://pavel-zheltiakov.github.io/Ava3DControl/releases.html)**
 
-Metallic-roughness PBR, glTF loading and triangle-accurate picking, in one control that renders through
-Metal on a Mac, OpenGL on Windows and Linux, WebGL 2 in a browser tab, and the CPU when a host offers no GPU
-at all — chosen at runtime, from the same binary.
+Metallic-roughness PBR, glTF loading and triangle-accurate picking, plus sprites, lines, point clouds and
+up to four lights, in one control that renders through Metal on a Mac, OpenGL on Windows and Linux, WebGL 2
+in a browser tab, and the CPU when a host offers no GPU at all — chosen at runtime, from the same binary.
 
 **Freeware, commercial use included.** No fee, no seat count, no registration, and no attribution
 requirement in your application.
 
-> **This is a beta.** `12.1.0-preview` is a NuGet prerelease: it will not appear in a default package search
+> **This is a beta.** `12.1.0-preview.2` is a NuGet prerelease: it will not appear in a default package search
 > and needs `--prerelease` to install. Everything documented is measured and working; the suffix is there
 > because the API may still move in response to early use. Pin the exact version.
 
@@ -31,8 +33,8 @@ The major and minor version track the Avalonia release this is built against —
 
 | | |
 | --- | --- |
-| `docs/` | The documentation site: a landing page, three concept guides with diagrams, and the generated API reference. Served at the link above; open `docs/index.html` for a local copy. |
-| `demo/` | The demo application's full source — thirteen scenes and five platform heads. It restores `Ava3DControl` from nuget.org, exactly as your own project would. |
+| `docs/` | The documentation site: a landing page, a book that teaches 3D from nothing, three concept guides with diagrams, the release history, and the generated API reference. Served at the link above; open `docs/index.html` for a local copy. |
+| `demo/` | The demo application's full source — twenty-four scenes and five platform heads. It restores `Ava3DControl` from nuget.org, exactly as your own project would. |
 | `LICENSE.md` | The licence. Read section 3 before you resell anything. |
 | `THIRD-PARTY-NOTICES.md` | What this builds on, and the fact that it ships no art assets at all. |
 
@@ -47,10 +49,22 @@ dotnet run --project Ava3D.Demo.Desktop        # macOS, Windows, Linux
 dotnet run --project Ava3D.Demo.Browser        # a browser tab
 ```
 
-Thirteen scenes, in the order they build on each other: one cube, geometry, the transform tree, materials,
-lighting, textures, normal mapping, picking, animation, a 128,002-triangle benchmark, a glTF round trip, the
-metallic-roughness chart, and a fully textured PBR surface. Each is a single self-contained file under
-`demo/Ava3D.Demo/Scenes/` that you can copy into your own project without untangling it from the demo shell.
+Twenty-four scenes, in the order they build on each other. First the fundamentals: one cube, geometry, the
+transform tree, materials, lighting, textures, normal mapping. Then ten that do exactly one thing each, with
+the feature on and off in the same frame wherever that is possible — bump mapping, raw-pixel textures,
+unlit, culling, blending and render order, sprites, lines, points, Fresnel rim and night-side emissive, and
+four lights at once. Then what a viewer control is actually asked for: picking, animation, a
+128,002-triangle benchmark, a glTF round trip, the metallic-roughness chart and a fully textured PBR
+surface.
+
+Last is **Contact**: a sixty-second film on a loop, with a story, a shot list and a camera that flies
+itself. Ships on Catmull–Rom paths that bank from the curvature of their own turn, tracers, an explosion
+that is a fireball, a debris cloud and a shockwave ring, and a docking — everything the ten scenes before it
+showed one at a time, doing a job.
+
+Each is a single self-contained file under `demo/Ava3D.Demo/Scenes/` that you can copy into your own project
+without untangling it from the demo shell. Contact is the exception, at five files, and says at the top of
+itself why.
 
 Switch scenes from the toolbar, or turn on **Touring** to have them advance by themselves. The **Engine**
 picker switches renderer: GPU to CPU takes effect on the next frame, and swapping between GPU APIs relaunches

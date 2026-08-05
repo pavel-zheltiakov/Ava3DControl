@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a class="current" aria-current="page" href="glossary.html">Glossary</a><ul class="sub"><li><a href="#geometry">Geometry</a></li><li><a href="#space">Space and movement</a></li><li><a href="#camera">The camera</a></li><li><a href="#surfaces">Surfaces and light</a></li><li><a href="#drawing">Drawing</a></li><li><a href="#files">Files and platforms</a></li></ul></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>Glossary</h1><p class="lede">
+  Every term the rest of the documentation uses, in plain words. The reference links here: a word you have
+  not met in a type's description is a link, and it lands on the entry for it. Each entry says what the thing
+  is, what it is called in this API, and which chapter teaches it properly.
+</p>
+
+<h2 id="geometry">Geometry</h2>
+
+<div class="term" id="g-vertex">
+  <h3>Vertex</h3>
+  <p>
+    A corner of a triangle. It always has a position, and it usually carries more: a
+    <a href="#g-normal">normal</a> saying which way the surface faces there, <a href="#g-uv">UVs</a> saying
+    where in a texture it sits, sometimes a <a href="#g-tangent">tangent</a>. Everything a shader knows about
+    the middle of a triangle is these values, blended between its three corners.
+  </p>
+  <p class="where">In Ava3D: <code>Mesh.Positions</code>, <code>Mesh.Normals</code>, <code>Mesh.TexCoords</code> · <a href="a-scene-from-nothing.html#meshes">chapter 1</a></p>
+</div>
+
+<div class="term" id="g-triangle">
+  <h3>Triangle</h3>
+  <p>
+    The only shape a graphics card draws. Three points, always flat and always convex, which is what makes
+    them cheap to fill in and easy to do a million of at once. Every curved surface you see is an
+    approximation made of them.
+  </p>
+  <p class="where">In Ava3D: <code>Mesh.TriangleCount</code> · <a href="a-scene-from-nothing.html#triangles">chapter 1</a></p>
+</div>
+
+<div class="term" id="g-mesh">
+  <h3>Mesh</h3>
+  <p>
+    A shape: a list of <a href="#g-vertex">vertices</a> and a list of <a href="#g-indices">indices</a> saying
+    which of them form each triangle. A mesh has no position — it sits around the origin and can be drawn in
+    fifty places at once, which is why placing it is a <a href="#g-scene-graph">node's</a> job.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.Mesh.html">Mesh</a>, <a href="Ava3D.Primitives.html">Primitives</a> · <a href="a-scene-from-nothing.html#meshes">chapter 1</a></p>
+</div>
+
+<div class="term" id="g-indices">
+  <h3>Indices, index buffer</h3>
+  <p>
+    Whole numbers that point into the vertex list, three per triangle. They exist because corners are shared:
+    a cube has eight of them but thirty-six corner slots, so the positions are stored once and named many
+    times.
+  </p>
+  <p class="where">In Ava3D: <code>Mesh.Indices</code> · <a href="a-scene-from-nothing.html#meshes">chapter 1</a></p>
+</div>
+
+<div class="term" id="g-winding">
+  <h3>Winding order</h3>
+  <p>
+    Which way round a triangle's three indices are listed, and therefore which of its two sides is the front.
+    The convention here — and in glTF, and in OpenGL — is counter-clockwise seen from outside. It is
+    invisible until <a href="#g-culling">culling</a> is on, and then a mesh wound the other way renders
+    inside out.
+  </p>
+  <p class="where">In Ava3D: every shape in <a href="Ava3D.Primitives.html">Primitives</a> · <a href="a-scene-from-nothing.html#meshes">chapter 1</a></p>
+</div>
+
+<div class="term" id="g-normal">
+  <h3>Normal</h3>
+  <p>
+    A unit direction saying which way a surface faces at a point. Lighting is almost entirely a comparison
+    between the normal, the direction to the light and the direction to the eye. Stored per vertex and
+    blended across the triangle, which is what lets flat pieces shade like a curve.
+  </p>
+  <p class="where">In Ava3D: <code>Mesh.Normals</code>, <code>Mesh.WithGeneratedNormals()</code> · <a href="surfaces-and-light.html#normals">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-tangent">
+  <h3>Tangent</h3>
+  <p>
+    A second direction per vertex, lying along the surface, that says which way is "right" across it. A
+    <a href="#g-normal-map">normal map</a> stores its directions relative to the surface, so without a
+    tangent there is no way to know how to orient them. Most exporters omit tangents, so they are usually
+    derived from the UVs.
+  </p>
+  <p class="where">In Ava3D: <code>Mesh.Tangents</code>, <code>Mesh.WithGeneratedTangents()</code> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-uv">
+  <h3>UV coordinates</h3>
+  <p>
+    Two numbers per vertex saying where in a texture image that corner sits — u across, v down, both usually
+    0 to 1. They are how a flat picture is wrapped onto a three-dimensional shape, and they are decided by
+    whoever made the model.
+  </p>
+  <p class="where">In Ava3D: <code>Mesh.TexCoords</code>, <a href="Ava3D.TextureWrap.html">TextureWrap</a> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-bounding-box">
+  <h3>Bounding box</h3>
+  <p>
+    The smallest axis-aligned box containing something. Testing against a box is far cheaper than testing
+    against the geometry inside it, so it is the first question asked when framing a scene or working out
+    what the pointer is over.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.BoundingBox.html">BoundingBox</a>, <code>Node.Bounds</code>, <code>Node.WorldBounds</code> · <a href="moving-things-about.html#bounds">chapter 2</a></p>
+</div>
+
+<h2 id="space">Space and movement</h2>
+
+<div class="term" id="g-matrix">
+  <h3>Matrix</h3>
+  <p>
+    A 4×4 grid of numbers holding a move, a turn and a scale all at once, so that applying all three to a
+    point is one operation. Multiplying two matrices gives the matrix that does both — which is how a
+    hierarchy of transforms collapses into one number per vertex per frame.
+  </p>
+  <p class="where">In Ava3D: <code>Node.LocalTransform</code>, <code>Node.WorldTransform</code> · <a href="moving-things-about.html#three-questions">chapter 2</a></p>
+</div>
+
+<div class="term" id="g-transform">
+  <h3>Transform</h3>
+  <p>
+    Where something is, which way it is turned, and how big it is. Applied in that order — scale, then
+    rotate, then translate — because doing it the other way swings an object around the origin instead of
+    turning it where it stands.
+  </p>
+  <p class="where">In Ava3D: <code>Node.Position</code>, <code>Node.Rotation</code>, <code>Node.Scale</code> · <a href="moving-things-about.html#three-questions">chapter 2</a></p>
+</div>
+
+<div class="term" id="g-scene-graph">
+  <h3>Scene graph</h3>
+  <p>
+    A tree of nodes where each child's transform is relative to its parent, so moving the parent moves
+    everything under it. It is what makes a wheel stay on a car without the wheel knowing where the car is.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.Scene.html">Scene</a>, <a href="Ava3D.Node.html">Node</a> · <a href="moving-things-about.html#the-graph">chapter 2</a></p>
+</div>
+
+<div class="term" id="g-world-space">
+  <h3>Local space, world space</h3>
+  <p>
+    A node's own position is measured relative to its parent — local space. World space is what everything is
+    finally measured in, once every parent's transform has been applied. Two nodes at the same local position
+    under different parents are nowhere near each other.
+  </p>
+  <p class="where">In Ava3D: <code>Node.Position</code> versus <code>Node.WorldPosition</code> · <a href="moving-things-about.html#local-and-world">chapter 2</a></p>
+</div>
+
+<div class="term" id="g-quaternion">
+  <h3>Quaternion</h3>
+  <p>
+    Four numbers that hold a rotation. Any orientation, however you arrived at it, is the same as one turn
+    about one axis; a quaternion is that axis and that angle, encoded so that combining two is a single
+    multiply and blending between two is a smooth arc. You build them from axes and directions and never read
+    the components.
+  </p>
+  <p class="where">In Ava3D: <code>Node.Rotation</code>, <a href="Ava3D.Rotations.html">Rotations</a> · <a href="turning-things.html#quaternion">chapter 4</a></p>
+</div>
+
+<div class="term" id="g-euler">
+  <h3>Euler angles</h3>
+  <p>
+    A rotation described as three separate turns — pitch, yaw and roll. Easy to picture, and three problems in
+    a trench coat: the order changes the answer, two axes can collide (<a href="#g-gimbal-lock">gimbal
+    lock</a>), and halfway between two sets of angles is rarely halfway between the two orientations.
+  </p>
+  <p class="where">In Ava3D: <code>Node.RotationDegrees</code> · <a href="turning-things.html#angles">chapter 4</a></p>
+</div>
+
+<div class="term" id="g-gimbal-lock">
+  <h3>Gimbal lock</h3>
+  <p>
+    What happens when two of the three <a href="#g-euler">Euler</a> axes line up — pitch straight up, and yaw
+    and roll become the same turn. A whole degree of freedom disappears and no combination of the three gets
+    it back. It is why this camera's pitch is clamped to ±89° rather than ±90°.
+  </p>
+  <p class="where">In Ava3D: avoided by <a href="Ava3D.Rotations.html">Rotations</a> · <a href="turning-things.html#angles">chapter 4</a></p>
+</div>
+
+<h2 id="camera">The camera</h2>
+
+<div class="term" id="g-view-matrix">
+  <h3>View matrix</h3>
+  <p>
+    The transform that rearranges the whole world so the camera sits at the origin looking down −Z. There is
+    no camera object inside a graphics card; moving the camera and moving the world are the same arithmetic.
+  </p>
+  <p class="where">In Ava3D: <code>Camera.View</code> · <a href="the-camera.html#two-matrices">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-projection">
+  <h3>Projection</h3>
+  <p>
+    The step that flattens three dimensions into the rectangle on your screen, making distant things smaller.
+    Perspective projection is the one that looks like a photograph; the alternative, orthographic, keeps
+    parallel lines parallel and is what CAD drawings use.
+  </p>
+  <p class="where">In Ava3D: <code>Camera.GetProjection(aspect)</code> · <a href="the-camera.html#two-matrices">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-frustum">
+  <h3>Frustum</h3>
+  <p>
+    The wedge of space a camera can actually see: bounded by the edges of the screen, and cut off at both ends
+    by the <a href="#g-near-plane">near and far planes</a>. Anything outside it is clipped away before it
+    costs anything.
+  </p>
+  <p class="where">In Ava3D: implied by <code>FieldOfView</code>, <code>NearPlane</code>, <code>FarPlane</code> · <a href="the-camera.html#near-far">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-field-of-view">
+  <h3>Field of view</h3>
+  <p>
+    How wide an angle the camera takes in, vertically, in degrees. The same choice as a photographer's lens: a
+    small angle flattens depth and observes; a large one exaggerates it and makes the viewer feel present.
+  </p>
+  <p class="where">In Ava3D: <code>Camera.FieldOfView</code>, 45 by default · <a href="the-camera.html#lens">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-near-plane">
+  <h3>Near plane, far plane</h3>
+  <p>
+    How close and how distant something can be before it is clipped away. Their <em>ratio</em> is what
+    matters: the <a href="#g-depth-buffer">depth buffer</a>'s precision is spent almost entirely near the near
+    plane, so a near plane set far closer than the scene needs is the usual cause of
+    <a href="#g-z-fighting">z-fighting</a>.
+  </p>
+  <p class="where">In Ava3D: <code>Camera.NearPlane</code>, <code>Camera.FarPlane</code>, derived when null · <a href="the-camera.html#near-far">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-orbit-camera">
+  <h3>Orbit camera</h3>
+  <p>
+    A camera described by what it is looking at and where it sits relative to that — a target, a distance,
+    and two angles — rather than by a position and a rotation. It is the right model for inspecting an
+    object, which is what a viewport usually does, and it has no roll of its own: up is world up.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.Camera.html">Camera</a>, and <code>Roll</code> when you want one · <a href="the-camera.html#orbit">chapter 3</a></p>
+</div>
+
+<h2 id="surfaces">Surfaces and light</h2>
+
+<div class="term" id="g-shader">
+  <h3>Shader</h3>
+  <p>
+    A small program the graphics card runs in parallel — once per vertex to work out where a corner lands,
+    once per covered pixel to work out what colour it is. This library ships one pair, written for OpenGL,
+    Metal and the CPU, and exposes their parameters as a <a href="Ava3D.Material.html">Material</a> rather
+    than letting you supply your own.
+  </p>
+  <p class="where">In Ava3D: not in the public API, by design · <a href="surfaces-and-light.html#shaders">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-pbr">
+  <h3>PBR, metallic-roughness</h3>
+  <p>
+    Physically based rendering: shading built on how light actually behaves, so a material tuned once looks
+    right under any lighting. The metallic-roughness flavour — the one glTF uses — describes a surface with
+    two main numbers instead of a pile of ad-hoc ones.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.Material.html">Material</a> · <a href="surfaces-and-light.html#metallic-roughness">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-albedo">
+  <h3>Base colour, albedo</h3>
+  <p>
+    The colour a surface is. For a non-metal it is the diffuse colour and reflections stay white; for a metal
+    there is no diffuse term at all and this becomes the tint of the reflection. Which is why the same
+    property makes red plastic and makes gold.
+  </p>
+  <p class="where">In Ava3D: <code>Material.BaseColor</code>, <code>Material.BaseColorTexture</code> · <a href="surfaces-and-light.html#metallic-roughness">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-metallic">
+  <h3>Metallic</h3>
+  <p>
+    Not a shininess slider: a switch between two physical behaviours. At 0 the surface has a diffuse colour
+    and white highlights; at 1 it has no diffuse term and every bit of its colour comes from what it
+    reflects. Values in between are only meaningful where one becomes the other, like paint flaking off
+    metal.
+  </p>
+  <p class="where">In Ava3D: <code>Material.Metallic</code> · <a href="surfaces-and-light.html#metallic-roughness">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-roughness">
+  <h3>Roughness</h3>
+  <p>
+    How scattered a surface's reflections are: 0 is a mirror, 1 is chalk. Microscopic texture, modelled
+    statistically rather than drawn — which is why a rough metal blurs the horizon it reflects instead of
+    showing it sharply.
+  </p>
+  <p class="where">In Ava3D: <code>Material.Roughness</code> · <a href="surfaces-and-light.html#metallic-roughness">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-texture">
+  <h3>Texture, texel</h3>
+  <p>
+    An image sampled across a surface to vary something — colour, roughness, how much light it gives off. A
+    texel is one pixel of it. Sampling happens at <a href="#g-uv">UV coordinates</a>, and what happens outside
+    0-to-1 is the wrap mode.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.Texture.html">Texture</a>, <code>Texture.FromPixels</code> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-normal-map">
+  <h3>Normal map</h3>
+  <p>
+    A texture whose pixels are directions rather than colours, used in place of the interpolated
+    <a href="#g-normal">normal</a>. It gives a flat surface rivets, seams and weave that catch the light with
+    no extra triangles — and no effect on the silhouette, which is how you can always tell.
+  </p>
+  <p class="where">In Ava3D: <code>Material.NormalTexture</code>, needs <a href="#g-tangent">tangents</a> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-bump-map">
+  <h3>Bump map</h3>
+  <p>
+    A height field — one channel, high and low — turned into a perturbed normal from its gradient. Cruder
+    than a <a href="#g-normal-map">normal map</a> and needs no tangents, which makes it the better choice on a
+    sphere, where UV tangents degenerate at the poles.
+  </p>
+  <p class="where">In Ava3D: <code>Material.BumpTexture</code>, <code>Material.BumpScale</code> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-emissive">
+  <h3>Emissive</h3>
+  <p>
+    Light a surface appears to give off itself: a screen, a lamp housing, a city at night. It is not a light
+    source — it illuminates nothing else — it simply stays bright when everything around it goes dark.
+  </p>
+  <p class="where">In Ava3D: <code>Material.EmissiveColor</code>, <code>Material.EmissiveTexture</code>, <code>Material.EmissiveNightSide</code> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-occlusion">
+  <h3>Ambient occlusion</h3>
+  <p>
+    Where ambient light cannot reach — inside a crevice, under a bolt head, in the corner of a room. Baked
+    into a texture in advance, because working it out live is what an offline renderer does.
+  </p>
+  <p class="where">In Ava3D: <code>Material.OcclusionTexture</code>, <code>Material.OcclusionStrength</code> · <a href="surfaces-and-light.html#maps">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-environment-light">
+  <h3>Environment light</h3>
+  <p>
+    The light that comes from everywhere rather than from one direction — the sky, the ground, the room. A
+    metal with nothing to reflect renders black, correctly and uselessly, so a renderer needs some model of
+    the surroundings. This one uses an analytic two-colour hemisphere, which costs nothing and needs no
+    image; the richer alternative, an image-based cubemap, is not here yet.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a>, <code>Scene.Environment</code> · <a href="surfaces-and-light.html#lights">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-point-light">
+  <h3>Directional light, point light</h3>
+  <p>
+    A directional light has a direction and no position: it is the sun, infinitely far away, striking
+    everything at the same angle. A point light has a position and fades with distance — its
+    <code>Range</code> is where it dies entirely and its <code>Decay</code> is how quickly, with 2 being the
+    inverse-square falloff of the real world.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.DirectionalLight.html">DirectionalLight</a>, <a href="Ava3D.PointLight.html">PointLight</a>, four in total · <a href="surfaces-and-light.html#lights">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-tone-mapping">
+  <h3>Tone mapping</h3>
+  <p>
+    Lighting arithmetic produces values well beyond 1.0; a screen cannot. Tone mapping is the squeeze from
+    one range into the other, and it is why a very bright surface goes creamy rather than clipping to a flat
+    white slab.
+  </p>
+  <p class="where">In Ava3D: automatic, and skipped entirely when <code>Material.Unlit</code> is set · <a href="surfaces-and-light.html#extra-terms">chapter 5</a></p>
+</div>
+
+<h2 id="drawing">Drawing</h2>
+
+<div class="term" id="g-draw-call">
+  <h3>Draw call</h3>
+  <p>
+    One instruction from the CPU to the GPU: draw this geometry, with this state. It is the unit that
+    actually costs — a hundred and twenty-eight thousand triangles in 126 draw calls is comfortable, while
+    twelve thousand draw calls of ten triangles each is not. One <code>MeshNode</code> is one draw call.
+  </p>
+  <p class="where">In Ava3D: <code>RenderInfo.DrawCalls</code> · <a href="making-it-fast.html#draw-calls">chapter 8</a></p>
+</div>
+
+<div class="term" id="g-depth-buffer">
+  <h3>Depth buffer, z-buffer</h3>
+  <p>
+    A distance stored per pixel, so that a surface being drawn can be compared with whatever is already there
+    and skipped if it is behind. It is what lets geometry be drawn in any order and still look right — and
+    its precision is not spread evenly, which is what makes the <a href="#g-near-plane">near plane</a>
+    matter.
+  </p>
+  <p class="where">In Ava3D: <code>Material.DepthTest</code>, <code>Material.DepthWrite</code> · <a href="past-triangles.html#blending">chapter 6</a></p>
+</div>
+
+<div class="term" id="g-z-fighting">
+  <h3>Z-fighting</h3>
+  <p>
+    Two surfaces at almost the same distance flickering between each other as the camera moves, because the
+    <a href="#g-depth-buffer">depth buffer</a> cannot tell them apart. Usually a near plane set far too close,
+    occasionally two coplanar surfaces that should have been one.
+  </p>
+  <p class="where">In Ava3D: avoid by setting <code>Camera.NearPlane</code> honestly · <a href="the-camera.html#near-far">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-blending">
+  <h3>Blending</h3>
+  <p>
+    How a pixel being drawn combines with the one already there. Opaque replaces it; alpha mixes the two by
+    a weight, which is glass and smoke; additive adds, so it can only brighten, which is fire and tracers and
+    glows. Blended things almost always want their depth <em>write</em> off, or they punch invisible holes in
+    each other.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.BlendMode.html">BlendMode</a> · <a href="past-triangles.html#blending">chapter 6</a></p>
+</div>
+
+<div class="term" id="g-render-order">
+  <h3>Render order</h3>
+  <p>
+    The manual override on what is drawn when. The automatic rule is render order first, then opaque before
+    blended, then back to front by node origin — per object, not per triangle, which is why two transparent
+    surfaces that interpenetrate cannot both be right.
+  </p>
+  <p class="where">In Ava3D: <code>Node.RenderOrder</code> · <a href="past-triangles.html#order">chapter 6</a></p>
+</div>
+
+<div class="term" id="g-billboard">
+  <h3>Billboard, sprite</h3>
+  <p>
+    A flat image that turns to face the camera every frame, so it never shows an edge. Glows, flares, smoke,
+    distant markers. Sized in world units here, so it recedes like anything else — and it can be told to
+    ignore depth, which is how a ship stays visible after its hull is sub-pixel.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.SpriteNode.html">SpriteNode</a> · <a href="past-triangles.html#sprites">chapter 6</a></p>
+</div>
+
+<div class="term" id="g-culling">
+  <h3>Backface culling</h3>
+  <p>
+    Skipping triangles that face away from the camera, which for a closed solid is half of them and free to
+    discard. Which way a triangle faces comes from its <a href="#g-winding">winding order</a>. Culling the
+    <em>front</em> faces instead is what a sky sphere seen from inside needs.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.CullMode.html">CullMode</a>, <code>Material.Cull</code> · <a href="surfaces-and-light.html#extra-terms">chapter 5</a></p>
+</div>
+
+<div class="term" id="g-instancing">
+  <h3>Instancing</h3>
+  <p>
+    Drawing the same geometry many times without uploading it many times. Here it is not a separate API: GPU
+    buffers are cached against the identity of a <a href="#g-mesh">Mesh</a>, so sharing one instance across a
+    hundred nodes is one upload and a hundred draw calls.
+  </p>
+  <p class="where">In Ava3D: share the <code>Mesh</code> instance · <a href="making-it-fast.html#share">chapter 8</a></p>
+</div>
+
+<div class="term" id="g-snapshot">
+  <h3>Snapshot</h3>
+  <p>
+    The flat, immutable draw list this control builds from your scene once a frame and hands to the render
+    thread. It is why you can mutate the graph from anywhere with no lock and never see half a frame, and why
+    the renderer never holds a reference to anything you can still change.
+  </p>
+  <p class="where">In Ava3D: <code>RenderInfo.SceneRebuildsPerSecond</code>, <code>SceneRebuildBytes</code> · <a href="how-a-frame-happens.html">How a frame happens</a></p>
+</div>
+
+<div class="term" id="g-picking">
+  <h3>Picking</h3>
+  <p>
+    Working out what is under the pointer. Done here against geometry rather than pixels: a ray is cast from
+    the camera through the pointer, rejected quickly by each node's <a href="#g-bounding-box">bounding
+    box</a>, then tested triangle by triangle. That behaves identically on the GPU, on the CPU, and in a
+    browser where reading a pixel back means a round trip.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.PickResult.html">PickResult</a>, <code>Ava3DView.IsPickingEnabled</code></p>
+</div>
+
+<h2 id="files">Files and platforms</h2>
+
+<div class="term" id="g-gltf">
+  <h3>glTF, .glb</h3>
+  <p>
+    The standard interchange format for 3D scenes — geometry, materials, textures and a node hierarchy in one
+    file. <code>.gltf</code> is the JSON form with its data alongside; <code>.glb</code> is the same thing
+    packed into one binary file, which is the form to use anywhere a second file would need fetching.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.GltfLoader.html">GltfLoader</a>, binary only · <a href="gltf-mapping.html">From a .glb file to these types</a></p>
+</div>
+
+<div class="term" id="g-backend">
+  <h3>Backend, renderer</h3>
+  <p>
+    The thing that turns a <a href="#g-snapshot">snapshot</a> into pixels through a particular graphics API:
+    Metal on Apple platforms, OpenGL or WebGL 2 elsewhere, and Skia on the CPU where a host offers no GPU
+    context at all. Which one you get is decided at runtime, from what the host actually provides.
+  </p>
+  <p class="where">In Ava3D: <a href="Ava3D.RenderInfo.html">RenderInfo</a>, <a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a> · <a href="choosing-a-renderer.html">How the renderer is chosen</a></p>
+</div>
+
+<p class="chapter-nav">
+  <a href="making-it-fast.html">← 8 · Making it fast</a>
+  <a href="index.html">Documentation overview →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

@@ -32,6 +32,8 @@ public sealed class PbrChartScene : DemoScene
         interpolate rather than snapping to one end.
         """;
 
+    public override SceneLook Look => SceneLook.Studio;
+
     public override Scene Build()
     {
         var scene = new Scene { Background = Color.FromRgb(24, 26, 32) };

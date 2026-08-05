@@ -21,7 +21,9 @@ public sealed class StressScene : DemoScene
         """
         A 5 x 5 x 5 grid of spheres, every one referencing the same Mesh instance, plus a ground plane. The
         mesh is uploaded to the GPU once and drawn 125 times: GPU buffers are cached against mesh identity,
-        which is why Mesh exposes its arrays as init-only.
+        which is why Mesh exposes its arrays as init-only — nothing can swap one out from under a buffer that
+        was sized for it. Rewriting the contents is fine, and InvalidateGeometry() refills the buffer in
+        place; all 125 spheres change together, because they are one mesh.
 
         This is the scene behind the published frame rates — 120 fps on macOS under both Metal and OpenGL, 120
         in Chrome under WebGL 2, 60 on an iPhone (vsync-capped), and around 17 on the CPU fallback. Switch the

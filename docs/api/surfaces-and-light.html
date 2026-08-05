@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5 · Surfaces and light · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a class="current" aria-current="page" href="surfaces-and-light.html">5 · Surfaces and light</a><ul class="sub"><li><a href="#shaders">What a shader is, and why you are not writing one</a></li><li><a href="#normals">Normals: which way a surface faces</a></li><li><a href="#metallic-roughness">The two dials</a></li><li><a href="#maps">Maps: varying it across the surface</a></li><li><a href="#lights">Lights</a></li><li><a href="#extra-terms">Four terms that are not physics</a></li></ul></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>5 · Surfaces and light</h1><p class="lede">
+  A <a class="term-link" href="glossary.html#g-triangle">triangle</a> on its own is a flat coloured shape. Everything that makes it look like brushed steel or wet
+  clay or a painted hull happens in this chapter: what a shader is, what a normal is for, the two dials that
+  do most of the work, and the maps that vary them across a surface.
+</p>
+
+<h2 id="shaders">What a shader is, and why you are not writing one</h2>
+
+<p>
+  A <a href="glossary.html#g-shader">shader</a> is a small program the graphics card runs an enormous number
+  of times in parallel. There are two of them in play for every triangle you draw:
+</p>
+
+<ul>
+  <li>The <strong><a class="term-link" href="glossary.html#g-vertex">vertex</a> shader</strong> runs once per corner. Its job is to work out where that corner
+      lands on the screen — the world, view and projection matrices from chapters 2 and 3, multiplied
+      together.</li>
+  <li>The <strong>fragment shader</strong> runs once per <em>pixel covered</em>. Its job is to decide what
+      colour that pixel is: it is where lighting happens, and where a scene at 1080p means two million
+      executions per frame.</li>
+</ul>
+
+<p>
+  This library ships one pair of them, written three times over — once in GLSL for OpenGL, once in Metal
+  Shading Language, once as ordinary C# for the CPU fallback — and gives you no way to supply your own. That
+  is a deliberate trade: a custom shader would have to be written three times by you as well, and would not
+  survive the trip to a browser tab. What you get instead is a
+  <a href="Ava3D.Material.html">Material</a>, which is that shader's parameters.
+</p>
+
+<h2 id="normals">Normals: which way a surface faces</h2>
+
+<p>
+  Light striking a surface square-on is bright; light grazing it is dim. To know which, the shader needs the
+  direction the surface faces at that point — its <a href="glossary.html#g-normal">normal</a>. Normals are
+  stored per vertex and interpolated across the triangle in between.
+</p>
+
+<p>
+  That interpolation is what lets a faceted sphere look round: the geometry is still flat pieces, but if
+  neighbouring triangles agree about the normal at a shared corner, the shading crosses the seam smoothly and
+  the eye reads a curve. Give each triangle its own normals and you get the flat-shaded look instead. Both
+  are one call:
+</p>
+
+<pre><code><span class="k">var</span> smooth = mesh.WithGeneratedNormals();   <span class="c">// welds by position — a curved surface</span></code></pre>
+
+<div class="tip">
+  <p>
+    <strong>A mesh with no normals is not lit.</strong> Everything in <code>Primitives</code> and everything
+    <code>GltfLoader</code> produces already has them. A mesh you build by hand does not until you ask.
+  </p>
+</div>
+
+<h2 id="metallic-roughness">The two dials</h2>
+
+<p>
+  This is a <a href="glossary.html#g-pbr">metallic-roughness PBR</a> renderer, which is the same model <a class="term-link" href="glossary.html#g-gltf">glTF</a>
+  uses and the same one every modern engine uses. It has two main parameters, and understanding them is most
+  of understanding how anything here looks.
+</p>
+
+<p>
+  <strong><code>Metallic</code></strong> is not a shininess slider. It picks between two genuinely different
+  physical behaviours, and values in between are only meaningful at a boundary — a painted surface flaking
+  off to bare metal.
+</p>
+
+<ul>
+  <li><strong><code>Metallic = 0</code></strong>, a non-metal: the surface has a diffuse colour — its
+      <code>BaseColor</code> — and its reflections are <em>white</em>, whatever colour it is. A red snooker
+      ball has a white highlight.</li>
+  <li><strong><code>Metallic = 1</code></strong>, a metal: there is no diffuse term <em>at all</em>. All the
+      colour comes from the reflection, tinted by <code>BaseColor</code>. This is why gold looks like gold
+      rather than like yellow plastic — and why a metal in a black room renders black, correctly, because
+      there is nothing for it to reflect.</li>
+</ul>
+
+<p>
+  <strong><code>Roughness</code></strong> is how scattered those reflections are. At 0 the surface is a
+  mirror; at 1 it is chalk. Everything interesting is in the middle, and the arithmetic behind it is GGX with
+  height-correlated Smith visibility and Schlick Fresnel — the same on all three renderers, so a material
+  tuned on a Mac looks the same in a browser tab.
+</p>
+
+<pre><code><span class="k">var</span> gold = <span class="k">new</span> Material { BaseColor = <span class="k">new</span>(1f, 0.77f, 0.34f, 1f), Metallic = 1f, Roughness = 0.25f };
+<span class="k">var</span> clay = <span class="k">new</span> Material { BaseColor = <span class="k">new</span>(0.75f, 0.3f, 0.2f, 1f), Metallic = 0f, Roughness = 0.85f };</code></pre>
+
+<h2 id="maps">Maps: varying it across the surface</h2>
+
+<p>
+  One <code>Roughness</code> for a whole object is a uniform object. To vary anything across a surface you
+  need a picture of the variation and somewhere to look it up — which is what
+  <a href="glossary.html#g-uv">UV coordinates</a> are: two numbers per vertex saying where in the image that
+  corner sits.
+</p>
+
+<table class="members">
+  <tbody>
+    <tr>
+      <td><code>BaseColorTexture</code></td>
+      <td>The colour, per pixel. Multiplied by <code>BaseColor</code>, so the property is a tint over the
+          map rather than an alternative to it.</td>
+    </tr>
+    <tr>
+      <td><code>MetallicRoughnessTexture</code></td>
+      <td>Both dials in one image: <a class="term-link" href="glossary.html#g-roughness">roughness</a> in the green channel, <a class="term-link" href="glossary.html#g-metallic">metallic</a> in blue. That is the glTF packing,
+          not a quirk — it lets one fetch answer two questions.</td>
+    </tr>
+    <tr>
+      <td><code>NormalTexture</code></td>
+      <td>Fake surface detail. Each pixel holds a direction rather than a colour, and the shader uses it in
+          place of the interpolated normal — so rivets, panel seams and weave catch the light without a
+          single extra triangle. The silhouette is what gives it away: a normal-mapped rivet has no bump on
+          the edge of the object.</td>
+    </tr>
+    <tr>
+      <td><code>EmissiveTexture</code>, <code>EmissiveColor</code></td>
+      <td>Light the surface gives off itself. It is not a light source — it does not illuminate anything
+          else — it simply stays bright where everything around it goes dark.</td>
+    </tr>
+    <tr>
+      <td><code>OcclusionTexture</code></td>
+      <td>Where ambient light does not reach: crevices, the inside of a bolt hole. Baked in advance, because
+          working it out live is what a global-illumination renderer does.</td>
+    </tr>
+    <tr>
+      <td><code>BumpTexture</code></td>
+      <td>A height field, turned into a perturbed normal from its screen-space gradient. Cruder than a normal
+          map and needs no tangents — which makes it the better choice on a sphere, where UV tangents
+          degenerate at the poles.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  A <a class="term-link" href="glossary.html#g-normal-map">normal map</a> needs one more thing than the others: a <a href="glossary.html#g-tangent">tangent</a> per
+  vertex, so the shader knows which way is "right" across the surface at that point. Most exporters omit
+  them, so the loader derives them — and you can too:
+</p>
+
+<pre><code><span class="k">var</span> ready = mesh.WithGeneratedNormals().WithGeneratedTangents();</code></pre>
+
+<p>
+  Textures do not have to come from files. <a href="Ava3D.Texture.html">Texture.FromPixels</a> takes raw
+  RGBA, which for a map generated in code saves encoding a PNG only to decode it again — over a second of
+  stall for four large maps in a browser:
+</p>
+
+<pre><code><span class="k">var</span> pixels = <span class="k">new</span> <span class="k">byte</span>[256 * 256 * 4];
+<span class="c">// … fill it in …</span>
+material.BaseColorTexture = Texture.FromPixels(pixels, 256, 256, name: <span class="s">"panels"</span>);</code></pre>
+
+<h2 id="lights">Lights</h2>
+
+<p>
+  Up to four, in <code>Scene.Lights</code>, of two kinds — plus an environment that is not one of the four.
+</p>
+
+<pre><code>scene.Lights.Clear();
+
+scene.Lights.Add(<span class="k">new</span> DirectionalLight
+{
+    Direction = Vector3.Normalize(<span class="k">new</span>(-0.4f, -0.8f, -0.4f)),  <span class="c">// the sun: a direction, no position</span>
+    Color = <span class="k">new</span>(1f, 0.96f, 0.9f),
+    Intensity = 3f
+});
+
+scene.Lights.Add(<span class="k">new</span> PointLight
+{
+    Position = <span class="k">new</span>(0f, 2f, 0f),   <span class="c">// a lamp: a place, and a reach</span>
+    Color = <span class="k">new</span>(1f, 0.6f, 0.2f),
+    Range = 12f,                <span class="c">// dead at 12 units; 0 means no limit</span>
+    Decay = 2f                  <span class="c">// inverse square, like the real thing and like three.js</span>
+});</code></pre>
+
+<p>
+  <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a> is the fill: an analytic two-colour hemisphere,
+  sky above and ground below, that a metal has something to reflect. It costs nothing, needs no cubemap and
+  runs on a phone — and it is why a metal here does not come out black.
+</p>
+
+<pre><code>scene.Environment = EnvironmentLight.Studio(0.6f);   <span class="c">// brighter, neutral</span>
+scene.Environment = EnvironmentLight.None;           <span class="c">// nothing but your own lights</span></code></pre>
+
+<div class="tip">
+  <p>
+    <strong>Lights are not nodes.</strong> The scene cannot see you changing one's fields, so call
+    <code>scene.Invalidate()</code> after you do — adding or removing through <code>Scene.Lights</code> does
+    it for you. Same rule as a <code>Material</code>, and for the same reason.
+  </p>
+</div>
+
+<h2 id="extra-terms">Four terms that are not physics</h2>
+
+<p>
+  PBR describes surfaces lit by light. Some things in a scene are not that, and pretending otherwise costs
+  more than a switch:
+</p>
+
+<ul>
+  <li><strong><code>Unlit</code></strong> — base colour straight through, no lighting, no <a class="term-link" href="glossary.html#g-tone-mapping">tone map</a>. A sun
+      disc is a flat bright circle, not a lit sphere with a terminator across it.</li>
+  <li><strong><code>RimColor</code> / <code>RimPower</code> / <code>RimIntensity</code></strong> — a Fresnel
+      rim, brightest where the surface turns away from you. An atmosphere seen from space is a shell with a
+      rim on it, and <code>RimLightBias</code> keeps the glow strongest on the sunward limb.</li>
+  <li><strong><code>EmissiveNightSide</code></strong> — masks the emissive map to the hemisphere facing away
+      from the key light, so a planet's cities stop glowing through its own daylight.</li>
+  <li><strong><code>Cull</code></strong> — <code>Back</code>, <code>Front</code> or <code>None</code>. Back
+      is the usual saving; <code>Front</code> is what a sky sphere seen from the inside needs.
+      <code>DoubleSided</code> is separate and independent: <code>Cull</code> decides which faces are drawn,
+      <code>DoubleSided</code> decides how the ones that are get lit.</li>
+</ul>
+
+<div class="try">
+  <h3>Run it</h3>
+  <p>
+    The chart is metallic across and roughness down, one colour, no textures — read the corners. The full PBR
+    scene is all five maps on one object, generated in code from a single height field.
+  </p>
+  <pre><code>AVA3D_SCENE=<span class="s">"PBR chart"</span> dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=<span class="s">"Full PBR"</span> dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=<span class="s">"Four lights"</span> dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+</div>
+
+<p class="chapter-nav">
+  <a href="turning-things.html">← 4 · Turning things</a>
+  <a href="past-triangles.html">6 · Past triangles →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:a3d="using:Ava3D"
+             xmlns:views="using:Ava3D.Demo.Views"
              mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="620"
              x:Class="Ava3D.Demo.Views.MainView">
 
@@ -12,13 +13,137 @@
             <Setter Property="FontSize" Value="11" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-        <Style Selector="TextBlock.mono">
-            <Setter Property="FontFamily" Value="monospace" />
+
+        <!-- The two steppers. Square and a little larger than the glyph needs, because ‹ and › are small
+             marks and a button you have to aim at is a button you stop using. -->
+        <Style Selector="Button.step">
+            <Setter Property="Width" Value="34" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Padding" Value="0,1,0,3" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+
+        <!--
+            A toggle that says what pressing it will do, which is the opposite of what it currently is.
+
+            Which means the checked state must not also be signalled by the accent colour Fluent gives it:
+            a blue button reading "Hide stats" can be read as "stats are hidden", and the whole point of
+            labelling the action is that there is then nothing left to work out. Same face either way; the
+            word is the state.
+        -->
+        <Style Selector="ToggleButton.reveal">
             <Setter Property="FontSize" Value="11" />
-            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+        <Style Selector="ToggleButton.reveal:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ToggleButtonBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrush}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource ToggleButtonForeground}" />
+        </Style>
+        <Style Selector="ToggleButton.reveal:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundPointerOver}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushPointerOver}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource ToggleButtonForegroundPointerOver}" />
+        </Style>
+        <Style Selector="ToggleButton.reveal:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ToggleButtonBackgroundPressed}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrushPressed}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource ToggleButtonForegroundPressed}" />
+        </Style>
+        <Style Selector="ToggleButton#NotesToggle">
+            <Setter Property="Content" Value="Show notes" />
+        </Style>
+        <Style Selector="ToggleButton#NotesToggle:checked">
+            <Setter Property="Content" Value="Hide notes" />
+        </Style>
+        <Style Selector="ToggleButton#StatsToggle">
+            <Setter Property="Content" Value="Show stats" />
+        </Style>
+        <Style Selector="ToggleButton#StatsToggle:checked">
+            <Setter Property="Content" Value="Hide stats" />
+        </Style>
+
+        <!--
+            The notes panel, in four dresses.
+
+            One overlay style for twenty-six scenes made every one of them look like the film, which is
+            the only one that earned it. A scene about back-face culling is a diagram and should read as
+            a diagram; a scene about roughness is a lit still life; the fundamentals are a manual page.
+            The panel is the frame around what the scene is saying, so it should be the frame that scene
+            wants — that is what DemoScene.Look chooses, and the grouping follows the catalogue's own
+            order rather than being invented separately.
+
+            The panel of numbers underneath deliberately does not change. It is the instrument, not the
+            content, and an instrument that restyles itself per subject is one you stop trusting.
+        -->
+        <Style Selector="Border.notes">
+            <Setter Property="Background" Value="#D9141821" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#22293A" />
+        </Style>
+        <Style Selector="Border.notes TextBlock#SceneTitle">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="Border.notes TextBlock#SceneNotes">
+            <Setter Property="Foreground" Value="#C3CAD8" />
+        </Style>
+
+        <!-- Blueprint: the scenes that are a comparison or a diagram — culling, blending, lines, points,
+             sprites, and the two kinds of surface detail. Drawing-office blue, a visible edge, and a
+             title in spaced capitals, because that is what a technical drawing's title block looks like. -->
+        <Style Selector="Border.notes.blueprint">
+            <Setter Property="Background" Value="#D9091420" />
+            <Setter Property="BorderBrush" Value="#2C4E6E" />
+        </Style>
+        <Style Selector="Border.notes.blueprint TextBlock#SceneTitle">
+            <Setter Property="Foreground" Value="#8FD3FF" />
+            <Setter Property="LetterSpacing" Value="0.6" />
+        </Style>
+        <Style Selector="Border.notes.blueprint TextBlock#SceneNotes">
+            <Setter Property="Foreground" Value="#AFC6DA" />
+        </Style>
+
+        <!-- Studio: materials, lighting, textures and the PBR scenes. Warm, because everything in them
+             is a lit object and a cold grey card next to a warm still life looks like a mistake. -->
+        <Style Selector="Border.notes.studio">
+            <Setter Property="Background" Value="#D91A1512" />
+            <Setter Property="BorderBrush" Value="#453425" />
+        </Style>
+        <Style Selector="Border.notes.studio TextBlock#SceneTitle">
+            <Setter Property="Foreground" Value="#F2CE96" />
+        </Style>
+        <Style Selector="Border.notes.studio TextBlock#SceneNotes">
+            <Setter Property="Foreground" Value="#D9CAB6" />
+        </Style>
+
+        <!-- Cosmic: the two scenes that are in space. This is the one the film already had. -->
+        <Style Selector="Border.notes.cosmic">
+            <Setter Property="Background" Value="#D9060B16" />
+            <Setter Property="BorderBrush" Value="#1D3B52" />
+        </Style>
+        <Style Selector="Border.notes.cosmic TextBlock#SceneTitle">
+            <Setter Property="Foreground" Value="#7FE3C0" />
+            <Setter Property="LetterSpacing" Value="0.4" />
+        </Style>
+        <Style Selector="Border.notes.cosmic TextBlock#SceneNotes">
+            <Setter Property="Foreground" Value="#B7C9D9" />
         </Style>
     </UserControl.Styles>
 
+    <!--
+        Dark, whatever the machine is set to.
+
+        Every panel, band and bar in this demo has its colour written into it — #12151C for the toolbar,
+        #D9141821 for the overlays — because they sit over a 3D scene that is mostly black. The controls
+        inside them do not: a ComboBox takes its colours from the theme variant, which follows the system.
+        So on a light-mode machine the picker came out light grey on a near-black bar with the two arrow
+        glyphs almost invisible, which is a real reason to find the toolbar hard to use and not a thing
+        you would ever see if your own machine happened to be dark.
+
+        One scope over the lot rather than the Application, so the reason lives next to the colours it is
+        about.
+    -->
+    <ThemeVariantScope RequestedThemeVariant="Dark">
     <Grid RowDefinitions="Auto,*">
 
         <!-- Toolbar. A WrapPanel rather than a fixed row so a phone in portrait folds it instead of
@@ -26,18 +151,50 @@
         <Border Grid.Row="0" Background="#12151C" Padding="10,8">
             <WrapPanel ItemSpacing="10" LineSpacing="8">
 
-                <TextBlock Classes="label" Text="SCENE" />
-                <ComboBox x:Name="SceneList" MinWidth="180" />
-                <Button x:Name="PrevButton" Content="‹" ToolTip.Tip="Previous scene" />
-                <Button x:Name="NextButton" Content="›" ToolTip.Tip="Next scene" />
-                <ToggleSwitch x:Name="TourToggle" OnContent="Touring" OffContent="Manual"
-                              ToolTip.Tip="Advance through the scenes automatically" />
+                <!--
+                    Back, the list, forward — the steppers either side of the thing they step through,
+                    which is where a pair of them belongs and which halves the distance the pointer
+                    travels to go one the other way.
+
+                    Grouped in a StackPanel rather than left as three siblings of the WrapPanel, so a
+                    narrow window folds the whole control onto the next line instead of leaving an arrow
+                    stranded on its own. No SCENE label: the list is full of scene names and has an arrow
+                    on each side of it, and a demo toolbar should not need a caption to be read.
+                -->
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button x:Name="PrevButton" Classes="step" Content="‹" ToolTip.Tip="Previous scene" />
+                    <ComboBox x:Name="SceneList" MinWidth="215" MaxDropDownHeight="460"
+                              ToolTip.Tip="Scene" />
+                    <Button x:Name="NextButton" Classes="step" Content="›" ToolTip.Tip="Next scene" />
+                </StackPanel>
+
+                <ToggleSwitch x:Name="AutoToggle" OnContent="Auto" OffContent="Auto"
+                              ToolTip.Tip="Move on by itself — a scene with a script when it reaches the end, anything else after a few seconds" />
 
                 <Border Width="1" Background="#262B36" Margin="4,0" />
 
-                <TextBlock Classes="label" Text="ENGINE" />
-                <ComboBox x:Name="EngineList" MinWidth="150" />
-                <Button x:Name="FitButton" Content="Fit view" />
+                <!--
+                    The two overlays, switched from the toolbar rather than from a button floating over
+                    the picture. Both read as what they will do next, not as what they are.
+
+                    Notes start hidden. They are three or four paragraphs written to be read, and opening
+                    a demo behind a wall of text hides the thing the text is about; whoever wants them
+                    presses the button, and on a phone that is the difference between a viewport and a
+                    page of prose. The panel of numbers starts shown, because it is the demo's evidence.
+                -->
+                <ToggleButton x:Name="NotesToggle" Classes="reveal"
+                              ToolTip.Tip="The paragraph or two about what this scene is showing" />
+                <ToggleButton x:Name="StatsToggle" Classes="reveal" IsChecked="True"
+                              ToolTip.Tip="Renderer, frame rate, draw calls, triangles, textures" />
+
+                <Border Width="1" Background="#262B36" Margin="4,0" />
+
+                <!-- Grouped for the same reason as the scene picker: a label that wraps onto the line
+                     above the thing it labels is worse than no label. -->
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Classes="label" Text="ENGINE" />
+                    <ComboBox x:Name="EngineList" MinWidth="215" />
+                </StackPanel>
             </WrapPanel>
         </Border>
 
@@ -46,42 +203,125 @@
             <a3d:Ava3DView x:Name="View" />
 
             <!--
+                Notes and probe, stacked down the left rather than one at each end of it.
+
                 Overlaid rather than beside, on purpose: it is the cheapest demonstration that the control
                 composites like any other Avalonia control instead of punching a hole through the window.
+
+                They share a column because the bottom of the window belongs to the caption, and a caption
+                is as wide as its longest line — a thirty-seven character one on a 1296pt window is over a
+                thousand points across, which used to run straight through a probe panel sitting in the
+                bottom-left corner and leave both unreadable. A StackPanel also means hiding the notes
+                lifts the probe rather than leaving a hole.
             -->
-            <Border VerticalAlignment="Top" HorizontalAlignment="Left"
-                    Margin="12" Padding="14,12" MaxWidth="420"
-                    Background="#D9141821" CornerRadius="8"
-                    BoxShadow="0 4 16 0 #40000000"
-                    IsVisible="{Binding !#NotesToggle.IsChecked}">
-                <StackPanel Spacing="8">
-                    <TextBlock x:Name="SceneTitle" FontSize="15" FontWeight="SemiBold" Foreground="White" />
-                    <ScrollViewer MaxHeight="176" HorizontalScrollBarVisibility="Disabled">
-                        <TextBlock x:Name="SceneNotes" FontSize="12" LineHeight="17"
-                                   Foreground="#C3CAD8" TextWrapping="Wrap" />
-                    </ScrollViewer>
-                </StackPanel>
-            </Border>
+            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="12" Spacing="12">
 
-            <!-- Diagnostics. Bottom-left so it never covers the toolbar or the notes. -->
-            <Border VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                    Margin="12" Padding="14,12" MinWidth="280"
-                    Background="#D9141821" CornerRadius="8"
-                    BoxShadow="0 4 16 0 #40000000">
-                <StackPanel Spacing="6">
-                    <TextBlock x:Name="Renderer" Classes="mono" FontSize="12" Foreground="#7FD8A0" />
-                    <TextBlock x:Name="Stats" Classes="mono" Foreground="#D8DCE6" />
-                    <TextBlock x:Name="Limits" Classes="mono" Foreground="#9AA3B5" />
-                    <TextBlock x:Name="EngineNote" Classes="mono" Foreground="#E8C07D" IsVisible="False" />
-                    <TextBlock x:Name="Errors" Classes="mono" FontSize="12" Foreground="#FF8A8A"
-                               IsVisible="False" />
-                    <TextBlock x:Name="Picked" FontSize="11" Foreground="#C7B7FF" TextWrapping="Wrap" />
-                </StackPanel>
-            </Border>
+                <!--
+                    What happened to the engine you chose.
 
-            <ToggleButton x:Name="NotesToggle" Content="Hide notes"
-                          VerticalAlignment="Top" HorizontalAlignment="Right" Margin="12"
-                          FontSize="11" Padding="8,4" />
+                    On the picture, not in the panel of numbers. Choosing a renderer this platform cannot
+                    run used to leave the demo looking exactly as it did before, with the explanation on a
+                    line in a panel that may well be shut — which is indistinguishable from the picker
+                    being broken. A renderer is the one setting here whose failure has nothing to show for
+                    it, so this is the one message that gets the viewport. Click anywhere on it to dismiss.
+
+                    At the top of the same column as the notes and the numbers, rather than floating
+                    somewhere of its own. Centred it covered the panel of numbers on a 1000-point window,
+                    and against the right-hand edge it still did on a phone; here it pushes them down
+                    instead, at every window size, which is the whole reason this column is a StackPanel.
+                -->
+                <Border x:Name="EngineNotice" IsVisible="False" Cursor="Hand"
+                        HorizontalAlignment="Left" MaxWidth="420"
+                        Padding="14,12" CornerRadius="8"
+                        Background="#E61E1116" BorderThickness="1" BorderBrush="#7A3A44"
+                        BoxShadow="0 4 16 0 #40000000"
+                        ToolTip.Tip="Click to dismiss">
+                    <StackPanel Spacing="7">
+                        <TextBlock x:Name="EngineNoticeTitle" FontSize="13" FontWeight="SemiBold"
+                                   Foreground="#FFB9A6" TextWrapping="Wrap" />
+                        <TextBlock x:Name="EngineNoticeReason" FontSize="12" LineHeight="17"
+                                   Foreground="#D6C3C7" TextWrapping="Wrap" />
+
+                        <!--
+                            Shown only where there is something to press: a head that can restart itself,
+                            and a renderer a restart would actually reach. The alternative was telling the
+                            reader to choose it from the picker again, which does not work — the picker is
+                            already showing it, and a ComboBox does not raise a selection change for the
+                            item that is already selected.
+
+                            The ellipsis is the whole of the promise it makes: this asks, the same way
+                            choosing from the picker asks, rather than closing the window on the press.
+                        -->
+                        <Button x:Name="NoticeAction" IsVisible="False" Content="Restart the demo…"
+                                FontSize="11" Padding="11,5" Margin="0,3,0,0"
+                                HorizontalAlignment="Left" />
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="NotesPanel" Classes="notes" HorizontalAlignment="Left"
+                        Padding="14,12" MaxWidth="420" CornerRadius="8"
+                        BoxShadow="0 4 16 0 #40000000"
+                        IsVisible="{Binding #NotesToggle.IsChecked}">
+                    <StackPanel Spacing="8">
+                        <TextBlock x:Name="SceneTitle" FontSize="15" FontWeight="SemiBold" />
+                        <ScrollViewer MaxHeight="176" HorizontalScrollBarVisibility="Disabled">
+                            <TextBlock x:Name="SceneNotes" FontSize="12" LineHeight="17"
+                                       TextWrapping="Wrap" />
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+
+                <views:Diagnostics x:Name="Probe" HorizontalAlignment="Left"
+                                   IsVisible="{Binding #StatsToggle.IsChecked}" />
+            </StackPanel>
+
+            <!--
+                The caption band. A scene with a script says where you are in it here rather than in the
+                notes, which are laid out to be read and not to be glanced at. It draws itself — see
+                Codec.cs — because a subtitle that looks like a tooltip belongs to the demo shell, and
+                this one is supposed to belong to the ship.
+            -->
+            <views:Codec x:Name="CaptionBand"
+                         VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                         Height="150" Margin="0,0,0,14" />
         </Grid>
+
+        <!--
+            The one question this demo asks before it does something it cannot take back.
+
+            Choosing OpenGL on a Mac, or Metal on a machine started in OpenGL, cannot be done inside a
+            running process — Avalonia fixes the graphics API before any window exists. The demo answers
+            that by starting a second copy and ending this one, and it used to do that the instant the
+            selection changed: the window disappeared, and whether anything came back was something you
+            found out afterwards. A drop-down is not allowed to close an application.
+
+            Over both rows on purpose, toolbar included. The backdrop is what makes this modal — a Border
+            with a Background takes the pointer, so the picker underneath cannot be changed again while the
+            demo is deciding whether to end itself. Click the dim part or press Escape to say no.
+        -->
+        <Border x:Name="RestartAsk" Grid.Row="0" Grid.RowSpan="2" IsVisible="False"
+                Background="#B405070C">
+            <Border MaxWidth="440" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Background="#F2141821" BorderThickness="1" BorderBrush="#2C3444"
+                    CornerRadius="10" Padding="20,18"
+                    BoxShadow="0 8 28 0 #66000000">
+                <StackPanel Spacing="10">
+                    <TextBlock x:Name="RestartQuestion" FontSize="15" FontWeight="SemiBold"
+                               Foreground="#FFFFFF" TextWrapping="Wrap" />
+                    <TextBlock x:Name="RestartDetail" FontSize="12" LineHeight="18"
+                               Foreground="#AEB7C7" TextWrapping="Wrap" />
+
+                    <!-- Yes on the right, where the affirmative goes, and it says what it will do rather
+                         than "Yes" — the button is read on its own by anybody who has already read the
+                         question, and "Yes" alone is not something to press under a dialog about closing. -->
+                    <StackPanel Orientation="Horizontal" Spacing="8"
+                                HorizontalAlignment="Right" Margin="0,6,0,0">
+                        <Button x:Name="RestartNo" Content="Not now" FontSize="12" Padding="14,6" />
+                        <Button x:Name="RestartYes" Classes="accent" FontSize="12" Padding="14,6" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
     </Grid>
+    </ThemeVariantScope>
 </UserControl>

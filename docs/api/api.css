@@ -84,6 +84,83 @@ blockquote {
 }
 blockquote p:last-child { margin-bottom: 0; }
 
+/* ---- the book ----
+   A chapter is prose with three recurring shapes in it: numbered steps, an aside worth knowing, and
+   the demo scene that shows the thing running. Each is styled once here rather than in every
+   fragment, so a chapter stays readable as HTML source. */
+h3 { scroll-margin-top: calc(var(--bar) + 12px); }
+
+/* An anchor with nothing in it, so a link can land somewhere that has no heading of its own. */
+.jump { display: block; height: 0; scroll-margin-top: calc(var(--bar) + 12px); }
+
+ol.steps { counter-reset: step; list-style: none; padding-left: 0; margin: 14px 0 18px; }
+ol.steps > li {
+  position: relative; padding-left: 34px; margin-bottom: 10px;
+}
+ol.steps > li::before {
+  counter-increment: step; content: counter(step);
+  position: absolute; left: 0; top: 1px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--bg-alt); border: 1px solid var(--line);
+  color: var(--dim); font-size: 11.5px; font-weight: 650;
+  display: flex; align-items: center; justify-content: center;
+}
+
+p.tip, div.tip {
+  margin: 16px 0; padding: 12px 16px;
+  border-left: 3px solid var(--line); background: var(--bg-alt);
+  border-radius: 0 6px 6px 0; color: var(--dim); font-size: 14px;
+}
+.tip strong, .tip b { color: var(--text); }
+.tip p { margin: 0 0 8px; }
+.tip p:last-child { margin: 0; }
+
+/* Run it yourself. Every chapter ends with the scene in the demo that shows what it just described,
+   because a paragraph about additive blending is worth less than four seconds of watching it. */
+.try {
+  margin: 26px 0 0; padding: 14px 18px;
+  background: var(--bg-alt); border: 1px solid var(--line); border-radius: 10px;
+}
+.try h3 { margin: 0 0 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); }
+.try p { margin: 0 0 10px; font-size: 14px; }
+.try pre { margin: 0; }
+
+/* Previous and next, because a book read in the sidebar is a book read out of order. */
+.chapter-nav {
+  display: flex; justify-content: space-between; gap: 16px;
+  margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+.chapter-nav a { text-decoration: none; }
+.chapter-nav .none { color: var(--dim); }
+
+/* A term link is not a navigation link: it is an offer, in the middle of a sentence, to go and find
+   out what a word means. It reads as text with a hint under it rather than as something to click. */
+a.term-link {
+  color: inherit; text-decoration: none;
+  border-bottom: 1px dotted var(--dim);
+}
+a.term-link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- glossary ----
+   Every reference page links here, so an entry has to stand on its own: what the word means, then
+   what it is called in this API, then where it is taught. */
+.term { padding: 16px 0; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--bar) + 12px); }
+.term:target { background: var(--bg-alt); border-radius: 8px; padding: 16px; }
+.term h3 { margin: 0 0 6px; font-size: 16px; }
+.term p { margin: 0 0 8px; }
+.term p:last-child { margin: 0; }
+.term .where { font-size: 13.5px; color: var(--dim); }
+.term .where code { font-size: 0.92em; }
+
+/* ---- code colouring ----
+   Three classes, applied by hand in the fragments. A tokeniser would be a build step, and the point
+   of this site is that there is not one. */
+pre .k { color: var(--accent); }
+pre .c { color: var(--dim); font-style: italic; }
+pre .s { color: #d3a76a; }
+@media (prefers-color-scheme: light) { pre .s { color: #9a5b12; } }
+
 /* ---- overview cards ---- */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 8px; }
 .card {
@@ -145,6 +222,11 @@ footer {
 /* ---- narrow ----
    The panel stops being a column and becomes a block above the content. Every group is still
    collapsible, which is what keeps it from pushing the page off the screen. */
+
+/* header.css wraps the bar onto two rows here, and everything that scrolls to an anchor subtracts
+   --bar. It has to be corrected from this file, which loads after it. */
+@media (max-width: 860px) { :root { --bar: 94px; } }
+
 @media (max-width: 900px) {
   .shell { grid-template-columns: 1fr; }
   .side {

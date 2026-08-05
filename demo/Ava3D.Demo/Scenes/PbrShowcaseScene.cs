@@ -35,6 +35,8 @@ public sealed class PbrShowcaseScene : DemoScene
         to Software to see exactly how much of this is the maps.
         """;
 
+    public override SceneLook Look => SceneLook.Studio;
+
     public override bool Animates => true;
 
     public override Scene Build()

@@ -24,6 +24,8 @@ public sealed class LightingScene : DemoScene
         With it off, the metal sphere has nothing to reflect and shows what "no environment" really costs.
         """;
 
+    public override SceneLook Look => SceneLook.Studio;
+
     public override bool Animates => true;
 
     public override Scene Build()

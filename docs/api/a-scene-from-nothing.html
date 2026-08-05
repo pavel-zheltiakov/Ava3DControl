@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1 · A scene from nothing · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a class="current" aria-current="page" href="a-scene-from-nothing.html">1 · A scene from nothing</a><ul class="sub"><li><a href="#triangles">Everything is triangles</a></li><li><a href="#meshes">A mesh is two lists</a></li><li><a href="#coordinates">Where things are</a></li><li><a href="#first-scene">Your first scene</a></li><li><a href="#what-happened">What just happened</a></li></ul></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>1 · A scene from nothing</h1><p class="lede">
+  This chapter assumes you have never written 3D code. By the end of it you will know what a scene is made
+  of, why it is made of that, and you will have put a lit object on the screen in about fifteen lines. Every
+  term introduced here is in the <a href="glossary.html">glossary</a> as well.
+</p>
+
+<h2 id="triangles">Everything is triangles</h2>
+
+<p>
+  A graphics card can draw exactly one shape: a <a class="term-link" href="glossary.html#g-triangle">triangle</a>. Not a sphere, not a curve, not a cylinder — a
+  triangle, with three corners. Everything you have ever seen rendered in real time was made of them.
+</p>
+
+<p>
+  That sounds like a crippling limitation and is the opposite. Three points are always flat, always convex,
+  and always have a well-defined inside; four points can be none of those. So the hardware does one thing,
+  does it in parallel by the million, and every curved surface is an approximation made of flat pieces. A
+  sphere with 8 segments is a lumpy ball. The same sphere with 64 is smooth, because the pieces are now
+  smaller than a pixel where it counts.
+</p>
+
+<pre><code><span class="k">var</span> coarse = Primitives.Sphere(radius: 0.5f, segments: 8,  rings: 4);   <span class="c">// 64 triangles, visibly faceted</span>
+<span class="k">var</span> smooth = Primitives.Sphere(radius: 0.5f, segments: 64, rings: 32);  <span class="c">// 4,096 triangles, round</span></code></pre>
+
+<p>
+  Neither is "correct". A ball bearing in the middle of the screen wants the second; a hundred of them in the
+  distance want the first, and the reader who cares about that is looking for
+  <a href="making-it-fast.html">chapter 8</a>.
+</p>
+
+<h2 id="meshes">A mesh is two lists</h2>
+
+<p>
+  A <a href="Ava3D.Mesh.html">Mesh</a> is where those triangles live, and it is two arrays rather than a list
+  of triangles.
+</p>
+
+<ul>
+  <li><strong><code>Positions</code></strong> — every corner in the object, each an <em>x, y, z</em> point.
+      A corner is called a <em><a class="term-link" href="glossary.html#g-vertex">vertex</a></em>.</li>
+  <li><strong><code>Indices</code></strong> — the triangles, as whole numbers that <em>point into</em> that
+      array. Three <a class="term-link" href="glossary.html#g-indices">indices</a> make one triangle.</li>
+</ul>
+
+<div class="diagram">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="mesh-title mesh-desc">
+  <title id="mesh-title">Four vertices and six indices make two triangles</title>
+  <desc id="mesh-desc">
+    A square is drawn as two triangles sharing an edge. Its four corners are numbered 0 to 3 and stored once
+    each in the Positions array; the Indices array names them in groups of three — 0, 1, 2 and 0, 2, 3 —
+    which is what makes the two triangles.
+  </desc>
+
+  <text class="d-band-label" x="10" y="20">the square</text>
+
+  <path class="d-box" d="M60 50 L220 50 L220 190 L60 190 Z"/>
+  <path class="d-edge" d="M60 190 L220 50"/>
+
+  <circle class="d-box-accent" cx="60" cy="190" r="13"/>
+  <text class="d-mono" x="55" y="195">0</text>
+  <circle class="d-box-accent" cx="220" cy="190" r="13"/>
+  <text class="d-mono" x="215" y="195">1</text>
+  <circle class="d-box-accent" cx="220" cy="50" r="13"/>
+  <text class="d-mono" x="215" y="55">2</text>
+  <circle class="d-box-accent" cx="60" cy="50" r="13"/>
+  <text class="d-mono" x="55" y="55">3</text>
+
+  <text class="d-note" x="152" y="160">0,1,2</text>
+  <text class="d-note" x="84" y="102">0,2,3</text>
+
+  <text class="d-band-label" x="310" y="20">what is stored</text>
+
+  <rect class="d-box" x="310" y="40" width="400" height="76" rx="8"/>
+  <text class="d-title" x="326" y="66">Positions — 4 points</text>
+  <text class="d-mono" x="326" y="92">(0,0,0) (1,0,0) (1,1,0) (0,1,0)</text>
+
+  <rect class="d-box-accent" x="310" y="130" width="400" height="76" rx="8"/>
+  <text class="d-title" x="326" y="156">Indices — 6 numbers, 2 triangles</text>
+  <text class="d-mono" x="326" y="182">0, 1, 2,   0, 2, 3</text>
+</svg>
+</div>
+
+<p class="caption">
+  Corner 0 and corner 2 are each used by both triangles — stored once, named twice. That is the whole reason
+  indices exist.
+</p>
+
+<p>
+  Why the indirection? Because corners are shared. A cube has eight of them, but six faces of two triangles
+  each is thirty-six corner slots. Storing the position thirty-six times would waste memory and, worse, would
+  mean moving one corner required finding and fixing all its copies. Instead, eight positions and thirty-six
+  indices.
+</p>
+
+<p>
+  Building one by hand looks like this, and this is a real, complete mesh:
+</p>
+
+<pre><code><span class="k">var</span> triangle = <span class="k">new</span> Mesh
+{
+    Positions = [<span class="k">new</span>(-0.5f, -0.5f, 0f), <span class="k">new</span>(0.5f, -0.5f, 0f), <span class="k">new</span>(0f, 0.5f, 0f)],
+    Indices   = [0, 1, 2]
+}.WithGeneratedNormals();</code></pre>
+
+<p>
+  <code>WithGeneratedNormals()</code> works out which way the surface faces, which is what lighting needs;
+  <a href="surfaces-and-light.html">chapter 5</a> is about that. You will rarely type positions out. The
+  shapes you would otherwise write from scratch are in
+  <a href="Ava3D.Primitives.html">Primitives</a> — box, sphere, cylinder, torus, plane — and anything
+  complicated comes out of a modelling tool through <a href="Ava3D.GltfLoader.html">GltfLoader</a>.
+</p>
+
+<div class="tip">
+  <p>
+    <strong><a class="term-link" href="glossary.html#g-winding">Winding</a> matters.</strong> The order of a triangle's three indices decides which side is the
+    front: counter-clockwise seen from outside, which is the <a class="term-link" href="glossary.html#g-gltf">glTF</a> and OpenGL convention and the one every
+    shape in <code>Primitives</code> follows. It only becomes visible when you turn on
+    <a href="Ava3D.CullMode.html">culling</a> — and then a mesh wound the other way turns inside out.
+  </p>
+</div>
+
+<h2 id="coordinates">Where things are</h2>
+
+<p>
+  Positions are three numbers, and the axes point like this: <strong>+X is right, +Y is up, and +Z comes
+  toward you</strong> out of the screen. So a model faces <strong>−Z</strong>, away from the viewer — which
+  is worth remembering now, because <a href="turning-things.html">chapter 4</a> aims things and −Z is the
+  direction it aims.
+</p>
+
+<p>
+  The unit is whatever you decide. Nothing here is metres. What matters is that you are consistent, and that
+  the ratio between your largest and smallest visible object stays sane —
+  <a href="the-camera.html#near-far">chapter 3</a> explains what "sane" means and what breaks when it is not.
+  For scale: the demo's <em>Contact</em> film holds a 250-unit fighter, a 24,576-unit planet and a sun
+  900,000 units away in the same frame, and it works because the <a class="term-link" href="glossary.html#g-near-plane">near plane</a> was chosen deliberately.
+</p>
+
+<h2 id="first-scene">Your first scene</h2>
+
+<p>
+  Three objects and one assignment. A <a href="Ava3D.Mesh.html">Mesh</a> is the shape, a
+  <a href="Ava3D.Material.html">Material</a> is what it is made of, a
+  <a href="Ava3D.MeshNode.html">MeshNode</a> puts the two together somewhere in the world, and a
+  <a href="Ava3D.Scene.html">Scene</a> is the tree of nodes the control draws.
+</p>
+
+<ol class="steps">
+  <li>Put the control in a window.</li>
+  <li>Build a scene and add one node to it.</li>
+  <li>Hand the scene to the control. There is no step 4.</li>
+</ol>
+
+<pre><code>&lt;Window xmlns=<span class="s">"https://github.com/avaloniaui"</span>
+        xmlns:a3d=<span class="s">"using:Ava3D"</span>&gt;
+    &lt;a3d:Ava3DView x:Name=<span class="s">"View"</span> /&gt;
+&lt;/Window&gt;</code></pre>
+
+<pre><code><span class="k">using</span> Ava3D;
+<span class="k">using</span> System.Numerics;
+
+<span class="k">var</span> scene = <span class="k">new</span> Scene();
+
+scene.Children.Add(<span class="k">new</span> MeshNode(
+    Primitives.Sphere(0.5f),
+    <span class="k">new</span> Material
+    {
+        BaseColor = <span class="k">new</span> Vector4(1f, 0.77f, 0.34f, 1f),   <span class="c">// r, g, b, a — 0 to 1, not 0 to 255</span>
+        Metallic  = 1f,
+        Roughness = 0.25f
+    }));
+
+View.Scene = scene;</code></pre>
+
+<p>
+  That is a lit, orbitable gold sphere. Nobody set up a camera, a light or a renderer: the control frames
+  whatever it is given, starts with one <a class="term-link" href="glossary.html#g-point-light">directional light</a> and an ambient environment, and picks the best
+  renderer the platform will give it. All three are yours to take over when you want them —
+  <a href="the-camera.html">chapter 3</a> takes the camera, <a href="surfaces-and-light.html">chapter 5</a>
+  the lights, and <a href="choosing-a-renderer.html">How the renderer is chosen</a> explains the third.
+</p>
+
+<h2 id="what-happened">What just happened</h2>
+
+<p>
+  You built a tree of objects on the UI thread and something else drew it on another thread. Between the two
+  is a <a class="term-link" href="glossary.html#g-snapshot">snapshot</a>: once a frame, the control walks your scene and produces a flat, immutable draw list, and
+  that is what crosses over. It is why you can add a hundred nodes in a loop with no lock and never see half
+  a frame.
+</p>
+
+<p>
+  It is also why some things are the way they are — why a <code>Mesh</code>'s arrays are init-only, why there
+  is no GPU device anywhere in the API, why the 3D clips and fades like any other control instead of
+  floating on top of your UI. <a href="how-a-frame-happens.html">How a frame happens</a> is the whole story
+  and is worth reading once, though not yet.
+</p>
+
+<div class="try">
+  <h3>Run it</h3>
+  <p>
+    The demo's first scene is this one, in one file of about forty lines. Every scene named in these chapters
+    can be opened by name, and each one does a single thing.
+  </p>
+  <pre><code>AVA3D_SCENE=<span class="s">"Hello cube"</span> dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+</div>
+
+<p class="chapter-nav">
+  <span class="none">First chapter</span>
+  <a href="moving-things-about.html">2 · Moving things about →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

@@ -24,6 +24,8 @@ public sealed class NormalMappingScene : DemoScene
         calls it for you when a material has a normal map.
         """;
 
+    public override SceneLook Look => SceneLook.Blueprint;
+
     public override bool Animates => true;
 
     public override Scene Build()

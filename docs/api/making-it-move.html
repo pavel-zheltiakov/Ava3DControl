@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7 · Making it move · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a class="current" aria-current="page" href="making-it-move.html">7 · Making it move</a><ul class="sub"><li><a href="#the-loop">The loop</a></li><li><a href="#paths">Paths</a></li><li><a href="#easing">Easing</a></li><li><a href="#randomness">Randomness you can repeat</a></li><li><a href="#vertices">Moving vertices</a></li><li><a href="#effects">Effects that never touch a vertex</a></li></ul></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>7 · Making it move</h1><p class="lede">
+  A scene that never changes is a picture. This chapter is the loop that changes it, the three small maths
+  helpers that stop every moving scene from reinventing the same curve, and the one way to move <a class="term-link" href="glossary.html#g-vertex">vertices</a>
+  without allocating a megabyte a frame.
+</p>
+
+<h2 id="the-loop">The loop</h2>
+
+<p>
+  There is no <code>Update</code> callback to override, because a control that owned the clock would own it
+  for everybody. You drive it, from an ordinary Avalonia timer:
+</p>
+
+<pre><code><span class="k">var</span> clock = <span class="k">new</span> DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+<span class="k">var</span> started = Stopwatch.StartNew();
+
+clock.Tick += (_, _) =&gt;
+{
+    <span class="k">var</span> t = (<span class="k">float</span>)started.Elapsed.TotalSeconds;
+
+    ship.Position = <span class="k">new</span> Vector3(MathF.Sin(t) * 4f, 0f, MathF.Cos(t) * 4f);
+    ship.LookAt(Vector3.Zero);
+};
+
+clock.Start();</code></pre>
+
+<p>
+  Setting a node property marks the scene dirty, and the control re-snapshots and redraws on the next frame.
+  Nothing else is needed — no invalidate call, no begin/end, no lock. Changing something the graph
+  <em>cannot</em> see — a <code>Material</code>, a <code>Light</code> — still wants
+  <code>scene.Invalidate()</code>, as <a href="moving-things-about.html#telling-the-scene">chapter 2</a> said.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>Drive from elapsed time, not from a frame counter.</strong> The same code runs at 120 fps on a
+    Mac, 60 in an iOS simulator and 37 on the CPU fallback. Anything advanced by "a bit per frame" runs at
+    three different speeds; anything computed from seconds runs at one.
+  </p>
+</div>
+
+<h2 id="paths">Paths</h2>
+
+<p>
+  Movement that is not a straight line usually wants a curve through points you chose.
+  <a href="Ava3D.Spline.html">Spline</a> is a Catmull–Rom curve, which is the one that actually passes
+  <em>through</em> its waypoints rather than being politely influenced by them:
+</p>
+
+<pre><code>Vector3[] path = [<span class="k">new</span>(-80, 0, 120), <span class="k">new</span>(-20, 6, 40), <span class="k">new</span>(30, 2, -10), <span class="k">new</span>(90, -4, -60)];
+
+<span class="k">var</span> where = Spline.Sample(path, t);      <span class="c">// position at t, 0..1 along the whole path</span>
+<span class="k">var</span> which = Spline.Direction(path, t);   <span class="c">// unit heading there — the tangent, normalised</span>
+
+ship.Position = where;
+ship.Rotation = Rotations.LookAlong(which);</code></pre>
+
+<p>
+  Taking the heading from the curve rather than storing it separately is the point: there is no second
+  quantity to drift out of step with the first. Pass <code>closed: true</code> for a loop, and there is a
+  <code>float[]</code> overload for anything else that should ease through keyframes — a throttle, a fade, a
+  camera distance.
+</p>
+
+<h2 id="easing">Easing</h2>
+
+<p>
+  Linear motion looks mechanical because nothing in the world starts and stops instantly.
+  <a href="Ava3D.Ease.html">Ease</a> shapes a 0-to-1 parameter — it does not interpolate anything, because
+  <code>float.Lerp</code> already exists:
+</p>
+
+<pre><code>Ease.In(t)      <span class="c">// slow start, hard stop</span>
+Ease.Out(t)     <span class="c">// hard start, gentle stop</span>
+Ease.InOut(t)   <span class="c">// soft at both ends — smoothstep, and the one you want most of the time</span>
+
+Ease.Ramp(from, to, value)   <span class="c">// clamped inverse lerp: where `value` sits between the two, as 0..1</span></code></pre>
+
+<p>
+  <code>Ramp</code> is the one that turns a raw quantity into an animation parameter — how far through a time
+  window you are, how close a ship is to its target. Composed with <code>InOut</code> it is exactly GLSL's
+  three-argument <code>smoothstep</code>, which is why there is no fourth curve for that:
+</p>
+
+<pre><code><span class="k">var</span> fade = Ease.InOut(Ease.Ramp(40f, 10f, distance));   <span class="c">// 0 at 40 units, 1 at 10, soft at both ends</span></code></pre>
+
+<h2 id="randomness">Randomness you can repeat</h2>
+
+<p>
+  Scatter a thousand rocks with <code>Random</code> and they land somewhere different every run, which makes
+  a scene impossible to photograph twice and a bug impossible to reproduce. Seeding it does not help as much
+  as it sounds: a sequence's thousandth answer depends on having asked for the first nine hundred and
+  ninety-nine, so drawing one extra value anywhere moves everything after it.
+</p>
+
+<p>
+  <a href="Ava3D.Scatter.html">Scatter</a> is indexed instead of sequential. Every answer is a pure function
+  of an index and a channel — no state, no seeding, no allocation, the same on every platform and every run:
+</p>
+
+<pre><code><span class="k">for</span> (<span class="k">var</span> i = 0; i &lt; 1660; i++)
+    stars[i] = Scatter.Direction(i) * 2_400_000f;   <span class="c">// uniform over the sphere</span>
+
+<span class="k">var</span> size  = 0.5f + Scatter.Value(i, channel: 1) * 2f;  <span class="c">// a second, independent stream</span>
+<span class="k">var</span> inside = Scatter.Point(i, channel: 2);              <span class="c">// uniform through the ball, not just on it</span></code></pre>
+
+<p>
+  Channels are what let one index carry several unrelated properties without them correlating. Delete a rock
+  and every other rock stays exactly where it was.
+</p>
+
+<h2 id="vertices">Moving vertices</h2>
+
+<p>
+  Everything above moves whole objects. Sometimes the shape itself has to change — a wake, a waveform, a
+  flag, a particle system where every fragment goes its own way.
+</p>
+
+<p>
+  A <code>Mesh</code>'s arrays are init-only so that nothing can swap one out from under a GPU buffer sized
+  for it. The <em>contents</em> are yours: write into them, say so, and the backends refill the buffers they
+  already hold — no allocation, no new buffer names, nothing freed.
+</p>
+
+<pre><code><span class="k">for</span> (<span class="k">var</span> i = 0; i &lt; mesh.Positions.Length; i++)
+    mesh.Positions[i].Y = MathF.Sin(mesh.Positions[i].X * 0.5f + t) * 0.4f;
+
+mesh.InvalidateGeometry();
+scene.Invalidate();      <span class="c">// a Mesh is not in the graph, so tell the scene yourself</span></code></pre>
+
+<p>
+  <a href="Ava3D.LineNode.html">LineNode</a> and <a href="Ava3D.PointsNode.html">PointsNode</a> have the same
+  method and do <em>not</em> need the second line — they are nodes, so they tell their own scene. Their
+  <code>Positions</code> are also settable, which is how the count changes; assigning a new array invalidates
+  by itself.
+</p>
+
+<div class="tip">
+  <p>
+    <strong><a class="term-link" href="glossary.html#g-normal">Normals</a> do not update themselves.</strong> Move the positions of a lit mesh and the shading is
+    still the old shape's. Recompute them into the existing array if the deformation is large enough to see —
+    or use it on something unlit, like a line or a point cloud, where the question does not arise.
+  </p>
+</div>
+
+<h2 id="effects">Effects that never touch a vertex</h2>
+
+<p>
+  Before reaching for moving vertices, check whether a transform will do. Almost every effect in the demo's
+  film is a fixed pool of nodes, hidden when idle, whose animation is entirely position, rotation, scale,
+  opacity or sprite size:
+</p>
+
+<ul>
+  <li><strong>A fireball</strong> is one sprite whose <code>Size</code> grows and <code>Opacity</code> falls.</li>
+  <li><strong>A debris burst</strong> is a <code>PointsNode</code> of 48 points on a unit sphere, with the
+      node's <code>Scale</code> growing.</li>
+  <li><strong>A shockwave</strong> is a 32-segment <code>LineNode</code> ring, scaled outward.</li>
+  <li><strong>A tracer</strong> is one segment plus a sprite, translated along its own −Z.</li>
+</ul>
+
+<p>
+  An invisible node costs a stack push — <code>IsVisible = false</code> and the <a class="term-link" href="glossary.html#g-snapshot">snapshot</a> skips the whole
+  subtree — so a pool of sixteen bolts that are mostly idle costs nothing to keep around. It is how a game
+  would do it anyway, and it means the geometry is uploaded once for the life of the scene.
+</p>
+
+<div class="try">
+  <h3>Run it</h3>
+  <p>
+    The animation scene is transforms on a clock. The film is all of the above at once, and prints its
+    captions so you can follow the timeline without watching it.
+  </p>
+  <pre><code>AVA3D_SCENE=Animation dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=Contact AVA3D_CAPTIONS=1 dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+</div>
+
+<p class="chapter-nav">
+  <a href="past-triangles.html">← 6 · Past triangles</a>
+  <a href="making-it-fast.html">8 · Making it fast →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

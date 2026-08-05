@@ -1,0 +1,148 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Ava3D.Demo.Views.Diagnostics">
+
+    <UserControl.Styles>
+        <!--
+            The label and value columns. A Grid with two columns rather than padded text in a monospace
+            font: "monospace" is a family name the desktop resolves and a browser or an Android device may
+            quietly not, and the padding was doing all the work of making a column of numbers readable. A
+            column cannot fall back to something proportional.
+        -->
+        <Style Selector="TextBlock.key">
+            <Setter Property="Foreground" Value="#79839A" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,12,3" />
+        </Style>
+        <Style Selector="TextBlock.value">
+            <Setter Property="Foreground" Value="#D8DCE6" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,0,0,3" />
+        </Style>
+        <Style Selector="TextBlock.note">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,9,0,0" />
+        </Style>
+
+        <!--
+            The features row is the only one you can open, so it is the only one that is a button. Stripped
+            back to nothing but its content: a Fluent ToggleButton arrives with a border, a background and
+            32 points of minimum height, all three of which would make one row of a value column look like
+            a control that had wandered in from the toolbar.
+        -->
+        <Style Selector="ToggleButton.features">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style Selector="ToggleButton.features /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+        </Style>
+        <Style Selector="ToggleButton.features:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ToggleButton.features:checked /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ToggleButton.features:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </UserControl.Styles>
+
+    <!--
+        Two headlines at the same size, because they are one sentence: this renderer, this many frames. The
+        engine gets the left because it is the thing being chosen and the thing the frame rate is a
+        consequence of, and its version rides along in small type — the word is what is being read, but
+        "OpenGL ES 3.0" and "OpenGL 4.6" are different machines and the difference should not be thrown
+        away to make a headline tidy.
+
+        Underneath, where the panel used to name the Avalonia class that handed over the graphics context:
+        the hardware, the operating system and the browser. Everything below the rule is the evidence, in a
+        single label column so the eye can run down the values without hunting for where each one starts.
+    -->
+    <!-- 420 to match the notes panel above it in the shell, since the two share a column. -->
+    <Border Padding="16,13" MinWidth="330" MaxWidth="420"
+            Background="#D9141821" CornerRadius="8"
+            BoxShadow="0 4 16 0 #40000000">
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+
+            <!--
+                Bottom-aligned rather than centred, so the two share one baseline however the engine's name
+                wraps. The version inside is a Run at a smaller size, which is why this block has no Text:
+                runs and text are two ways to fill the same control and only one of them can win.
+            -->
+            <TextBlock x:Name="Renderer" Grid.Row="0" Grid.Column="0"
+                       VerticalAlignment="Bottom" TextWrapping="Wrap"
+                       FontSize="21" FontWeight="SemiBold" Foreground="#7FD8A0" />
+            <TextBlock x:Name="Fps" Grid.Row="0" Grid.Column="1"
+                       VerticalAlignment="Bottom" Margin="18,0,0,0"
+                       FontSize="21" FontWeight="SemiBold" Foreground="#F2F5FA" />
+
+            <TextBlock x:Name="HostName" Grid.Row="1" Grid.Column="0"
+                       Margin="0,3,0,0" TextWrapping="Wrap"
+                       FontSize="11" Foreground="#8A93A6" />
+            <TextBlock x:Name="FrameTime" Grid.Row="1" Grid.Column="1"
+                       Margin="18,3,0,0" TextAlignment="Right"
+                       FontSize="11" Foreground="#8A93A6" />
+
+            <Border Grid.Row="2" Grid.ColumnSpan="2" Height="1" Background="#242A36" Margin="0,11" />
+
+            <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="78,*"
+                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0" Classes="key" Text="draws" />
+                <TextBlock x:Name="Draws" Grid.Row="0" Grid.Column="1" Classes="value" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Classes="key" Text="triangles" />
+                <TextBlock x:Name="Triangles" Grid.Row="1" Grid.Column="1" Classes="value" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Classes="key" Text="resolution" />
+                <TextBlock x:Name="Resolution" Grid.Row="2" Grid.Column="1" Classes="value" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Classes="key" Text="textures" />
+                <TextBlock x:Name="Textures" Grid.Row="3" Grid.Column="1" Classes="value"
+                           FontSize="11" Foreground="#9AA3B5" />
+
+                <!--
+                    The one row that answers a question rather than reporting a number: what this renderer
+                    does that another would not. Closed it is a score, which is all most people want; open
+                    it is the nine rows the score is out of, each with its reason.
+                -->
+                <TextBlock Grid.Row="4" Grid.Column="0" Classes="key" Text="features" />
+                <ToggleButton x:Name="FeatureToggle" Grid.Row="4" Grid.Column="1" Classes="features"
+                              ToolTip.Tip="What this renderer does and does not do, row by row.">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock x:Name="FeatureScore" FontSize="12" />
+                        <TextBlock x:Name="FeatureChevron" FontSize="10" Foreground="#9AA3B5"
+                                   VerticalAlignment="Center" Text="&#x25B8;" />
+                    </StackPanel>
+                </ToggleButton>
+
+                <!--
+                    Spanning both columns rather than sitting in the value column: nine names and their
+                    reasons need the width, and the tick column is a label column of its own. Scrolled
+                    because the CPU fallback's seven reasons are longer than the panel is allowed to be.
+                -->
+                <ScrollViewer Grid.Row="5" Grid.ColumnSpan="2" MaxHeight="288" Margin="0,6,0,2"
+                              HorizontalScrollBarVisibility="Disabled"
+                              IsVisible="{Binding #FeatureToggle.IsChecked}">
+                    <StackPanel x:Name="FeatureList" Spacing="5" />
+                </ScrollViewer>
+            </Grid>
+
+            <TextBlock x:Name="EngineNote" Grid.Row="4" Grid.ColumnSpan="2" Classes="note"
+                       Foreground="#E8C07D" IsVisible="False" />
+            <TextBlock x:Name="Errors" Grid.Row="5" Grid.ColumnSpan="2" Classes="note"
+                       FontSize="12" Foreground="#FF8A8A" IsVisible="False" />
+            <TextBlock x:Name="Picked" Grid.Row="6" Grid.ColumnSpan="2" Classes="note"
+                       Foreground="#C7B7FF" IsVisible="False" />
+        </Grid>
+    </Border>
+</UserControl>

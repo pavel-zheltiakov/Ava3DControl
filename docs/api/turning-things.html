@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4 · Turning things · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a class="current" aria-current="page" href="turning-things.html">4 · Turning things</a><ul class="sub"><li><a href="#angles">Angles are fine until they are not</a></li><li><a href="#quaternion">What a quaternion actually is</a></li><li><a href="#building">Building one from what you have</a></li><li><a href="#combining">Combining, and undoing</a></li><li><a href="#aiming">Aiming a node at something</a></li><li><a href="#banking">Banking into a turn</a></li></ul></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>4 · Turning things</h1><p class="lede">
+  Rotation is the part of 3D that people meet as three angles and leave as four numbers they do not
+  understand. This chapter is why the swap happens, what the four numbers are, and — mostly — how to avoid
+  ever looking at them.
+</p>
+
+<h2 id="angles">Angles are fine until they are not</h2>
+
+<p>
+  "Turn 30° about X, then 45° about Y, then 10° about Z" is easy to picture and easy to type. It is also
+  three separate problems waiting:
+</p>
+
+<ul>
+  <li><strong>The order changes the answer.</strong> X-then-Y is a different orientation from Y-then-X. Two
+      pieces of code that both say "pitch 30, yaw 45" can disagree about where a thing ends up.</li>
+  <li><strong>Two of the axes can collide.</strong> Pitch straight up and the yaw and roll axes line up:
+      one whole degree of freedom vanishes, and no combination of the three can get it back. It is called
+      <a href="glossary.html#g-gimbal-lock">gimbal lock</a>, and it is the reason a camera pitch is clamped
+      to ±89° here rather than ±90°.</li>
+  <li><strong>They do not interpolate.</strong> Halfway between two sets of <a class="term-link" href="glossary.html#g-euler">Euler angles</a> is very rarely
+      halfway between the two orientations, and something animated through them wobbles on the way.</li>
+</ul>
+
+<p>
+  For placing a crate at 45° none of that matters, which is why <code>Node.RotationDegrees</code> exists and
+  is perfectly good. For anything that turns, follows or aims, it all matters at once.
+</p>
+
+<h2 id="quaternion">What a quaternion actually is</h2>
+
+<p>
+  Any orientation in 3D, however you got to it, is the same as <em>one</em> rotation about
+  <em>one</em> axis. That is not obvious and it is true: pitch, yaw and roll in any combination can always be
+  replaced by a single turn about some tilted axis you did not choose.
+</p>
+
+<p>
+  A <a href="glossary.html#g-quaternion">quaternion</a> is that fact written down as four numbers: three that
+  encode the axis, one that encodes how far around it. Turning it into a <a class="term-link" href="glossary.html#g-matrix">matrix</a> is a handful of
+  multiplications, combining two of them is one multiply, and <a class="term-link" href="glossary.html#g-blending">blending</a> between two is a smooth arc with no
+  wobble and no locked axis.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>You are not expected to read them.</strong> Nobody looks at <code>(0.183, 0.0, 0.0, 0.983)</code>
+    and sees "21° of pitch". You build quaternions from things you <em>do</em> understand — an axis and an
+    angle, or two directions — and combine them. In eight years of using them you may never inspect a
+    component.
+  </p>
+</div>
+
+<h2 id="building">Building one from what you have</h2>
+
+<p>
+  <code>System.Numerics.Quaternion</code> provides the two that come from angles, and
+  <a href="Ava3D.Rotations.html">Rotations</a> adds the two that come from directions — which is what a scene
+  usually has:
+</p>
+
+<pre><code><span class="c">// From an axis and an angle: a wheel turning about its own hub.</span>
+<span class="k">var</span> spin = Quaternion.CreateFromAxisAngle(Vector3.UnitX, seconds * 2f);
+
+<span class="c">// From angles, when angles are genuinely what you mean.</span>
+<span class="k">var</span> tilt = Quaternion.CreateFromYawPitchRoll(yaw, pitch, roll);
+
+<span class="c">// From one direction to another: the shortest arc between them.</span>
+<span class="k">var</span> lay = Rotations.FromTo(Vector3.UnitY, surfaceNormal);
+
+<span class="c">// From a heading: point the nose that way and keep the top level.</span>
+<span class="k">var</span> aim = Rotations.LookAlong(velocity);</code></pre>
+
+<p>
+  <code>FromTo</code> is the one people do not know they wanted. Lay a decal flat on a sloped surface, swing a
+  hinge onto its axis, ask how far one attitude is from another — none of those is expressible in Euler
+  angles at all, and all three are one call. It takes vectors of any length and calls no trigonometric
+  function.
+</p>
+
+<p>
+  <code>LookAlong</code> is the named case of aiming: give it a direction and it produces the rotation that
+  points a model's nose down it, with the model's top as level as it can be. The optional second argument is
+  what "level" means, if world +Y is not it.
+</p>
+
+<h2 id="combining">Combining, and undoing</h2>
+
+<pre><code><span class="k">var</span> both = outer * inner;                <span class="c">// `inner` happens first — see below</span>
+<span class="k">var</span> same = Quaternion.Concatenate(inner, outer);  <span class="c">// identical, and says so</span>
+<span class="k">var</span> back = Quaternion.Conjugate(both);    <span class="c">// the same turn, backwards (for a unit quaternion)</span>
+<span class="k">var</span> half = Quaternion.Slerp(a, b, 0.5f);  <span class="c">// genuinely halfway, along the shortest arc</span></code></pre>
+
+<div class="tip">
+  <p>
+    <strong>Quaternions multiply right to left; matrices in the same library multiply left to right.</strong>
+    This catches everyone once. <code>Matrix4x4</code> here uses the row-vector convention, so
+    <code>rotate * translate</code> means rotate <em>then</em> translate. <code>Quaternion</code>'s
+    <code>*</code> is the ordinary Hamilton product, so <code>a * b</code> applies <strong>b</strong> first
+    and <code>a</code> second — which is why <code>Quaternion.Concatenate(a, b)</code> exists and is
+    documented as "a followed by b". If a rotation comes out backwards, swap the operands before
+    suspecting anything subtler.
+  </p>
+</div>
+
+<p>
+  Multiplication is not commutative — <code>a * b</code> is not <code>b * a</code> — for the same reason
+  turning left then walking is not walking then turning left. And after a few thousand multiplications
+  rounding will have crept in, so a quaternion you keep accumulating wants an occasional
+  <code>Quaternion.Normalize</code>.
+</p>
+
+<h2 id="aiming">Aiming a node at something</h2>
+
+<p>
+  Most of the time you do not need any of the above, because the thing you actually want is on the node:
+</p>
+
+<pre><code>turret.LookAt(target.WorldPosition);
+camera_mount.LookAt(target.WorldPosition, up: shipUp);</code></pre>
+
+<p>
+  <a href="Ava3D.Node.html">Node.LookAt</a> turns the node so its nose — <strong>−Z</strong>, the convention
+  from <a href="a-scene-from-nothing.html#coordinates">chapter 1</a> — points at a world-space position. Any
+  rotation the parents are applying is solved out, so a turret bolted to a hull that is itself rolling still
+  ends up looking at what it was told to look at.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>If your model aims sideways, its nose is not down −Z.</strong> That is a modelling convention, not
+    a bug here — fix it in the exporter, or bake the correction into the geometry once with
+    <code>mesh.Transformed(Matrix4x4.CreateRotationY(MathF.PI))</code> rather than adding a fudge rotation to
+    every node that uses it.
+  </p>
+</div>
+
+<h2 id="banking">Banking into a turn</h2>
+
+<p>
+  An aircraft does not turn flat; it rolls into the turn and the turn follows. That reads as one line once
+  you have a heading and how fast it is changing:
+</p>
+
+<pre><code><span class="k">var</span> forward = Vector3.Normalize(Spline.Direction(path, t));  <span class="c">// which way it is going</span>
+<span class="k">var</span> bank = Math.Clamp(-turnRate * gain, -0.96f, 0.96f);       <span class="c">// ±55°, so it never lies on its back</span>
+
+<span class="k">var</span> level = Rotations.LookAlong(forward);                     <span class="c">// nose on the heading, wings level</span>
+
+ship.Rotation = bank == 0f
+    ? level
+    : Quaternion.CreateFromAxisAngle(forward, -bank) * level;</code></pre>
+
+<p>
+  Read that multiplication <em>right to left</em>, as the box above says: <code>level</code> happens first and
+  puts the nose on the heading, and the roll is applied after it, about <code>forward</code> — which by then
+  <em>is</em> the nose. That is the whole trick. Bank about the world's Z axis instead and a ship heading
+  north would corkscrew sideways through its own turn.
+</p>
+
+<div class="try">
+  <h3>Run it</h3>
+  <p>
+    Six ships fly Catmull–Rom paths and bank out of their turn rate; a turret on a rolling hull tracks its
+    target through it.
+  </p>
+  <pre><code>AVA3D_SCENE=Contact dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+</div>
+
+<p class="chapter-nav">
+  <a href="the-camera.html">← 3 · The camera</a>
+  <a href="surfaces-and-light.html">5 · Surfaces and light →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

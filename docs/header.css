@@ -131,6 +131,10 @@
    The page links drop to their own row; the brand and the outbound links stay on the first one, because
    those are the two things worth reaching without thinking. */
 
+/* The bar is two rows below this width, so --bar — which is what anything scrolling to an anchor subtracts —
+   has to grow with it. That override lives in site.css and api.css rather than here, because both of them
+   load after this file and would otherwise put the 58px back. */
+
 @media (max-width: 860px) {
   .bar .nav { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 10px; }
   .bar .links:not(.tools) { order: 1; width: 100%; gap: 16px; flex-wrap: wrap; row-gap: 8px; }

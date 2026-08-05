@@ -9,6 +9,7 @@ namespace Ava3D.Demo.Scenes;
 /// </summary>
 public sealed class TexturesScene : DemoScene
 {
+
     public override string Title => "Textures";
 
     public override string Summary => "Checkerboard, UV layout and the three wrap modes";
@@ -24,6 +25,8 @@ public sealed class TexturesScene : DemoScene
 
         Both maps are generated in code. See Textures/Procedural.cs; the demo ships no image files.
         """;
+
+    public override SceneLook Look => SceneLook.Studio;
 
     public override Scene Build()
     {

@@ -11,6 +11,20 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <!--
+    The demo is one source tree built two ways: against src/ here, and against the last published package in
+    the public repository — see the comment beside the reference in Ava3D.Demo.csproj. That means anything
+    the demo uses which was added to the library after the last release will not compile there, and the
+    public repository's whole point is that it proves the published package builds an application.
+
+    So the two are told apart. Code that needs an unreleased API goes behind !AVA3D_FROM_PACKAGE and comes
+    back for free at the next release, when the API is in the package and the condition stops mattering.
+    Today that is exactly one thing: FrameCapture.Scale, which the site's banner is captured with.
+  -->
+  <PropertyGroup Condition="'$(Ava3DFromPackage)' == 'true'">
+    <DefineConstants>$(DefineConstants);AVA3D_FROM_PACKAGE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
   </ItemGroup>

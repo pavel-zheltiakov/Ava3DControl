@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6 · Past triangles · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a class="current" aria-current="page" href="past-triangles.html">6 · Past triangles</a><ul class="sub"><li><a href="#sprites">Sprites: things that always face you</a></li><li><a href="#lines">Lines</a></li><li><a href="#points">Points</a></li><li><a href="#blending">Blending: what happens when things overlap</a></li><li><a href="#order">What is drawn on top</a></li></ul></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>6 · Past triangles</h1><p class="lede">
+  Some things in a scene are not surfaces. A star is a point of light with no size at all; a glow has no
+  geometry; a panel line is a line. Drawing those as <a class="term-link" href="glossary.html#g-triangle">triangles</a> is possible and always looks like what it is.
+  This chapter is the three node types that are not meshes, and the rules that decide what ends up on top.
+</p>
+
+<h2 id="sprites">Sprites: things that always face you</h2>
+
+<p>
+  A <a href="Ava3D.SpriteNode.html">SpriteNode</a> is a flat image that turns to face the camera every frame
+  — a <a href="glossary.html#g-billboard">billboard</a>. Turn the camera around it and it turns with you, so
+  it never shows an edge.
+</p>
+
+<pre><code>scene.Children.Add(<span class="k">new</span> SpriteNode
+{
+    Texture = glow,
+    Position = beacon.WorldPosition,
+    Size = <span class="k">new</span> Vector2(150f, 150f),   <span class="c">// world units — it shrinks with distance</span>
+    Color = <span class="k">new</span> Vector3(1f, 0.4f, 0.3f),
+    Blend = BlendMode.Additive,
+    DepthTest = <span class="k">false</span>                    <span class="c">// draw over whatever is in front of it</span>
+});</code></pre>
+
+<p>
+  Two properties carry the weight. <code>Size</code> is in world units rather than pixels, so a sprite
+  behaves like an object in the scene and recedes with distance. And <code>DepthTest = false</code> lets it
+  draw <em>over</em> geometry that is nearer — which is how a ship stays visible as a point of light long
+  after its hull is smaller than a pixel. Emissive geometry cannot do that: it is still a surface, and a
+  surface a pixel wide is a pixel.
+</p>
+
+<h2 id="lines">Lines</h2>
+
+<p>
+  A <a href="Ava3D.LineNode.html">LineNode</a> is unlit segments: the <code>Positions</code> array is read in
+  <strong>pairs</strong>, each pair one segment from A to B. It is the type behind wireframes, panel lines,
+  blueprint edges, trajectory arcs and shockwave rings.
+</p>
+
+<pre><code>scene.Children.Add(<span class="k">new</span> LineNode
+{
+    Positions = hull.GetEdges(),   <span class="c">// creases and boundaries, not the whole wireframe</span>
+    Color = <span class="k">new</span> Vector3(0.6f, 0.8f, 1f),
+    Opacity = 0.22f,
+    Width = 1.5f,
+    DepthWrite = <span class="k">false</span>,
+    RenderOrder = 1                <span class="c">// after the hull, so the lines sit on it</span>
+});</code></pre>
+
+<p>
+  <a href="Ava3D.Mesh.html">Mesh.GetEdges</a> is the usual source. Its one parameter is a crease angle: 0
+  gives you every edge, the default keeps folds and boundaries and drops what is buried inside a smooth
+  surface, and 180 leaves only the outline of an open surface.
+</p>
+
+<p>
+  <code>Width</code> is in device pixels and works on every renderer — anything wider than one pixel is
+  expanded into triangles and sized after the perspective divide, because every mainstream OpenGL driver
+  clamps <code>glLineWidth</code> to 1 and Metal has no line-width control at all.
+</p>
+
+<h2 id="points">Points</h2>
+
+<p>
+  A <a href="Ava3D.PointsNode.html">PointsNode</a> is a cloud: one square per position, no geometry between
+  them. Starfields, debris, sparks, dust, a scatter plot.
+</p>
+
+<p>
+  The property that decides what kind of cloud you have is <code>SizeAttenuation</code>:
+</p>
+
+<ul>
+  <li><strong><code>false</code></strong> — <code>Size</code> is in pixels and stays there however far away
+      the points are. That is a starfield: stars do not get smaller when you fly toward them.</li>
+  <li><strong><code>true</code></strong> — <code>Size</code> is in world units and shrinks with distance,
+      like everything else. That is spray, debris, snow.</li>
+</ul>
+
+<pre><code>scene.Children.Add(<span class="k">new</span> PointsNode
+{
+    Positions = stars,          <span class="c">// 1,660 points on a very large sphere</span>
+    Size = 2f,
+    SizeAttenuation = <span class="k">false</span>,   <span class="c">// two pixels each, forever</span>
+    Color = <span class="k">new</span> Vector3(1f, 1f, 0.95f)
+});</code></pre>
+
+<h2 id="blending">Blending: what happens when things overlap</h2>
+
+<p>
+  When a pixel is drawn over one that is already there,
+  <a href="glossary.html#g-blending">blending</a> decides how the two combine. There are three modes and they
+  are not interchangeable:
+</p>
+
+<table class="members">
+  <tbody>
+    <tr>
+      <td><code>BlendMode.Opaque</code></td>
+      <td>The new pixel replaces the old one. The default, the fastest, and right for anything solid.</td>
+    </tr>
+    <tr>
+      <td><code>BlendMode.Alpha</code></td>
+      <td>A weighted mix, by the alpha value: glass, smoke, a fading overlay. The result depends on the order
+          the two were drawn in, which is why <a href="#order">order</a> matters below.</td>
+    </tr>
+    <tr>
+      <td><code>BlendMode.Additive</code></td>
+      <td>The new pixel is <em>added</em> to what is there, so it only ever brightens. Fire, tracers, glows,
+          plasma. Overlapping additive sprites stack toward white, which is what makes a cluster of them read
+          as one bright thing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  Two further switches decide how a surface interacts with the
+  <a href="glossary.html#g-depth-buffer">depth buffer</a>:
+</p>
+
+<ul>
+  <li><strong><code>DepthTest</code></strong> — "am I allowed to draw if something is already in front of
+      me?" Off means always draw.</li>
+  <li><strong><code>DepthWrite</code></strong> — "do I record my own depth for the things drawn after me?"
+      Off means later things ignore me.</li>
+</ul>
+
+<div class="tip">
+  <p>
+    <strong>Blended things almost always want <code>DepthWrite = false</code>.</strong> A glow that writes
+    depth punches an invisible hole: the next glow behind it fails the depth test and vanishes, and a cluster
+    of sprites turns into whichever one happened to be drawn first. Turning the write off is what lets
+    additive things add.
+  </p>
+</div>
+
+<h2 id="order">What is drawn on top</h2>
+
+<p>
+  Every drawable in the scene — meshes, sprites, lines, points — goes into one list and is sorted by the same
+  three rules, in this order:
+</p>
+
+<ol class="steps">
+  <li><strong><code>Node.RenderOrder</code></strong>, lowest first. It is the manual override, and it beats
+      everything below.</li>
+  <li><strong>Opaque before blended.</strong> Solid geometry fills the depth buffer first, so blended things
+      have something to test against.</li>
+  <li><strong>Back to front, by the node's origin</strong> — per object, not per triangle.</li>
+</ol>
+
+<p>
+  That last point is the limitation worth knowing: two transparent surfaces that pass through each other
+  cannot both be right, because the sort has one answer per object. It is enough for shells, glows,
+  overlays and cockpit glass, and not enough for a bag of marbles made of coloured glass.
+</p>
+
+<p>
+  The recipe for "lines drawn over the hull they belong to" falls straight out of the three rules:
+  <code>DepthWrite = false</code> so the lines do not block each other, and <code>RenderOrder = 1</code> so
+  they come after the hull whatever the distance sort thinks.
+</p>
+
+<div class="try">
+  <h3>Run it</h3>
+  <p>Four scenes, one idea each, with the feature on and off in the same frame.</p>
+  <pre><code>AVA3D_SCENE=Sprites  dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=Lines    dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=Points   dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=Blending dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+</div>
+
+<p class="chapter-nav">
+  <a href="surfaces-and-light.html">← 5 · Surfaces and light</a>
+  <a href="making-it-move.html">7 · Making it move →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

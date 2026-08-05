@@ -119,13 +119,13 @@ public static class Procedural
 
             // Distance to the nearest cell edge: 0 on the seam, 0.5 at the centre.
             var edge = MathF.Min(MathF.Min(fu, 1f - fu), MathF.Min(fv, 1f - fv));
-            var plate = Smoothstep(0.028f, 0.055f, edge);
+            var plate = Ease.InOut(Ease.Ramp(0.028f, 0.055f, edge));
 
             var bump = 0f;
             foreach (var (cx, cy) in new[] { (0.11f, 0.11f), (0.89f, 0.11f), (0.11f, 0.89f), (0.89f, 0.89f) })
             {
                 var d = MathF.Sqrt((fu - cx) * (fu - cx) + (fv - cy) * (fv - cy));
-                bump = MathF.Max(bump, 1f - Smoothstep(0.020f, 0.038f, d));
+                bump = MathF.Max(bump, 1f - Ease.InOut(Ease.Ramp(0.020f, 0.038f, d)));
             }
 
             // A lit strip along the horizontal seam of every other row of panels.
@@ -168,10 +168,10 @@ public static class Procedural
 
             // glTF packing. Red is unused, green is roughness, blue is metallic — linear data, so no
             // gamma anywhere near it.
-            var roughness = Lerp(0.78f, 0.30f, panel[i]);
+            var roughness = float.Lerp(0.78f, 0.30f, panel[i]);
             if (rivet[i] > 0.5f) roughness = 0.20f;
 
-            var metallic = Lerp(0.45f, 1.00f, panel[i]);
+            var metallic = float.Lerp(0.45f, 1.00f, panel[i]);
 
             px[0] = 0;
             px[1] = ByteLinear(roughness);
@@ -195,7 +195,7 @@ public static class Procedural
         {
             var i = y * size + x;
             // Crevices are what ambient light cannot reach. Rivets get a contact ring rather than a hole.
-            var ao = Lerp(0.42f, 1.00f, panel[i]);
+            var ao = float.Lerp(0.42f, 1.00f, panel[i]);
             ao *= 1f - rivet[i] * 0.12f;
             var v = ByteLinear(ao);
             px[0] = v;
@@ -296,14 +296,6 @@ public static class Procedural
     }
 
     private static int Wrap(int v, int size) => (v % size + size) % size;
-
-    private static float Lerp(float a, float b, float t) => a + (b - a) * t;
-
-    private static float Smoothstep(float edge0, float edge1, float x)
-    {
-        var t = Math.Clamp((x - edge0) / (edge1 - edge0), 0f, 1f);
-        return t * t * (3f - 2f * t);
-    }
 
     /// <summary>A stable per-cell value in 0..1. Not good randomness; good enough to break up a tiling.</summary>
     private static float Hash(int x, int y)

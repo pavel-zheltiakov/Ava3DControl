@@ -9,11 +9,13 @@
 </head>
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
-  <a class="brand" href="../index.html">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview · beta</span>
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
-    <a href="index.html">Documentation</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
   </div>
   <div class="links tools">
     <details class="fb">
@@ -29,7 +31,7 @@
 </nav></header>
 <div class="shell">
 <aside class="side">
-<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>Concepts</summary><ul><li><a class="current" aria-current="page" href="how-a-frame-happens.html">How a frame happens</a><ul class="sub"><li><a href="#the-shape">The shape of it</a></li><li><a href="#two-threads">Two threads, one snapshot</a></li><li><a href="#what-is-cached">What survives between frames</a></li><li><a href="#the-picture">Why it composites like a control and not a hole</a></li><li><a href="#in-practice">What this means when you use it</a></li></ul></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group"><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group" open><summary>Concepts</summary><ul><li><a class="current" aria-current="page" href="how-a-frame-happens.html">How a frame happens</a><ul class="sub"><li><a href="#the-shape">The shape of it</a></li><li><a href="#two-threads">Two threads, one snapshot</a></li><li><a href="#what-is-cached">What survives between frames</a></li><li><a href="#the-picture">Why it composites like a control and not a hole</a></li><li><a href="#in-practice">What this means when you use it</a></li></ul></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
 </aside>
 <main>
 <p class="crumb"><a href="index.html">Documentation</a> · Concepts</p><h1>How a frame happens</h1><p class="lede">
@@ -104,10 +106,10 @@
 <h2 id="two-threads">Two threads, one snapshot</h2>
 
 <p>
-  Avalonia's compositor renders on its own thread. Your scene graph lives on the UI thread and you expect to
+  Avalonia's compositor renders on its own thread. Your <a class="term-link" href="glossary.html#g-scene-graph">scene graph</a> lives on the UI thread and you expect to
   mutate it from a button handler. Those two facts cannot both be true of the same object, so they are not the
   same object: <a href="Ava3D.Ava3DView.html">Ava3DView</a> walks the tree once per frame and produces a flat,
-  immutable snapshot — a draw list, with every transform already accumulated to world space.
+  immutable <a class="term-link" href="glossary.html#g-snapshot">snapshot</a> — a draw list, with every transform already accumulated to <a class="term-link" href="glossary.html#g-world-space">world space</a>.
 </p>
 
 <p>
@@ -131,10 +133,13 @@
 <ul>
   <li>
     <strong>Meshes are cached against the <a href="Ava3D.Mesh.html">Mesh</a> instance.</strong> The demo's
-    stress scene puts one sphere on 125 nodes: one vertex buffer, 125 draw calls. Reuse the same instance and
+    stress scene puts one sphere on 125 nodes: one <a class="term-link" href="glossary.html#g-vertex">vertex</a> buffer, 125 <a class="term-link" href="glossary.html#g-draw-call">draw calls</a>. Reuse the same instance and
     you get that automatically; build a new <code>Mesh</code> every frame and you will pay for it every frame.
-    That is why <code>Mesh</code> exposes its arrays as init-only — a mutable mesh could not be cached this way
-    without a version counter nobody would remember to bump.
+    That is why <code>Mesh</code> exposes its arrays as init-only: nothing can swap one out from under a
+    buffer, so the length the buffer was sized for is the length it still is. The <em>contents</em> can change
+    — write into them and call <a href="Ava3D.Mesh.html">InvalidateGeometry()</a>, and the cache refills the
+    buffers it already has rather than making new ones. That is one upload and no allocation, which is the
+    difference between animated geometry and a new <code>Mesh</code> every frame.
   </li>
   <li>
     <strong>Textures decode lazily and upload a couple per frame.</strong> A
@@ -173,7 +178,7 @@
 
 <ul>
   <li><strong>Mutate freely from the UI thread.</strong> There is no lock and no update scope.</li>
-  <li><strong>Keep your <code>Mesh</code> instances.</strong> Sharing one is how instancing happens here.</li>
+  <li><strong>Keep your <code>Mesh</code> instances.</strong> Sharing one is how <a class="term-link" href="glossary.html#g-instancing">instancing</a> happens here.</li>
   <li><strong>Do not expect to reach the GPU.</strong> There is no device, context or command buffer in the
       public API, because on one of the supported platforms there is no such object to hand you.</li>
   <li><strong>Read <a href="Ava3D.RenderInfo.html">RenderInfo</a> rather than assuming.</strong> It reports
@@ -183,7 +188,7 @@
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

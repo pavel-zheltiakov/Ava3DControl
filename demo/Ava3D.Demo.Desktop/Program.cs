@@ -19,6 +19,16 @@ sealed class Program
         if (int.TryParse(Environment.GetEnvironmentVariable("AVA3D_CAPTURE_FRAME"), out var frame))
             FrameCapture.Frame = frame;
 
+#if !AVA3D_FROM_PACKAGE
+        // AVA3D_CAPTURE_SCALE=2 renders the frame at twice the display's scale, which is how a picture
+        // bigger than this screen gets taken. Only useful with AVA3D_CAPTURE; harmless without it.
+        //
+        // Behind the switch because FrameCapture.Scale is newer than the published package, and this same
+        // file is compiled against that package in the public repository. See the csproj.
+        if (double.TryParse(Environment.GetEnvironmentVariable("AVA3D_CAPTURE_SCALE"), out var scale) && scale > 0)
+            FrameCapture.Scale = scale;
+#endif
+
         // AVA3D_PROBE=<seconds> renders for a while, prints what the renderer did, then exits — so the
         // control can be verified from a terminal instead of by someone watching a window.
         if (double.TryParse(Environment.GetEnvironmentVariable("AVA3D_PROBE"), out var seconds) && seconds > 0)
@@ -75,6 +85,13 @@ sealed class Program
         // The software switch earns its keep: with Metal covering macOS and iOS and GL covering
         // everything else, the CPU fallback is now only reached by Vulkan and software hosts, and a
         // path nothing exercises is a path that quietly stops working.
+        //
+        // The engine picker's saved choice is read here too, and only for OpenGL. That is the one option
+        // a running process cannot reach on its own, so it is the one that has to be answered before the
+        // application is built; Metal is the default on the platforms that have it, and the CPU fallback
+        // is the control's own decision, made per frame from the same saved setting in MainView. The
+        // environment wins where it speaks, because a probe or capture run is measuring the configuration
+        // it was handed and must not inherit whatever the last person to open the demo clicked.
         if (Environment.GetEnvironmentVariable("AVA3D_SOFTWARE") == "1")
         {
             builder = builder.With(new AvaloniaNativePlatformOptions
@@ -82,7 +99,8 @@ sealed class Program
                 RenderingMode = [AvaloniaNativeRenderingMode.Software]
             });
         }
-        else if (Environment.GetEnvironmentVariable("AVA3D_GL") == "1")
+        else if (Environment.GetEnvironmentVariable("AVA3D_GL") == "1" ||
+                 Engine.DemoSettings.Engine == RenderBackendKind.OpenGL)
         {
             builder = builder.With(new AvaloniaNativePlatformOptions
             {

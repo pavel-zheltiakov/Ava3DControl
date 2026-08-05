@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3 · The camera · Ava3DControl</title>
+<link rel="stylesheet" href="../header.css">
+<link rel="stylesheet" href="api.css">
+</head>
+<body>
+<header class="bar"><nav class="nav" aria-label="Site">
+  <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
+  <span class="tag">12.1.0-preview.2 · beta</span>
+  <div class="links">
+    <a href="../index.html">Home</a>
+    <a href="a-scene-from-nothing.html">3D Guide</a>
+    <a href="index.html#reference">API Reference</a>
+    <a href="../releases.html">Releases</a>
+  </div>
+  <div class="links tools">
+    <details class="fb">
+      <summary>Feedback</summary>
+      <div class="fb-pop">
+        <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg><span><b>GitHub Issues</b><small>A bug, a missing thing, a question — in the open, where the answer helps the next person.</small></span></a>
+        <a href="https://t.me/avadevtools/199"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg><span><b>Telegram</b><small>The Ava3DControl topic in the AvaDevTools group, for anything shorter than an issue.</small></span></a>
+      </div>
+    </details>
+    <a class="nav-ico" href="https://github.com/pavel-zheltiakov/Ava3DControl" title="GitHub" aria-label="GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7 0-.7 0-.7 1.2 0 1.9 1.2 1.9 1.2 1 1.8 2.8 1.3 3.5 1 0-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.2.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.4 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.7-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg></a>
+    <a class="nav-ico" href="https://t.me/avadevtools/199" title="Telegram" aria-label="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.9 4.6c.3-1.2-.9-2.2-2-1.7L2.7 9.7c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.5c.3 1 1.6 1.3 2.3.5l2.4-2.5 4.5 3.3c.9.6 2.1.2 2.4-.9l3.4-14.9zM8.2 12.9l9.4-5.8c.4-.2.7.3.4.6l-7.7 7.2c-.3.3-.5.6-.5 1l-.3 2.3c0 .3-.5.4-.6.1l-1.1-3.7c-.2-.6.1-1.3.4-1.7z"/></svg></a>
+  </div>
+</nav></header>
+<div class="shell">
+<aside class="side">
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a class="current" aria-current="page" href="the-camera.html">3 · The camera</a><ul class="sub"><li><a href="#two-matrices">A camera is two matrices</a></li><li><a href="#orbit">The orbit model</a></li><li><a href="#eye-and-focus">Eye and focus, when a shot is what you want</a></li><li><a href="#lens">The lens</a></li><li><a href="#near-far">Near and far, and the mistake everyone makes</a></li><li><a href="#roll">Roll</a></li><li><a href="#fit">Framing something you have never seen</a></li></ul></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li></ul></details></nav>
+</aside>
+<main>
+<p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>3 · The camera</h1><p class="lede">
+  There is no camera object inside a graphics card. What there is, is arithmetic that moves the whole world
+  until the thing you wanted to look at is in front of the origin — and then flattens it. A
+  <a href="Ava3D.Camera.html">Camera</a> here is the friendly end of that: where you are, what you are
+  looking at, and through what sort of lens.
+</p>
+
+<h2 id="two-matrices">A camera is two matrices</h2>
+
+<p>
+  Every <a class="term-link" href="glossary.html#g-vertex">vertex</a> in the scene goes through the same three steps: its node's world transform puts it in the
+  world, the <em>view</em> <a class="term-link" href="glossary.html#g-matrix">matrix</a> rearranges the world so the camera is at the origin looking down −Z, and
+  the <em>projection</em> matrix flattens what is left into the rectangle on your screen.
+</p>
+
+<p>
+  You never build either by hand — <code>Camera.View</code> and <code>Camera.GetProjection(aspect)</code> are
+  there if you want to see them — but knowing the shape explains two things that otherwise look arbitrary:
+  why moving the camera and moving the world are the same operation, and why the near and <a class="term-link" href="glossary.html#g-near-plane">far planes</a> matter
+  as much as they do.
+</p>
+
+<h2 id="orbit">The orbit model</h2>
+
+<p>
+  This camera is described by four numbers rather than by a position and a rotation, because the common case
+  is not flying — it is looking <em>at</em> something:
+</p>
+
+<ul>
+  <li><strong><code>Target</code></strong> — the point being looked at.</li>
+  <li><strong><code>Distance</code></strong> — how far away from it.</li>
+  <li><strong><code>Yaw</code></strong> — how far around it, in radians.</li>
+  <li><strong><code>Pitch</code></strong> — how far above or below it. Clamped to ±89°, because straight up
+      is where the <a class="term-link" href="glossary.html#g-view-matrix">view matrix</a> has no answer for which way is right.</li>
+</ul>
+
+<p>
+  Drag, wheel and middle-drag map onto exactly those, which is why orbiting, zooming and panning work with
+  no code from you. Set them yourself and the view moves:
+</p>
+
+<pre><code>View.Camera.Target   = model.WorldPosition;
+View.Camera.Distance = 12f;
+View.Camera.Yaw      = MathF.PI / 4f;</code></pre>
+
+<h2 id="eye-and-focus">Eye and focus, when a shot is what you want</h2>
+
+<p>
+  Yaw and pitch are the wrong vocabulary for "put the camera here, looking at that". So the same camera can
+  be described the way a film camera is:
+</p>
+
+<pre><code>View.Camera.LookFrom(<span class="k">new</span> Vector3(0f, 40f, 120f), station.WorldPosition);  <span class="c">// both at once</span>
+View.Camera.LookAt(kestrel.WorldPosition);                             <span class="c">// aim, do not move</span>
+View.Camera.Position = <span class="k">new</span> Vector3(5f, 2f, 8f);                        <span class="c">// move, keep the target</span></code></pre>
+
+<p>
+  All three write back into the same four numbers, so nothing gets out of step. And when you need the
+  camera's own axes — to strafe, to place something in front of it, to fire along its line of sight —
+  <code>Forward</code>, <code>Right</code> and <code>Up</code> are there in <a class="term-link" href="glossary.html#g-world-space">world space</a>:
+</p>
+
+<pre><code>muzzle.WorldPosition = View.Camera.Position + View.Camera.Forward * 2f;</code></pre>
+
+<h2 id="lens">The lens</h2>
+
+<p>
+  <code>FieldOfView</code> is the vertical angle the view covers, in degrees, and 45 is the default. It is
+  the same choice a photographer makes:
+</p>
+
+<ul>
+  <li><strong>A small angle</strong> (20°, a long lens) flattens depth. Things far apart look stacked, and
+      the scene feels observed from outside.</li>
+  <li><strong>A large angle</strong> (70°, wide) exaggerates it. Near things loom, and the scene feels like
+      somewhere you are standing.</li>
+</ul>
+
+<p>
+  Changing the <a class="term-link" href="glossary.html#g-field-of-view">field of view</a> is not the same as changing distance, even though both make an object bigger.
+  Dolly in and the background comes with you; widen the lens and the background runs away. Pick one angle per
+  scene and move the camera instead — the demo's film sets its lens once, at the top, and every shot in it is
+  a move.
+</p>
+
+<h2 id="near-far">Near and far, and the mistake everyone makes</h2>
+
+<div class="diagram">
+<svg viewBox="0 0 720 260" role="img" aria-labelledby="frustum-title frustum-desc">
+  <title id="frustum-title">The viewing frustum: field of view, near plane and far plane</title>
+  <desc id="frustum-desc">
+    The camera sits at the left. Two lines spread out from it at the field-of-view angle. A near plane
+    crosses them close to the camera and a far plane crosses them at the right; everything between the two
+    is drawn, and everything outside is clipped away. The depth buffer's precision is spent between those
+    two planes.
+  </desc>
+
+  <circle class="d-box-accent" cx="60" cy="130" r="14"/>
+  <text class="d-sub" x="30" y="176">camera</text>
+
+  <path class="d-edge" d="M70 124 L680 40"/>
+  <path class="d-edge" d="M70 136 L680 220"/>
+
+  <path class="d-box-accent" d="M170 110 L170 150 L170 150 L170 110 Z"/>
+  <line class="d-edge" x1="170" y1="106" x2="170" y2="154"/>
+  <text class="d-mono-accent" x="132" y="96">near</text>
+
+  <line class="d-edge" x1="640" y1="46" x2="640" y2="214"/>
+  <text class="d-mono-accent" x="612" y="36">far</text>
+
+  <path class="d-rule" d="M70 130 H660"/>
+
+  <text class="d-note" x="250" y="126">everything between the planes is drawn</text>
+  <text class="d-note" x="250" y="150">— and the depth buffer's precision lives here</text>
+
+  <path class="d-edge" d="M104 118 A 40 40 0 0 0 104 142"/>
+  <text class="d-mono" x="92" y="200">FieldOfView</text>
+</svg>
+</div>
+
+<p>
+  The <strong>near plane</strong> is how close something can be before it is clipped away; the
+  <strong>far plane</strong> is how distant before it disappears. Everything between them shares the
+  <a href="glossary.html#g-depth-buffer">depth buffer</a>, which is how the renderer knows what is in front
+  of what — and its precision is not spread evenly. Almost all of it is spent near the near plane.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>The classic mistake is a near plane that is too close.</strong> Setting it to 0.001 "to be safe"
+    spends the entire depth buffer on the first centimetre, and everything past it starts flickering as
+    surfaces fight over which is in front — <a href="glossary.html#g-z-fighting">z-fighting</a>. What matters
+    is the <em>ratio</em> far ÷ near, not either number: 1 to 10,000 is comfortable, 1 to 10,000,000 is not.
+  </p>
+</div>
+
+<p>
+  Left null, both are derived from the scene's size and the camera's distance, which is right often enough
+  that most scenes never touch them. Set them when you know better:
+</p>
+
+<pre><code>View.Camera.NearPlane = 5f;          <span class="c">// nothing in this scene is closer than a fighter</span>
+View.Camera.FarPlane  = 3_000_000f;  <span class="c">// the sky sphere is 2.4 million units out</span></code></pre>
+
+<p>
+  That is the demo's film: a 250-unit fighter, a 24,576-unit planet and a sun 900,000 units away in one
+  frame, a range of 600,000 to 1, with no logarithmic depth trickery. It works because the near plane was
+  chosen rather than defaulted.
+</p>
+
+<h2 id="roll">Roll</h2>
+
+<p>
+  An <a class="term-link" href="glossary.html#g-orbit-camera">orbit camera</a> has no roll: up is world +Y, always, which is what a viewer wants and what a
+  <em>shot</em> sometimes does not. <code>Roll</code> tips the horizon, and <code>RollToward(up)</code> sets
+  it from a direction rather than from an angle whose sign you would have to guess:
+</p>
+
+<pre><code><span class="k">var</span> wingsUp = Vector3.TransformNormal(Vector3.UnitY, fighter.WorldTransform);
+View.Camera.RollToward(wingsUp);   <span class="c">// the horizon banks with the wings</span></code></pre>
+
+<p>
+  Sprites roll with it, because all three renderers take a <a class="term-link" href="glossary.html#g-billboard">billboard</a>'s axes from the view matrix rather than
+  from the world.
+</p>
+
+<h2 id="fit">Framing something you have never seen</h2>
+
+<pre><code>View.Camera.Fit(model.WorldBounds);          <span class="c">// centre it and back off until it fits</span>
+View.Camera.Fit(scene.WorldBounds, 1.6f);    <span class="c">// with more room around it</span></code></pre>
+
+<p>
+  <code>Fit</code> takes the bounding sphere and the field of view and works out a distance. It is right for
+  an object you want to look at and wrong for a building you want to stand inside, and there is no way to
+  tell those apart from geometry — so if you know better, set <code>Distance</code> afterwards. The control
+  calls this itself on the first frame unless <code>AutoFit</code> is off.
+</p>
+
+<div class="try">
+  <h3>Run it</h3>
+  <p>
+    The film drives the camera from a shot list — cuts, dollies, a chase locked to a ship's own frame — and
+    prints each caption as it changes.
+  </p>
+  <pre><code>AVA3D_SCENE=Contact AVA3D_CAPTIONS=1 dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+</div>
+
+<p class="chapter-nav">
+  <a href="moving-things-about.html">← 2 · Moving things about</a>
+  <a href="turning-things.html">4 · Turning things →</a>
+</p>
+
+</main>
+</div>
+<footer>
+  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>
+    <a href="../index.html">Home</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·
+    <a href="https://github.com/pavel-zheltiakov/Ava3DControl/issues">Issues</a> ·
+    <a href="https://t.me/avadevtools/199">Telegram</a>
+  </p>
+</footer>
+</body>
+</html>

@@ -23,6 +23,8 @@ public sealed class MaterialsScene : DemoScene
         reflect reads as black.
         """;
 
+    public override SceneLook Look => SceneLook.Studio;
+
     public override Scene Build()
     {
         var scene = new Scene();
@@ -69,6 +71,7 @@ public sealed class MaterialsScene : DemoScene
     }
 
     /// <summary>Square-on, so the two rows can be compared column by column.</summary>
+
     public override void Frame(Camera camera)
     {
         camera.Yaw = 0f;

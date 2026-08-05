@@ -47,6 +47,8 @@ public sealed class GltfScene : DemoScene
          browser makes awkward; pack it first.
          """;
 
+    public override SceneLook Look => SceneLook.Studio;
+
     public override Scene Build()
     {
         try
