@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.2 · beta</span>
+  <span class="tag">12.1.0-preview.3 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -154,6 +154,36 @@ car.Position = <span class="k">new</span> Vector3(0f, 0f, -10f);   <span class="
   almost nothing — the <a class="term-link" href="glossary.html#g-snapshot">snapshot</a> walks it once a frame and multiplies the matrices on the way down.
 </p>
 
+<p>
+  A node has exactly one parent, and adding it somewhere else moves it rather than copying it. That is what
+  makes handover work — a crate picked up by a crane, a missile leaving its rail, a passenger stepping off a
+  train — and it is one line, because the old parent lets go on its own:
+</p>
+
+<pre><code>crane.Hook.Children.Add(crate);   <span class="c">// leaves the deck, keeps its mesh and its material</span></code></pre>
+
+<p>
+  What does <em>not</em> carry over is where it appeared to be. <code>Position</code> is relative to the
+  parent, so a crate at <code>(0, 0, 0)</code> on the deck is at the hook's origin the instant it changes
+  hands. When the handover has to be seamless, read
+  <a href="Ava3D.Node.html">WorldTransform</a> before the move and set the local transform to match after it.
+</p>
+
+<p>
+  Beside <code>Add</code> and <code>Remove</code>, <code>Children</code> does <code>Insert</code>,
+  <code>RemoveAt</code>, <code>IndexOf</code>, <code>Contains</code> and <code>Clear</code>. Order in the list
+  is not draw order — that is <code>RenderOrder</code> and the distance sort — so inserting rather than adding
+  matters only when your own code walks the children and cares which comes first.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>A node cannot be its own ancestor.</strong> Adding a node to something underneath it would make a
+    loop, and a loop in a graph that gets walked once a frame is a hang rather than an error. So it throws
+    instead, at the moment the mistake is made and while the stack still says who made it.
+  </p>
+</div>
+
 <h2 id="local-and-world">Local space, world space</h2>
 
 <p>
@@ -221,7 +251,7 @@ scene.Invalidate();</code></pre>
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.3 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

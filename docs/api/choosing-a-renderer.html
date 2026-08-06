@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.2 · beta</span>
+  <span class="tag">12.1.0-preview.3 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -109,7 +109,7 @@
   Every branch above ends in something that draws. That is deliberate, and it is the reason the CPU backend
   exists at all: a control that renders nothing on a Vulkan host, or inside a remote desktop session, or on a
   VM with no GPU passthrough, is a control you cannot ship in a general-purpose application. The fallback is
-  slower — 24 fps against 120 on the benchmark scene — and it carries only the base-colour map, and it says so
+  slower — 55 fps against 120 on the benchmark scene — and it carries only the base-colour map, and it says so
   in <a href="Ava3D.RenderInfo.html">RenderInfo</a>. What it does not do is show a blank rectangle.
 </p>
 
@@ -180,15 +180,17 @@
 </p>
 
 <p>
-  The CPU backend is the deliberate exception. It shades per <a class="term-link" href="glossary.html#g-vertex">vertex</a> rather than per pixel, has no <a class="term-link" href="glossary.html#g-depth-buffer">depth buffer</a>,
-  and samples only the base-colour map. It is a fallback that keeps its promises small, not a fourth renderer
-  pretending to be the other three.
+  The CPU backend is the deliberate exception. It shades per <a class="term-link" href="glossary.html#g-vertex">vertex</a> rather than per pixel, samples only the
+  base-colour map, and fills whole pixels rather than anti-aliasing their edges. What it does share with the
+  other two is the answer to what is in front of what: it rasterises against its own <a class="term-link" href="glossary.html#g-depth-buffer">depth buffer</a>, so hidden
+  surfaces are hidden for the same reason and in the same order. It is a fallback that keeps its promises
+  small, not a fourth renderer pretending to be the other three.
 </p>
 
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.3 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

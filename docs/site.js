@@ -237,6 +237,13 @@
         return row.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(function (c) { return c.trim(); });
     }
 
+    // Whether a line is the continuation of the bullet above it rather than the start of anything.
+    function continues(line) {
+        var trimmed = line.trim();
+        return trimmed !== '' && !/^[-*]\s+/.test(trimmed) && !/^#{1,3}\s+/.test(trimmed) &&
+            trimmed.charAt(0) !== '|' && trimmed !== '---' && !/^(Install|Docs|NuGet):/.test(trimmed);
+    }
+
     function render(markdown) {
         var lines = String(markdown).replace(/\r\n/g, '\n').split('\n');
         var html = '';
@@ -281,8 +288,18 @@
             if (/^[-*]\s+/.test(trimmed)) {
                 flush();
                 html += '<ul>';
-                for (; i < lines.length && /^[-*]\s+/.test(lines[i].trim()); i++)
-                    html += '<li>' + inline(lines[i].trim().slice(2)) + '</li>';
+                for (; i < lines.length && /^[-*]\s+/.test(lines[i].trim()); i++) {
+                    var item = lines[i].trim().slice(2);
+
+                    // A bullet wrapped over several lines is one bullet — markdown's lazy continuation.
+                    // Worth the four lines: the release notes are written to a column width like every
+                    // other file here, and without this every wrapped bullet ended its own list and came
+                    // out as a paragraph underneath it.
+                    while (i + 1 < lines.length && continues(lines[i + 1]))
+                        item += ' ' + lines[++i].trim();
+
+                    html += '<li>' + inline(item) + '</li>';
+                }
                 i--;
                 html += '</ul>';
                 continue;

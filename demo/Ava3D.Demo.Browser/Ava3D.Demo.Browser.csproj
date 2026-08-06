@@ -19,6 +19,37 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!--
+      The five assemblies that reach native code through a function pointer, kept whole through the
+      trimmer. Without this the application publishes cleanly and then draws nothing.
+
+      GlEntryPoints binds every GL function this renderer needs beyond Avalonia's own set as an
+      [UnmanagedFunctionPointer] delegate handed to Marshal.GetDelegateForFunctionPointer, and Avalonia
+      and SkiaSharp reach their own native layers the same way. Calling one in WebAssembly needs a
+      trampoline for that exact signature, and WasmBuildNative generates those by scanning the
+      application for the signatures it uses. Nothing references those delegate types statically — they
+      are reached through a generic — so the trimmer takes them, the scan then finds no signatures to
+      build, and the first GL call aborts the runtime at aot-runtime-wasm.c:188 with an ExitStatus
+      carrying no message. The picture is black, no exception escapes, and every diagnostic the
+      application prints about itself says nothing is wrong. That is the failure that kept this demo on
+      an untrimmed build for three releases.
+
+      The CPU renderer survives trimming without any of this, because it never calls a GL entry point —
+      which is why the fault looked like "publishing is broken" rather than "the GL path is".
+
+      The set is deliberately generous rather than minimal: it costs two megabytes against a
+      twenty-megabyte saving, and a narrower list would be a thing to rediscover the next time a
+      dependency moves. What it buys is the trimmed build, which is the only way to get
+      RunAOTCompilation — and that is worth ten times the frame rate on the CPU renderer.
+    -->
+    <TrimmerRootAssembly Include="Ava3D" />
+    <TrimmerRootAssembly Include="Avalonia.OpenGL" />
+    <TrimmerRootAssembly Include="Avalonia.Base" />
+    <TrimmerRootAssembly Include="Avalonia.Skia" />
+    <TrimmerRootAssembly Include="SkiaSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Ava3D.Demo\Ava3D.Demo.csproj" />
   </ItemGroup>
 </Project>

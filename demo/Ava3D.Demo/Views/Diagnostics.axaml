@@ -13,7 +13,7 @@
             <Setter Property="Foreground" Value="#79839A" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="TextAlignment" Value="Right" />
-            <Setter Property="Margin" Value="0,0,12,3" />
+            <Setter Property="Margin" Value="0,0,10,3" />
         </Style>
         <Style Selector="TextBlock.value">
             <Setter Property="Foreground" Value="#D8DCE6" />
@@ -25,6 +25,24 @@
             <Setter Property="FontSize" Value="11" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="Margin" Value="0,9,0,0" />
+        </Style>
+
+        <!--
+            Tabular figures, on everything that is a reading rather than a word.
+
+            Inter's default digits are proportional — a 1 is narrower than an 8 — so a number that changes
+            sixty times a second does not merely change, it shimmers: every digit after the one that
+            changed slides left or right by a pixel or two, and the eye tracks the movement instead of the
+            value. `tnum` is the font's own answer to that, one advance width for all ten digits, and it is
+            the same feature every dashboard and terminal font has on by default.
+
+            It is half of standing still. The other half is where the number is anchored, which is the
+            layout's job: readings are right-aligned against a fixed edge with a minimum width, so a digit
+            gained or lost grows the number leftwards into space that was already empty and nothing to the
+            right of it moves.
+        -->
+        <Style Selector="TextBlock.number">
+            <Setter Property="FontFeatures" Value="tnum=1" />
         </Style>
 
         <!--
@@ -58,6 +76,78 @@
         <Style Selector="ToggleButton.features:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent" />
         </Style>
+
+        <!--
+            The clock switch: two segments in one outlined pill, the live one filled.
+
+            A segmented switch rather than a lamp that turns something on, because there is nothing here to
+            turn on — there are two clocks and the number is read off one of them. A single-state toggle
+            would have to be labelled with one of the two names and would then be wrong half the time it
+            was looked at: a pill reading "render" tells you nothing about whether you are in that mode or
+            about to enter it. Both names, always, and the lit one is the answer.
+
+            "frame" fills in the panel's own neutral grey and "render" in its green, which is the colour of
+            everything here that is a fact about the engine rather than about the display. The frame clock
+            belongs to the display; the render clock is ours.
+        -->
+        <Style Selector="ToggleButton.clock">
+            <Setter Property="Padding" Value="2" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="ToggleButton.clock /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#3A4356" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+        <!-- Every state, because Fluent's ToggleButton would otherwise paint its accent over both
+             segments on hover and press and lose which of the two is lit. -->
+        <Style Selector="ToggleButton.clock:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#55607A" />
+        </Style>
+        <Style Selector="ToggleButton.clock:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#55607A" />
+        </Style>
+        <Style Selector="ToggleButton.clock:checked /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#3A4356" />
+        </Style>
+        <Style Selector="ToggleButton.clock:checked:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#55607A" />
+        </Style>
+        <Style Selector="ToggleButton.clock:checked:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#55607A" />
+        </Style>
+
+        <Style Selector="ToggleButton.clock Border.segment">
+            <Setter Property="Padding" Value="7,2" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ToggleButton.clock Border.segment TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="#6B7488" />
+        </Style>
+        <Style Selector="ToggleButton.clock:unchecked Border#ClockFrame">
+            <Setter Property="Background" Value="#252B38" />
+        </Style>
+        <Style Selector="ToggleButton.clock:unchecked Border#ClockFrame TextBlock">
+            <Setter Property="Foreground" Value="#D8DCE6" />
+        </Style>
+        <Style Selector="ToggleButton.clock:checked Border#ClockRender">
+            <Setter Property="Background" Value="#1A3A2C" />
+        </Style>
+        <Style Selector="ToggleButton.clock:checked Border#ClockRender TextBlock">
+            <Setter Property="Foreground" Value="#7FD8A0" />
+        </Style>
     </UserControl.Styles>
 
     <!--
@@ -68,14 +158,22 @@
         away to make a headline tidy.
 
         Underneath, where the panel used to name the Avalonia class that handed over the graphics context:
-        the hardware, the operating system and the browser. Everything below the rule is the evidence, in a
-        single label column so the eye can run down the values without hunting for where each one starts.
+        the hardware, the operating system and the browser, with the interval beside it and the surface it
+        was measured on below.
+
+        The rule is the join between two kinds of fact. Above it is this run — the renderer, the machine,
+        the rate, the surface, the draws — all of which change if you press the engine picker and none of
+        which the scene decides. Below it is the scene: the triangles and the textures, which are the same
+        numbers on every backend and the only thing here a different renderer would have to agree with.
+        Features is under the rule too and belongs to neither, which is why it sits below both with a gap
+        above it.
     -->
     <!-- 420 to match the notes panel above it in the shell, since the two share a column. -->
     <Border Padding="16,13" MinWidth="330" MaxWidth="420"
             Background="#D9141821" CornerRadius="8"
             BoxShadow="0 4 16 0 #40000000">
-        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto">
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+              Grid.IsSharedSizeScope="True">
 
             <!--
                 Bottom-aligned rather than centred, so the two share one baseline however the engine's name
@@ -85,38 +183,134 @@
             <TextBlock x:Name="Renderer" Grid.Row="0" Grid.Column="0"
                        VerticalAlignment="Bottom" TextWrapping="Wrap"
                        FontSize="21" FontWeight="SemiBold" Foreground="#7FD8A0" />
-            <TextBlock x:Name="Fps" Grid.Row="0" Grid.Column="1"
-                       VerticalAlignment="Bottom" Margin="18,0,0,0"
-                       FontSize="21" FontWeight="SemiBold" Foreground="#F2F5FA" />
 
+            <!--
+                The rate and its unit are two blocks, not one string, and the column they sit in is Auto
+                against a star — so the pair is pinned to the panel's right edge and a number that grows
+                grows leftwards. "fps" therefore never moves, and the reading itself only moves when it
+                gains a whole digit, which three significant figures make rare: 8.32, 120, 6,250.
+            -->
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
+                        Margin="18,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <TextBlock x:Name="Fps" Classes="number" MinWidth="52" TextAlignment="Right"
+                           FontSize="21" FontWeight="SemiBold" Foreground="#F2F5FA" />
+                <TextBlock x:Name="FpsUnit" Text="fps" Margin="6,0,0,0"
+                           FontSize="21" FontWeight="SemiBold" Foreground="#F2F5FA" />
+            </StackPanel>
+
+            <!--
+                The host on the left and the interval on the right, sharing a line.
+
+                They are different facts — where this is running, and how fast — but each was a line of
+                small type spending a whole row on one short thing, and stacked with the interval hard
+                right they read as one ragged paragraph with a hole in the middle. Side by side the row is
+                full, the head is a row shorter, and the two are told apart by which edge they hang off:
+                everything about the machine grows rightwards from the left edge, everything measured
+                grows leftwards from the right one.
+
+                The interval is the sentence it looks like — 8.32 ms per frame — and pressing the other
+                half of the pill changes both the denominator and the rate above it, which is exactly what
+                it means. Two frame rates on screen at once is a panel whose headline nobody trusts: the
+                reader has to work out which of them is the measurement before either means anything. One
+                rate, one time, and the switch in the middle of the sentence that names the clock they
+                came off.
+            -->
             <TextBlock x:Name="HostName" Grid.Row="1" Grid.Column="0"
-                       Margin="0,3,0,0" TextWrapping="Wrap"
-                       FontSize="11" Foreground="#8A93A6" />
-            <TextBlock x:Name="FrameTime" Grid.Row="1" Grid.Column="1"
-                       Margin="18,3,0,0" TextAlignment="Right"
+                       Margin="0,6,0,0" TextWrapping="Wrap" VerticalAlignment="Center"
                        FontSize="11" Foreground="#8A93A6" />
 
-            <Border Grid.Row="2" Grid.ColumnSpan="2" Height="1" Background="#242A36" Margin="0,11" />
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal"
+                        Margin="18,6,0,0" HorizontalAlignment="Right">
+                <TextBlock x:Name="FrameTime" Classes="number" MinWidth="34" TextAlignment="Right"
+                           VerticalAlignment="Center" FontSize="11" Foreground="#8A93A6" />
+                <TextBlock Text="ms /" Margin="4,0,7,0" VerticalAlignment="Center"
+                           FontSize="11" Foreground="#8A93A6" />
+                <ToggleButton x:Name="ClockToggle" Classes="clock"
+                              ToolTip.Tip="Which clock the rate is read off: frame, the interval between frames, which the display sets — or render, the time this control spent making one, which it does not">
+                    <StackPanel Orientation="Horizontal">
+                        <Border x:Name="ClockFrame" Classes="segment">
+                            <TextBlock Text="frame" />
+                        </Border>
+                        <Border x:Name="ClockRender" Classes="segment">
+                            <TextBlock Text="render" />
+                        </Border>
+                    </StackPanel>
+                </ToggleButton>
+            </StackPanel>
 
-            <Grid Grid.Row="3" Grid.ColumnSpan="2" ColumnDefinitions="78,*"
-                  RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
-                <TextBlock Grid.Row="0" Grid.Column="0" Classes="key" Text="draws" />
-                <TextBlock x:Name="Draws" Grid.Row="0" Grid.Column="1" Classes="value" />
-                <TextBlock Grid.Row="1" Grid.Column="0" Classes="key" Text="triangles" />
-                <TextBlock x:Name="Triangles" Grid.Row="1" Grid.Column="1" Classes="value" />
-                <TextBlock Grid.Row="2" Grid.Column="0" Classes="key" Text="resolution" />
-                <TextBlock x:Name="Resolution" Grid.Row="2" Grid.Column="1" Classes="value" />
-                <TextBlock Grid.Row="3" Grid.Column="0" Classes="key" Text="textures" />
-                <TextBlock x:Name="Textures" Grid.Row="3" Grid.Column="1" Classes="value"
-                           FontSize="11" Foreground="#9AA3B5" />
+            <!--
+                The surface, and what it cost to fill: the two numbers that belong to the head rather than
+                to the model, each under the column it answers to.
+
+                Resolution is a property of the surface the platform handed this control — the same scene
+                at twice the pixels is a different measurement of the same renderer — so it goes under the
+                machine that handed it over. Draws is what the renderer did with that surface, sixty times
+                a second, and it is the number that moves with the rate; so it goes under the rate, right
+                against the same edge, growing leftwards like every other reading here.
+
+                Everything below the rule is the model, and neither of these is a fact about the model.
+
+                One label column down the whole panel, which is why the left half is a Grid sharing its
+                width with the grid below the rule rather than a StackPanel sizing itself. "resolution" is
+                the longest label here, so it sets the column, sits flush against the panel's left edge,
+                and every shorter label under it right-aligns to the same edge with its value at the same
+                x. A rule is a join between two blocks; two label columns seven points apart is a mistake.
+            -->
+            <Grid Grid.Row="2" Grid.Column="0" Margin="0,6,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Labels" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Classes="key" Text="resolution" Margin="0,0,10,0" />
+                <TextBlock x:Name="Resolution" Grid.Column="1" Classes="value number" Margin="0" />
+            </Grid>
+
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal"
+                        Margin="18,6,0,0" HorizontalAlignment="Right">
+                <TextBlock Classes="key" Text="draws" Margin="0,0,10,0" VerticalAlignment="Center" />
+                <TextBlock x:Name="Draws" Classes="value number" Margin="0" MinWidth="26"
+                           TextAlignment="Right" VerticalAlignment="Center" />
+            </StackPanel>
+
+            <Border Grid.Row="3" Grid.ColumnSpan="2" Height="1" Background="#242A36" Margin="0,11" />
+
+            <!--
+                What is being drawn, in one column: the model's own properties, which are the same numbers
+                whichever renderer is drawing them.
+
+                One column rather than two pairs to a row. Pairing saved a panel's worth of white space
+                when there were five of these, but it also sat the display's numbers beside the scene's,
+                and two numbers on one line are read as a pair whether or not they are one — draws next to
+                triangles invites a ratio that means nothing. The two that were never about the model have
+                gone up into the head; what is left answers one question, so it reads down one column, and
+                the values start at the same x whatever the label above them said.
+
+                Features last, held off the counts by a gap. It is the odd one out twice over: not a fact
+                about the model but about the renderer, and the only row here that opens. It answers a
+                question rather than reporting a number — what this renderer does that another would not.
+                Closed it is a score, which is all most people want; open it is the fifteen rows the score
+                is out of, each with its reason.
+            -->
+            <Grid Grid.Row="4" Grid.ColumnSpan="2" RowDefinitions="Auto,Auto,Auto,Auto">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Labels" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Classes="key" Text="triangles" />
+                <TextBlock x:Name="Triangles" Grid.Row="0" Grid.Column="1" Classes="value number" />
 
                 <!--
-                    The one row that answers a question rather than reporting a number: what this renderer
-                    does that another would not. Closed it is a score, which is all most people want; open
-                    it is the nine rows the score is out of, each with its reason.
+                    Textures is the one row here that is a sentence rather than a number —
+                    "12 textures, 3.4 Mtexel, anisotropic 16×" — so it takes the width the column gives it
+                    and wraps into it rather than being cut to a number's width.
                 -->
-                <TextBlock Grid.Row="4" Grid.Column="0" Classes="key" Text="features" />
-                <ToggleButton x:Name="FeatureToggle" Grid.Row="4" Grid.Column="1" Classes="features"
+                <TextBlock Grid.Row="1" Grid.Column="0" Classes="key" Text="textures" />
+                <TextBlock x:Name="Textures" Grid.Row="1" Grid.Column="1"
+                           Classes="value" FontSize="11" Foreground="#9AA3B5" />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Classes="key" Text="features" Margin="0,11,10,3" />
+                <ToggleButton x:Name="FeatureToggle" Grid.Row="2" Grid.Column="1" Classes="features"
+                              Margin="0,11,0,0"
                               ToolTip.Tip="What this renderer does and does not do, row by row.">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock x:Name="FeatureScore" FontSize="12" />
@@ -126,22 +320,22 @@
                 </ToggleButton>
 
                 <!--
-                    Spanning both columns rather than sitting in the value column: nine names and their
+                    Spanning both columns rather than sitting in the value column: fifteen names and their
                     reasons need the width, and the tick column is a label column of its own. Scrolled
-                    because the CPU fallback's seven reasons are longer than the panel is allowed to be.
+                    because the CPU fallback's eight reasons are longer than the panel is allowed to be.
                 -->
-                <ScrollViewer Grid.Row="5" Grid.ColumnSpan="2" MaxHeight="288" Margin="0,6,0,2"
+                <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" MaxHeight="288" Margin="0,6,0,2"
                               HorizontalScrollBarVisibility="Disabled"
                               IsVisible="{Binding #FeatureToggle.IsChecked}">
                     <StackPanel x:Name="FeatureList" Spacing="5" />
                 </ScrollViewer>
             </Grid>
 
-            <TextBlock x:Name="EngineNote" Grid.Row="4" Grid.ColumnSpan="2" Classes="note"
+            <TextBlock x:Name="EngineNote" Grid.Row="5" Grid.ColumnSpan="2" Classes="note"
                        Foreground="#E8C07D" IsVisible="False" />
-            <TextBlock x:Name="Errors" Grid.Row="5" Grid.ColumnSpan="2" Classes="note"
+            <TextBlock x:Name="Errors" Grid.Row="6" Grid.ColumnSpan="2" Classes="note"
                        FontSize="12" Foreground="#FF8A8A" IsVisible="False" />
-            <TextBlock x:Name="Picked" Grid.Row="6" Grid.ColumnSpan="2" Classes="note"
+            <TextBlock x:Name="Picked" Grid.Row="7" Grid.ColumnSpan="2" Classes="note"
                        Foreground="#C7B7FF" IsVisible="False" />
         </Grid>
     </Border>

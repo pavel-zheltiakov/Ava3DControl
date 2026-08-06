@@ -1,4 +1,4 @@
-# Ava3DControl · 12.1.0-preview.2
+# Ava3DControl · 12.1.0-preview.3
 
 A 3D viewport control for [Avalonia](https://avaloniaui.net/). Metallic-roughness PBR, glTF loading and
 triangle-accurate picking, in one binary that renders through Metal, OpenGL, WebGL 2 or the CPU — chosen at
@@ -20,7 +20,7 @@ The major and minor version track the Avalonia release this is built against, so
 ## In this repository
 
 - `docs/` — the documentation site, and the browser demo it hosts.
-- `demo/` — the demo application in full: twenty-six scenes and five platform heads. It restores
+- `demo/` — the demo application in full: thirty-four scenes and five platform heads. It restores
   Ava3DControl from nuget.org, exactly as your own project would.
 - `LICENSE.md`, `THIRD-PARTY-NOTICES.md`.
 
@@ -35,13 +35,15 @@ dotnet run --project Ava3D.Demo.Desktop        # macOS, Windows, Linux
 dotnet run --project Ava3D.Demo.Browser        # a browser tab
 ```
 
-Twenty-six scenes in the order they build on each other, each a single self-contained file under
-`demo/Ava3D.Demo/Scenes/` that copies into your own project without untangling. Last is Contact — a
-sixty-second film on a loop, with a story, a shot list and a camera that flies itself.
+Thirty-four scenes in the order they build on each other, each a single self-contained file under
+`demo/Ava3D.Demo/Scenes/` that copies into your own project without untangling. Four of them are one
+generated ATX motherboard seen four ways — shaded, as an inspector you can click a component in, as a
+drawing-office print, and as a wireframe. Last is Contact — a sixty-second film on a loop, with a story, a
+shot list and a camera that flies itself.
 
 Switch scenes from the toolbar, or turn on Touring to have them advance by themselves. The Engine picker
-switches renderer. Switches, on every head: AVA3D_SCENE, AVA3D_TOUR, AVA3D_GL, AVA3D_SOFTWARE, AVA3D_PROBE.
-In a browser the first two are query-string parameters instead.
+switches renderer. Switches, on every head: AVA3D_SCENE, AVA3D_TOUR, AVA3D_GL, AVA3D_SOFTWARE, AVA3D_THREADS,
+AVA3D_PROBE. In a browser the first two are query-string parameters instead.
 
 ## Using it
 
@@ -81,7 +83,7 @@ call:
 
 ## Limits
 
-- No shadows, no image-based lighting, no animation or skinning.
+- No shadows, no animation or skinning.
 - Transparency is ordered per object, not per triangle.
 - Binary .glb only.
 - Android builds but has not been run on a device.

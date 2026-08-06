@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.2 · beta</span>
+  <span class="tag">12.1.0-preview.3 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -79,12 +79,31 @@
   are one call:
 </p>
 
-<pre><code><span class="k">var</span> smooth = mesh.WithGeneratedNormals();   <span class="c">// welds by position — a curved surface</span></code></pre>
+<pre><code><span class="k">var</span> smooth = mesh.WithSmoothNormals();   <span class="c">// corners agree — a curved surface</span>
+<span class="k">var</span> faceted = mesh.WithFlatNormals();    <span class="c">// corners disagree — hard edges</span></code></pre>
+
+<p>
+  Which one you want is a question about the silhouette, not about taste. Smooth shading on an eight-sided
+  cylinder reads as a badly lit tube: the shading says <em>round</em> while the outline says <em>octagon</em>,
+  the eye believes the outline, and the result looks like a mistake. The same geometry faceted reads as an
+  octagonal drum — deliberate, solid, and obviously what was meant. Low-polygon work wants
+  <code>WithFlatNormals</code>; it is the look, not a compromise.
+</p>
+
+<p>
+  <code>WithFlatNormals</code> costs vertices, and a real number of them. A hard edge means the two faces
+  cannot share a corner, so every triangle gets its own three: a 32-segment sphere goes from 561 vertices to
+  3,072. Call it once when the mesh is built. <code>WithSmoothNormals</code> is the way back — it welds by
+  position first, so a mesh that has already been split, by this call or by an STL file or by an exporter set
+  to flat shading, smooths as though it never had been.
+</p>
 
 <div class="tip">
   <p>
     <strong>A mesh with no normals is not lit.</strong> Everything in <code>Primitives</code> and everything
     <code>GltfLoader</code> produces already has them. A mesh you build by hand does not until you ask.
+    <code>WithGeneratedNormals</code> is the one to call there — it fills the gap and leaves a mesh that
+    already has normals alone, which is what a loader wants and what the two above deliberately do not do.
   </p>
 </div>
 
@@ -211,13 +230,42 @@ scene.Lights.Add(<span class="k">new</span> PointLight
 });</code></pre>
 
 <p>
-  <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a> is the fill: an analytic two-colour hemisphere,
-  sky above and ground below, that a metal has something to reflect. It costs nothing, needs no cubemap and
-  runs on a phone — and it is why a metal here does not come out black.
+  <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a> is the fill: the light that comes from
+  everywhere, so a metal has something to reflect. It is why a metal here does not come out black. By
+  default it is an analytic two-colour hemisphere, sky above and ground below, which costs nothing, needs no
+  assets and runs on a phone.
 </p>
 
 <pre><code>scene.Environment = EnvironmentLight.Studio(0.6f);   <span class="c">// brighter, neutral</span>
 scene.Environment = EnvironmentLight.None;           <span class="c">// nothing but your own lights</span></code></pre>
+
+<p>
+  Give it an image instead and the fill becomes a place. <code>Texture</code> takes an equirectangular
+  picture — u once round the horizon, v from straight up to straight down, which is exactly what
+  <a href="Ava3D.Primitives.html">Primitives.Sphere</a> maps — and <code>Rotation</code> turns it. That
+  layout is the reason one image can be both the sky a viewer sees and the light coming off it, so the
+  reflection in a hull <em>is</em> the backdrop rather than something that resembles it.
+</p>
+
+<pre><code>scene.Environment = EnvironmentLight.FromTexture(sky, intensity: 1.15f);
+scene.Environment.Rotation = MathF.PI * 0.25f;       <span class="c">// turn the sky, not the geometry</span></code></pre>
+
+<p>
+  The image is blurred once, into eight progressively wider copies, and a surface reads whichever two its
+  roughness falls between. That is what makes a polished hull reflect the sky sharply and a brushed one
+  reflect an average of everything within twenty degrees — from one image, with no cubemap, on all three
+  renderers including the one with no GPU. It costs under ten milliseconds on the frame the image first
+  appears, and nothing at all on a scene that never sets it.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>Eight bits a channel.</strong> A <code>Texture</code> cannot carry a sun ten thousand times
+    brighter than the sky the way an HDR probe can. Put the sun in a
+    <a href="Ava3D.DirectionalLight.html">DirectionalLight</a>, where it belongs, and let the image carry
+    the rest.
+  </p>
+</div>
 
 <div class="tip">
   <p>
@@ -267,7 +315,7 @@ AVA3D_SCENE=<span class="s">"Four lights"</span> dotnet run --project samples/Av
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.3 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

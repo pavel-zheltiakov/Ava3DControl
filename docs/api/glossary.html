@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.2 · beta</span>
+  <span class="tag">12.1.0-preview.3 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -375,8 +375,11 @@
   <p>
     The light that comes from everywhere rather than from one direction — the sky, the ground, the room. A
     metal with nothing to reflect renders black, correctly and uselessly, so a renderer needs some model of
-    the surroundings. This one uses an analytic two-colour hemisphere, which costs nothing and needs no
-    image; the richer alternative, an image-based cubemap, is not here yet.
+    the surroundings. Ava3D offers two: an analytic two-colour hemisphere, which costs nothing and needs no
+    image, and an equirectangular picture, prefiltered into eight bands of increasing roughness so that a
+    polished surface reflects it sharply and a rough one reflects a wide average of it. The second is
+    image-based lighting; it is stacked bands of one 2D texture rather than a cubemap, which is what lets
+    the same arithmetic run on every backend.
   </p>
   <p class="where">In Ava3D: <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a>, <code>Scene.Environment</code> · <a href="surfaces-and-light.html#lights">chapter 5</a></p>
 </div>
@@ -432,7 +435,22 @@
     <a href="#g-depth-buffer">depth buffer</a> cannot tell them apart. Usually a near plane set far too close,
     occasionally two coplanar surfaces that should have been one.
   </p>
-  <p class="where">In Ava3D: avoid by setting <code>Camera.NearPlane</code> honestly · <a href="the-camera.html#near-far">chapter 3</a></p>
+  <p class="where">In Ava3D: avoid by setting <code>Camera.NearPlane</code> honestly, or by
+    <a href="#g-depth-bias">depth bias</a> where the surfaces are meant to be coplanar ·
+    <a href="the-camera.html#near-far">chapter 3</a></p>
+</div>
+
+<div class="term" id="g-depth-bias">
+  <h3>Depth bias</h3>
+  <p>
+    A nudge added to a surface's depth as it is rasterised, so geometry deliberately drawn on top of other
+    geometry — a decal on a wall, panel lines on a hull, a grid on a floor — wins the depth test cleanly
+    instead of <a href="#g-z-fighting">z-fighting</a> with what it sits on. Two numbers: a constant, and one
+    scaled by how steeply the surface runs away from the camera, which is what covers a floor seen at a
+    grazing angle.
+  </p>
+  <p class="where">In Ava3D: <code>Material.DepthBias</code> and <code>DepthBiasSlope</code>, filled
+    triangles only · <a href="past-triangles.html#depth-bias">chapter 6</a></p>
 </div>
 
 <div class="term" id="g-blending">
@@ -537,7 +555,7 @@
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.3 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

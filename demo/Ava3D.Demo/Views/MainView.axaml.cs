@@ -7,6 +7,7 @@ using Ava3D.Demo.Engine;
 using Ava3D.Demo.Scenes;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 
@@ -111,9 +112,9 @@ public partial class MainView : UserControl
            ================ Ava3D ================
            renderer  : {info.Renderer}
            context   : {info.Context}
-           host      : {HostPlatform.Describe(info.Device)}, {RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant()}
+           host      : {HostPlatform.Describe(info.Device)}, {RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant()}, {Cores()}
            size      : {info.Size}
-           perf      : {info.FramesPerSecond:F1} fps, {info.FrameMilliseconds:F2} ms/frame, {info.FramesRendered} frames
+           perf      : {info.FramesPerSecond:F1} fps, {info.FrameMilliseconds:F2} ms/frame, {info.RenderMilliseconds:F2} ms/render, {info.FramesRendered} frames
            geometry  : {info.DrawCalls} draws, {info.Triangles:N0} triangles
            snapshot  : {info.SceneRebuildSummary ?? "not rebuilt — the scene is static"}
            textures  : {info.Textures ?? "(none)"}
@@ -122,6 +123,18 @@ public partial class MainView : UserControl
            error     : {info.Error ?? "(none)"}
            =======================================
            """;
+
+    /// <summary>
+    /// How many cores the runtime will admit to, which is not always how many the machine has.
+    ///
+    /// Worth printing because it is the one number that explains a CPU-renderer frame rate before anyone
+    /// reads the code: the software backend shares its vertex pass across cores only when there is more
+    /// than one, and a WebAssembly tab reports exactly one unless the page was served with the two headers
+    /// that unlock <c>SharedArrayBuffer</c>. Seeing "1 core" on a sixteen-core machine is the whole
+    /// explanation, and it is invisible everywhere else.
+    /// </summary>
+    private static string Cores()
+        => Environment.ProcessorCount == 1 ? "1 core" : $"{Environment.ProcessorCount} cores";
 
     /// <summary>
     /// The feature score and, when it is not full marks, which rows are missing.
@@ -195,6 +208,11 @@ public partial class MainView : UserControl
         // which is the control's own decision, and putting the picker on what was asked for.
         if (DemoSettings.Engine is { } saved)
             _view.PreferredBackend = saved;
+
+        // AVA3D_THREADS=0 holds the CPU renderer to one core, so the comparison the picker offers can also
+        // be made from a probe run — which is the only way to put a number on it that anyone can check.
+        if (Environment.GetEnvironmentVariable("AVA3D_THREADS") == "0")
+            _view.SoftwareThreading = false;
 
         // Dismissed by clicking it. Nothing else in the demo is modal and this should not be either: it is
         // an explanation, and an explanation you have read is one you should be able to put away. The
@@ -538,8 +556,12 @@ public partial class MainView : UserControl
     /// </summary>
     private void AutoTick()
     {
-        // Not while the picker is open, and not while the selection is still catching up with itself.
-        if (_current is null || _sceneList.IsDropDownOpen || _wanted != _shown)
+        // Not while either picker is open, and not while the selection is still catching up with itself.
+        //
+        // Both pickers, not just the scene one. Advancing builds a scene, which is tens of milliseconds
+        // on the thread that also delivers input — and a list that the viewer has open is a list they are
+        // reading, whichever of the two it is.
+        if (_current is null || _sceneList.IsDropDownOpen || _engineList.IsDropDownOpen || _wanted != _shown)
             return;
 
         if (_onScreen.Elapsed >= _current.TourDuration)
@@ -577,6 +599,7 @@ public partial class MainView : UserControl
         // outcomes that cannot take effect here are still answers: one of them relaunches into a process
         // that reads this on the way up, and the other is a request this machine cannot meet today.
         DemoSettings.Engine = choice.Kind;
+        _view.SoftwareThreading = choice.Threading;
         _view.PreferredBackend = choice.Kind;
 
         switch (choice.Option?.Availability)
@@ -764,8 +787,16 @@ public partial class MainView : UserControl
             Notice(option);
     }
 
-    /// <summary>One row of the engine picker. <c>Option</c> is null for the Automatic entry.</summary>
-    private sealed record EngineChoice(RenderBackendKind Kind, string Label, BackendOption? Option)
+    /// <summary>
+    /// One row of the engine picker. <c>Option</c> is null for the Automatic entry.
+    ///
+    /// <c>Threading</c> is what makes the CPU renderer two rows instead of one. It is not a second backend —
+    /// it is the same renderer with its vertex pass held to a single core — but it belongs in this list
+    /// rather than in a settings panel, because the only way to understand what it does is to switch between
+    /// them and watch the counter.
+    /// </summary>
+    private sealed record EngineChoice(
+        RenderBackendKind Kind, string Label, BackendOption? Option, bool Threading = true)
     {
         public override string ToString() => Label;
     }
@@ -802,7 +833,25 @@ public partial class MainView : UserControl
             if (OperatingSystem.IsBrowser() && option.Availability == BackendAvailability.Unavailable)
                 continue;
 
-            choices.Add(new EngineChoice(option.Kind, option.Name, option));
+            // The CPU renderer is named by how many cores it is being given, because that is the only thing
+            // about it anyone here is choosing between: CPU (×16) and CPU (×1) are one renderer with its
+            // vertex pass shared or held to a single core. The count is this machine's, so the label is
+            // also the answer to what "all cores" means on it — which is the number the frame rate beside
+            // it has to be read against.
+            //
+            // One row where there is one core — which is what a browser tab is unless the application was
+            // published for threads — because two rows would then be the same renderer under two names.
+            if (option.Kind == RenderBackendKind.Software && Environment.ProcessorCount > 1)
+            {
+                choices.Add(new EngineChoice(option.Kind, $"CPU (×{Environment.ProcessorCount})", option));
+                choices.Add(new EngineChoice(option.Kind, "CPU (×1)", option, Threading: false));
+                continue;
+            }
+
+            choices.Add(new EngineChoice(
+                option.Kind,
+                option.Kind == RenderBackendKind.Software ? "CPU (×1)" : option.Name,
+                option));
         }
 
         _suppressEngineChange = true;
@@ -810,7 +859,17 @@ public partial class MainView : UserControl
         {
             _engineList.ItemsSource = choices;
             var wanted = info.PreferredBackend;
-            _engineList.SelectedIndex = Math.Max(0, choices.FindIndex(c => c.Kind == wanted));
+            var threading = _view.SoftwareThreading;
+
+            // Both halves, then the kind alone. The second is not dead code: a single-core host lists one
+            // CPU row and it is the shared one, so a process started with AVA3D_THREADS=0 there matches no
+            // row on the first test — and falling back to Automatic would be the picker lying about which
+            // renderer is drawing.
+            var index = choices.FindIndex(c => c.Kind == wanted && c.Threading == threading);
+            if (index < 0)
+                index = choices.FindIndex(c => c.Kind == wanted);
+
+            _engineList.SelectedIndex = Math.Max(0, index);
         }
         finally
         {
@@ -820,6 +879,13 @@ public partial class MainView : UserControl
 
     private void OnPicked(object? sender, PickEventArgs e)
     {
+        // A scene that knows what its objects mean gets the click first, and if it takes it the shell
+        // does nothing at all — no tint of its own to undo, and its answer goes in the caption rather
+        // than in the diagnostics line. See DemoScene.Picked for why the shell's default is not enough
+        // for a model whose components are several nodes each.
+        if (_current.Picked(_currentScene, e.Result))
+            return;
+
         ClearHighlight();
 
         if (e.Result is not { } hit)

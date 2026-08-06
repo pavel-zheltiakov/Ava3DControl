@@ -32,8 +32,27 @@ internal sealed class Codec : Control
     /// <summary>How long the panel takes to arrive, and how long it takes to go.</summary>
     private const double FadeIn = 0.28, FadeOut = 0.45;
 
-    /// <summary>How long the text takes to scan in behind its caret.</summary>
-    private const double Reveal = 0.34;
+    /// <summary>
+    /// How long the text takes to scan in behind its caret.
+    ///
+    /// Half a second rather than a third of one. The caret is the only other thing on this panel that
+    /// moves sideways, and a scene that changes its caption every four seconds — as Motherboard does,
+    /// once per merge — sweeps it across the words often enough for the speed to matter.
+    /// </summary>
+    private const double Reveal = 0.55;
+
+    /// <summary>
+    /// The signal fault: how many chances a second it gets, how likely each one is, how far it moves
+    /// the words, and how much of its slot it takes to swell and settle again.
+    ///
+    /// These four numbers were tuned against a film whose captions are on screen for four seconds and
+    /// are read at a glance, and they were wrong for everything else: a tear a second, snapping seven
+    /// pixels sideways, is a caption you cannot read at all when the caption is a component's
+    /// designator and its dimensions and it is up for fourteen seconds while you look at the part.
+    /// Now it is a fault about every six seconds, half as far, and it arrives and leaves on a sine
+    /// rather than on a step — which keeps the effect on a still frame and takes it off a moving one.
+    /// </summary>
+    private const double TearRate = 1.6, TearChance = 0.11, TearWidth = 6, TearHold = 0.34;
 
     private string? _wanted;
     private string _shown = string.Empty;
@@ -138,12 +157,23 @@ internal sealed class Codec : Control
         // The signal. A tear every so often, chosen from the clock rather than from a random source so
         // that two runs of the film glitch on the same frames — which matters, because the same film is
         // used to compare three renderers image by image.
-        var slot = Math.Floor(_clock * 7);
-        var torn = Noise(slot) < 0.14;
-        var tear = torn ? (Noise(slot + 91) - 0.5) * 14 : 0;
+        //
+        // It swells and settles over the first third of its slot instead of switching on and off. A
+        // step is what a real display does and it is also a jump in the middle of a word: the eye is
+        // tracking the line, and there is nothing to track through a discontinuity. Half a second of
+        // sine covers the same ground and can be read straight through.
+        var slot = Math.Floor(_clock * TearRate);
+        var into = _clock * TearRate - slot;
+        var torn = Noise(slot) < TearChance && into < TearHold;
+        var tear = torn
+            ? (Noise(slot + 91) - 0.5) * TearWidth * Math.Sin(into / TearHold * Math.PI)
+            : 0;
 
-        // And a flicker in the backlight, always running, so the panel is never quite still.
-        var lamp = fade * (0.93 + 0.07 * Math.Sin(_clock * 31) + (torn ? -0.16 : 0));
+        // And a flicker in the backlight, always running, so the panel is never quite still. The dip
+        // that goes with a tear rides on the tear's own strength rather than on the fact of it, so the
+        // panel dims into the fault and comes back out of it instead of blinking.
+        var glitch = Math.Abs(tear) / (TearWidth / 2);
+        var lamp = fade * (0.93 + 0.07 * Math.Sin(_clock * 31) - 0.16 * glitch);
 
         using var _ = context.PushTransform(Matrix.CreateTranslation(0, lift));
 
@@ -281,6 +311,7 @@ internal sealed class Codec : Control
         var stroke = new Pen(new SolidColorBrush(Shade(0xFF, 0xE9FBFF, lamp)), 2.4,
             lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
         var caret = new SolidColorBrush(Shade(0xE0, 0xBFF4FF, lamp));
+        var fringe = Math.Abs(tear) * 0.9;
 
         for (var i = 0; i < _drawn.Length; i++)
         {
@@ -303,14 +334,17 @@ internal sealed class Codec : Control
             // and would cost a surface if it were.
             context.DrawGeometry(null, glow, _drawn[i]);
 
-            if (tear != 0)
+            // The fringe separates as far as the tear has moved, so the channels come apart with it
+            // and close up again behind it. Fixed offsets under a tear that now swells would appear
+            // at their full separation on the tear's first frame, which is the snap taken out above.
+            if (fringe > 0.05)
             {
-                using (context.PushTransform(Matrix.CreateTranslation(-2.5, 0)))
+                using (context.PushTransform(Matrix.CreateTranslation(-fringe, 0)))
                     context.DrawGeometry(null, new Pen(
                         new SolidColorBrush(Shade(0x7A, 0xFF3B4E, lamp)), 2.2,
                         lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round), _drawn[i]);
 
-                using (context.PushTransform(Matrix.CreateTranslation(2.5, 0)))
+                using (context.PushTransform(Matrix.CreateTranslation(fringe, 0)))
                     context.DrawGeometry(null, new Pen(
                         new SolidColorBrush(Shade(0x7A, 0x36F0FF, lamp)), 2.2,
                         lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round), _drawn[i]);

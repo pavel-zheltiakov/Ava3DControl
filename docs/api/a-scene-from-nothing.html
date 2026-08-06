@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.2 · beta</span>
+  <span class="tag">12.1.0-preview.3 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -142,8 +142,15 @@
   <code>WithGeneratedNormals()</code> works out which way the surface faces, which is what lighting needs;
   <a href="surfaces-and-light.html">chapter 5</a> is about that. You will rarely type positions out. The
   shapes you would otherwise write from scratch are in
-  <a href="Ava3D.Primitives.html">Primitives</a> — box, sphere, cylinder, torus, plane — and anything
+  <a href="Ava3D.Primitives.html">Primitives</a> — box, sphere, cylinder, torus, plane, disc — and anything
   complicated comes out of a modelling tool through <a href="Ava3D.GltfLoader.html">GltfLoader</a>.
+</p>
+
+<p>
+  The round ones take an arc as well as a size, so they are not only whole shapes: a sweep and a start angle
+  turn a cylinder into a pipe section, a sphere into a dome, a disc into a pie slice. Both are in degrees,
+  both are measured the same way about the same axis, and a partial shape is left open rather than capped,
+  because a lid is a <code>Disc</code> away and a hole cannot be cut back out of one.
 </p>
 
 <div class="tip">
@@ -249,7 +256,7 @@ View.Scene = scene;</code></pre>
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.3 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

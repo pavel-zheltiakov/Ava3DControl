@@ -22,12 +22,21 @@ namespace Ava3D.Demo.Views;
 /// </summary>
 public partial class Diagnostics : UserControl
 {
-    private readonly TextBlock _renderer, _hostName, _fps, _frameTime;
+    private readonly TextBlock _renderer, _hostName, _fps, _fpsUnit, _frameTime;
     private readonly TextBlock _draws, _triangles, _resolution, _textures;
     private readonly TextBlock _engineNote, _errors, _picked;
     private readonly TextBlock _featureScore, _featureChevron;
-    private readonly ToggleButton _featureToggle;
+    private readonly ToggleButton _featureToggle, _clockToggle;
     private readonly StackPanel _featureList;
+
+    /// <summary>
+    /// The last frame's numbers, so flipping the clock switch redraws the rate from them at once.
+    ///
+    /// Without this the panel would wait for the next frame to catch up, which is nothing at all on a
+    /// running renderer and forever on a stopped one — and a switch that does nothing when pressed is
+    /// indistinguishable from a switch that is broken.
+    /// </summary>
+    private RenderInfo? _last;
 
     /// <summary>
     /// The list the rows were last built from, so nine controls are not rebuilt sixty times a second.
@@ -51,6 +60,7 @@ public partial class Diagnostics : UserControl
         _renderer = this.FindControl<TextBlock>("Renderer")!;
         _hostName = this.FindControl<TextBlock>("HostName")!;
         _fps = this.FindControl<TextBlock>("Fps")!;
+        _fpsUnit = this.FindControl<TextBlock>("FpsUnit")!;
         _frameTime = this.FindControl<TextBlock>("FrameTime")!;
         _draws = this.FindControl<TextBlock>("Draws")!;
         _triangles = this.FindControl<TextBlock>("Triangles")!;
@@ -64,10 +74,17 @@ public partial class Diagnostics : UserControl
         _featureScore = this.FindControl<TextBlock>("FeatureScore")!;
         _featureChevron = this.FindControl<TextBlock>("FeatureChevron")!;
         _featureList = this.FindControl<StackPanel>("FeatureList")!;
+        _clockToggle = this.FindControl<ToggleButton>("ClockToggle")!;
 
         // A chevron that turns is the whole of the affordance, since the row has no border to open.
         _featureToggle.IsCheckedChanged += (_, _) =>
             _featureChevron.Text = _featureToggle.IsChecked == true ? "▾" : "▸";
+
+        _clockToggle.IsCheckedChanged += (_, _) =>
+        {
+            if (_last is { } info)
+                ShowRate(info);
+        };
 
         // Enough of the host to fill the line before any renderer exists — the machine is the half of it
         // only a renderer can answer, and the panel is built before the first frame is drawn.
@@ -86,10 +103,8 @@ public partial class Diagnostics : UserControl
             _hostName.Text = HostPlatform.Describe(card);
         }
 
-        // Before the first frame there is no rate to report, and a panel opening on "0.0 fps" reads as a
-        // renderer that is not running rather than one that has not been asked yet.
-        _fps.Text = info.FramesPerSecond > 0 ? $"{info.FramesPerSecond:F1} fps" : "— fps";
-        _frameTime.Text = info.FrameMilliseconds > 0 ? $"{info.FrameMilliseconds:F2} ms/frame" : "";
+        _last = info;
+        ShowRate(info);
 
         _draws.Text = info.DrawCalls.ToString("N0");
         _triangles.Text = info.Triangles.ToString("N0");
@@ -107,6 +122,65 @@ public partial class Diagnostics : UserControl
     private static readonly IBrush Bright = new SolidColorBrush(Color.Parse("#D8DCE6"));
     private static readonly IBrush Dim = new SolidColorBrush(Color.Parse("#9AA3B5"));
     private static readonly IBrush Faint = new SolidColorBrush(Color.Parse("#79839A"));
+    private static readonly IBrush White = new SolidColorBrush(Color.Parse("#F2F5FA"));
+
+    /// <summary>
+    /// The rate, and the interval it came out of, on whichever of the two clocks the switch is set to.
+    ///
+    /// Both are frames per second, because both are the same frames — counted against different clocks.
+    /// There is no second unit here and no tool anywhere names one: what changes is the denominator.
+    ///
+    /// <b>frame</b> is the interval between frames, which is the number everybody quotes and the one the
+    /// display decides. A healthy GPU scene reads 16.67 ms on a 60 Hz panel and 8.33 on a 120 Hz one
+    /// however little work it is doing, so on its own it cannot tell a renderer with ten times the
+    /// headroom it needs from one that is only just keeping up. Profilers call this frame time; Unreal's
+    /// <c>stat unit</c> prints it as Frame and PresentMon as Frame Time.
+    ///
+    /// <b>render</b> is the time this control spent making one, and the rate that time alone implies. It
+    /// is arithmetic rather than a measurement — nothing runs at six thousand frames a second and no
+    /// display would show it — but it is the answer to the question the headline cannot reach: how much
+    /// of the frame is ours. At 8.33 ms per frame and 0.16 ms per render the honest reading is that the
+    /// renderer is idle fifty times over, and "6,250 fps" carries that where "120" does not. This is the
+    /// line <c>stat unit</c> calls Draw and PresentMon calls GPU Busy; the name here matches
+    /// <see cref="RenderInfo.RenderMilliseconds"/>, which is where it comes from.
+    ///
+    /// It opens on <i>frame</i>, because that is the one that was measured.
+    /// </summary>
+    private void ShowRate(RenderInfo info)
+    {
+        // Before the first frame there is no rate to report, and a panel opening on "0.0 fps" reads as a
+        // renderer that is not running rather than one that has not been asked yet.
+        var (rate, interval, colour) = _clockToggle.IsChecked == true
+            ? (info.RenderMilliseconds > 0 ? 1000.0 / info.RenderMilliseconds : 0, info.RenderMilliseconds, Yes)
+            : (info.FramesPerSecond, info.FrameMilliseconds, White);
+
+        _fps.Text = Reading(rate);
+        _frameTime.Text = Reading(interval);
+        _fps.Foreground = colour;
+        _fpsUnit.Foreground = colour;
+    }
+
+    /// <summary>
+    /// A live reading, at three significant figures.
+    ///
+    /// Three, everywhere, whatever the magnitude: 0.456, 3.00, 12.4, 299, 6,250. It is a claim about
+    /// precision rather than about decimal places, which is the honest one to make about a number that is
+    /// an exponential average of the last few dozen frames — the fourth digit of 299.323 fps is noise
+    /// being reported as a measurement, and the fourth digit of 0.4562 ms is below anything the timer can
+    /// resolve. It is also the only rule that keeps the width constant at both ends of the range, and a
+    /// width that changes is a number that jumps: five characters at 6,250 fps and five at 0.456 ms.
+    ///
+    /// Rounded before the magnitude is decided, so 99.96 reads 100 rather than 100.0 — otherwise the one
+    /// value in the range that carries a fourth digit would be the one at the boundary.
+    /// </summary>
+    private static string Reading(double value) => value switch
+    {
+        <= 0 or double.NaN => "—",
+        >= 99.95 => value.ToString("N0"),
+        >= 9.995 => value.ToString("F1"),
+        >= 0.9995 => value.ToString("F2"),
+        _ => value.ToString("F3")
+    };
 
     /// <summary>
     /// The score, and the rows behind it.

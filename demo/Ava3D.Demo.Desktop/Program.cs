@@ -92,22 +92,21 @@ sealed class Program
         // is the control's own decision, made per frame from the same saved setting in MainView. The
         // environment wins where it speaks, because a probe or capture run is measuring the configuration
         // it was handed and must not inherit whatever the last person to open the demo clicked.
+        var options = new AvaloniaNativePlatformOptions();
+        var asked = false;
+
         if (Environment.GetEnvironmentVariable("AVA3D_SOFTWARE") == "1")
         {
-            builder = builder.With(new AvaloniaNativePlatformOptions
-            {
-                RenderingMode = [AvaloniaNativeRenderingMode.Software]
-            });
+            options.RenderingMode = [AvaloniaNativeRenderingMode.Software];
+            asked = true;
         }
         else if (Environment.GetEnvironmentVariable("AVA3D_GL") == "1" ||
                  Engine.DemoSettings.Engine == RenderBackendKind.OpenGL)
         {
-            builder = builder.With(new AvaloniaNativePlatformOptions
-            {
-                RenderingMode = [AvaloniaNativeRenderingMode.OpenGl, AvaloniaNativeRenderingMode.Software]
-            });
+            options.RenderingMode = [AvaloniaNativeRenderingMode.OpenGl, AvaloniaNativeRenderingMode.Software];
+            asked = true;
         }
 
-        return builder;
+        return asked ? builder.With(options) : builder;
     }
 }

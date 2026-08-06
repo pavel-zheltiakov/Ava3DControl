@@ -95,9 +95,10 @@ try {
 
     await runtime.runMain(runtime.getConfig().mainAssemblyName, [globalThis.location.href]);
 } catch (error) {
-    // location.protocol is checked first because it is by far the most common way to see this: opening the
-    // published folder from disk. The runtime's assets are fetched, and a file:// page is not allowed to
-    // fetch anything, so the failure is guaranteed and has nothing to do with the browser.
+    // A backstop rather than the answer. Opening the published folder from disk is by far the most common
+    // way to see a failure here, but on every current browser this file is not loaded at all in that case —
+    // a module script is fetched with CORS and a disk page's origin is null — so index.html says it in a
+    // classic script instead. This stays for anything that does get here with a file:// URL.
     if (globalThis.location.protocol === 'file:')
         failed('This page has to be served over http.',
             'A file:// page cannot fetch the runtime it needs. Serve the folder — <code>python3 -m ' +

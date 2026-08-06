@@ -40,8 +40,10 @@ public sealed class ModelScene : DemoScene
          loader reads binary glTF only, because resolving a dozen satellite URIs is awkward in a browser
          and pointless everywhere else.
 
-         2.4 MB of the demo's download is this file. Everything else in the demo is still generated in
-         code, which is why the other twenty-three scenes cost nothing to ship.
+         2.4 MB of the demo's download is this file, and it is the only asset here that came from outside.
+         The board in the next scene is another 2.7 MB, but it is a build output rather than a download —
+         tools/models/build-pcb.py produces it. Everything else in the demo is generated in code at
+         startup, which is why the remaining scenes cost nothing to ship.
          """;
 
     public override SceneLook Look => SceneLook.Studio;

@@ -5,7 +5,8 @@ namespace Ava3D.Demo.Scenes;
 /// then materials and lighting, then textures and the surface detail that goes on top of them, then the
 /// things that are drawn but are not lit triangles — sprites, lines, points, blending — then the things a
 /// viewer control is actually asked for, picking and animation and a scene big enough to hurt, then the
-/// two that exist to show the shading model, and last the one that exists to be watched.
+/// board and the four ways of looking at it, then the two that exist to show the shading model, and last
+/// the one that exists to be watched.
 ///
 /// Each of the middle group shows exactly one feature, with it on and off in the same frame wherever that
 /// is possible. A scene that demonstrates six things demonstrates none of them.
@@ -19,9 +20,11 @@ public static class DemoCatalog
     [
         () => new HelloCubeScene(),
         () => new PrimitivesScene(),
+        () => new FlatShadingScene(),
         () => new TransformsScene(),
         () => new MaterialsScene(),
         () => new LightingScene(),
+        () => new EnvironmentScene(),
         () => new TexturesScene(),
         () => new NormalMappingScene(),
         () => new BumpScene(),
@@ -31,6 +34,7 @@ public static class DemoCatalog
         () => new BlendingScene(),
         () => new SpritesScene(),
         () => new LinesScene(),
+        () => new DepthBiasScene(),
         () => new PointsScene(),
         () => new RimScene(),
         () => new FourLightsScene(),
@@ -40,6 +44,11 @@ public static class DemoCatalog
         () => new StressScene(),
         () => new GltfScene(),
         () => new ModelScene(),
+        () => new MotherboardScene(),
+        () => new Board.InspectorScene(),
+        () => new Board.IndicatorsScene(),
+        () => new Board.DraftsmanScene(),
+        () => new Board.WireframeScene(),
         () => new PbrChartScene(),
         () => new PbrShowcaseScene(),
         () => new Contact.ContactScene()

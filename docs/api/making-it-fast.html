@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.2 · beta</span>
+  <span class="tag">12.1.0-preview.3 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -122,6 +122,17 @@ scene.Children.Add(<span class="k">new</span> MeshNode(whole, sharedMaterial)); 
 
 <pre><code>material.BaseColorTexture = Texture.FromPixels(rgba, 1024, 512, name: <span class="s">"panels"</span>);</code></pre>
 
+<p>
+  One texture is not like the others. The image handed to
+  <a href="Ava3D.EnvironmentLight.html">EnvironmentLight.FromTexture</a> has to be blurred by <a class="term-link" href="glossary.html#g-roughness">roughness</a>
+  before it can light anything, and that is done on the CPU the first time the scene is built. It costs
+  <strong>7 to 11 milliseconds, once</strong>, and — this is the part worth knowing — that figure barely
+  moves between a 256×128 source and a 2048×1024 one, because the work happens after the image has been
+  reduced to a fixed working size. So there is no performance argument for feeding it a small sky. Swapping
+  the texture at runtime pays the cost again; rotating it with <code>Rotation</code> does not, because that
+  is a number the <a class="term-link" href="glossary.html#g-shader">shader</a> reads and not a rebuild.
+</p>
+
 <h2 id="snapshot">The per-frame snapshot</h2>
 
 <p>
@@ -174,15 +185,17 @@ Console.WriteLine($<span class="s">"{info.Renderer} · {info.FramesPerSecond:0.0
 
 <p>
   On a host that offers no GPU context the CPU fallback takes over, and it is a different machine rather than
-  a slower one: it lights per vertex instead of per pixel, sorts back to front instead of testing depth, and
-  carries only the base-colour map. The same film that runs at 120 fps on Metal runs at 37.7 there.
+  a slower one: it lights per vertex instead of per pixel, carries only the base-colour map, and fills every
+  pixel in managed code — against its own <a class="term-link" href="glossary.html#g-depth-buffer">depth buffer</a>, in horizontal bands across every core. The same film
+  that runs at 120 fps on Metal runs at 61.7 there.
 </p>
 
 <p>
-  It also counts differently — it reports 1,099 draws and 6,497 triangles for the frame the GPU backends
-  describe as 105 and 17,358 — so compare it against itself over time and never against a GPU row.
-  Everything it cannot do is in <code>RenderInfo.Features</code>, nine crosses out of thirteen, each with the
-  sentence for why. <a href="choosing-a-renderer.html">How the renderer is chosen</a> is the rest of that
+  It also counts differently — it reports the 6,561 triangles it actually rasterised for the frame the GPU
+  backends describe as 17,358 submitted — so compare it against itself over time and never against a GPU row.
+  Everything it cannot do is in <code>RenderInfo.Features</code>, eight crosses out of fifteen, each with the
+  sentence for why, and one of them is a triangle budget: past it, the rest of the frame is dropped rather
+  than drawn late. <a href="choosing-a-renderer.html">How the renderer is chosen</a> is the rest of that
   story.
 </p>
 
@@ -215,7 +228,7 @@ Console.WriteLine($<span class="s">"{info.Renderer} · {info.FramesPerSecond:0.0
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.2 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.3 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

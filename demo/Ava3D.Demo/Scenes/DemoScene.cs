@@ -9,9 +9,10 @@ namespace Ava3D.Demo.Scenes;
 /// Every scene in this folder is a single file with no dependencies on the others, so it can be read on
 /// its own and copied into a real application without untangling it from the demo shell. That is the point
 /// of the shape: the interesting part of a demo is the twenty lines that build the scene, and those lines
-/// should not be buried in a switch statement. The one exception is <c>Contact/</c>, which is a
-/// sixty-second film rather than a demonstration of anything in particular, and says so at the top of
-/// itself.
+/// should not be buried in a switch statement. Two folders are exceptions and both say so at the top of
+/// themselves: <c>Contact/</c> is a sixty-second film rather than a demonstration of anything in
+/// particular, and <c>Board/</c> is one model looked at four ways, where the loading and the manifest are
+/// identical in all four and copying them would only make three of them go stale.
 ///
 /// A scene is built once when it is selected and then, if it animates, nudged each frame. It keeps
 /// references to whatever nodes it wants to move in its own fields — which is why these are classes rather
@@ -100,6 +101,25 @@ public abstract class DemoScene
     /// automatic tour does not leave a recoloured object behind.
     /// </summary>
     public virtual bool WantsPicking => false;
+
+    /// <summary>
+    /// The click, offered to the scene before the shell does anything with it. Return true to say the
+    /// scene has dealt with it and the shell should keep its hands off.
+    /// </summary>
+    /// <param name="scene">The scene returned by <see cref="Build"/>.</param>
+    /// <param name="hit">What the ray found, or null for a click on nothing.</param>
+    /// <remarks>
+    /// The shell's own answer to a click — clone the material, tint it orange, name the node — is the
+    /// right one for a scene of unrelated objects, and it is the wrong one as soon as the thing a person
+    /// clicked is not the thing they meant. On the board, one component is several nodes: clicking a
+    /// memory slot hits <c>dimm.1.latch</c>, and tinting that alone highlights a plastic clip while
+    /// leaving the slot it belongs to untouched. What the scene knows and the shell cannot is which
+    /// nodes make up a part, what the part is called, and which copper leaves it.
+    ///
+    /// So this is a scene taking over, not a notification: a scene that returns true owns the highlight
+    /// and everything shown about it, which is why <see cref="Caption"/> is where the answer goes.
+    /// </remarks>
+    public virtual bool Picked(Scene scene, PickResult? hit) => false;
 
     /// <summary>
     /// How the notes panel should dress itself for this scene. See <see cref="SceneLook"/>.

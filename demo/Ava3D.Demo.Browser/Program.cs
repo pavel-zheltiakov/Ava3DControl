@@ -100,6 +100,11 @@ internal sealed partial class Program
                     case "tour":
                         Environment.SetEnvironmentVariable("AVA3D_TOUR", value);
                         break;
+                    case "threads":
+                        // ?threads=0 holds the CPU renderer to one core. Only means anything in a build
+                        // published with WasmEnableThreads, where a tab has more than one to hold it to.
+                        Environment.SetEnvironmentVariable("AVA3D_THREADS", value);
+                        break;
                     case "engine":
                         PreferEngine(value);
                         break;
