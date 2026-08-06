@@ -12,6 +12,13 @@ namespace Ava3D.Demo.Scenes;
 public sealed class StressScene : DemoScene
 {
     private const int Side = 5;
+    private const float Radius = 0.34f;
+    private const float Spacing = 0.8f;
+
+    // Where the bottom of the bottom row is, and therefore where the ground goes. Derived rather than
+    // typed: the three numbers above have to agree with it, and when they were three separate literals
+    // they stopped agreeing — the floor sat 0.54 above the bottom of the spheres and cut through them.
+    private const float GroundY = -((Side - 1) * 0.5f * Spacing) - Radius;
 
     public override string Title => "Stress test";
 
@@ -35,15 +42,17 @@ public sealed class StressScene : DemoScene
         var scene = new Scene();
 
         // 32 x 16 is the default: 1,024 triangles each, 128,000 for the grid.
-        var sphere = Primitives.Sphere(0.34f);
+        var sphere = Primitives.Sphere(Radius);
 
+        // The 126th draw and the two triangles that make 128,000 into 128,002 — it is in the count every
+        // published frame rate was measured against, so it stays. The bottom row rests on it exactly.
         scene.Children.Add(new MeshNode(Primitives.Plane(9f, 9f), new Material
         {
             BaseColor = new Vector4(0.13f, 0.14f, 0.16f, 1f),
             Roughness = 0.9f
         })
         {
-            Position = new Vector3(0f, -1.4f, 0f),
+            Position = new Vector3(0f, GroundY, 0f),
             IsPickable = false
         });
 
@@ -63,7 +72,10 @@ public sealed class StressScene : DemoScene
                 Roughness = 0.2f + v * 0.6f
             })
             {
-                Position = new Vector3((x - 2) * 0.8f, (y - 2) * 0.8f, (z - 2) * 0.8f),
+                Position = new Vector3(
+                    (x - (Side - 1) * 0.5f) * Spacing,
+                    (y - (Side - 1) * 0.5f) * Spacing,
+                    (z - (Side - 1) * 0.5f) * Spacing),
                 IsPickable = false
             });
         }
