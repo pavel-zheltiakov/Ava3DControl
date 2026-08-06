@@ -300,10 +300,12 @@
           <p data-i18n-html="story.s12.p">
             The film, in Chrome, on WebGL 2 — 109 draws and 17,358 triangles a frame with no plugin and no
             separate build of the renderer. It goes through Avalonia's SkiaSharp graphics lease rather than
-            <code>OpenGlControlBase</code>, which does not exist on the web platform. Thirteen of fifteen
-            features: the two it does without are anisotropic filtering and depth bias, whose entry points
-            resolve and then terminate the WebAssembly runtime when they are called, so the renderer does not
-            call them and the panel says which and why rather than quietly dropping them.
+            <code>OpenGlControlBase</code>, which does not exist on the web platform. Fifteen of fifteen
+            features, where it read thirteen until recently: anisotropic filtering and depth bias were
+            refused because their entry points resolved and then ended the process when called. That turned
+            out to be a fault in how the demo was assembled rather than anything about the web, and the panel
+            still names anything a renderer cannot do rather than quietly dropping it. The fix is newer than
+            the published package, so an application built on 12.1.0-preview.3 still reports thirteen.
             <a href="demo.html" data-i18n="story.s12.a">Run it yourself →</a>
           </p>
         </figcaption>

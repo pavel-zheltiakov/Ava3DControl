@@ -39,11 +39,13 @@ public sealed class DepthBiasScene : DemoScene
         whatever they are on. Nudging the line vertices along the normal works at one distance and comes
         adrift at another.
 
-        Two renderers cannot do this, for opposite reasons. The CPU fallback paints back to front with no
-        depth buffer, so it has nothing to fight over and both panels look like the right-hand one. The
-        browser has a depth buffer and no way to bias it — glPolygonOffset terminates the WebAssembly
-        runtime, so it is never called — and both panels look like the left-hand one. The features list in
-        the statistics panel says which you are looking at.
+        One renderer cannot do this, and one used not to be able to. The CPU fallback paints back to front
+        with no depth buffer, so it has nothing to fight over and both panels look like the right-hand one.
+        The browser refused it until recently, because glPolygonOffset there ended the process rather than
+        returning — a missing interop trampoline in a build that was assembled rather than published, which
+        is a thing about how the demo was made and never was a thing about the web. It works here now, and
+        in a package later than 12.1.0-preview.3. The features list in the panel says what your renderer can
+        do.
         """;
 
     public override SceneLook Look => SceneLook.Blueprint;

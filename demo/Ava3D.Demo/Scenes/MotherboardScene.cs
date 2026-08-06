@@ -42,8 +42,8 @@ public sealed class MotherboardScene : DemoScene
 
          Two other things are being leaned on rather than demonstrated. The silkscreen — every white
          outline on the board — is flat geometry lying in the board's own surface, so it needs
-         Material.DepthBias to win the depth test; without it the outlines crawl, and on the browser and
-         the CPU fallback they still do. And the gold contacts, the aluminium heatsinks and the tinned
+         Material.DepthBias to win the depth test; without it the outlines crawl, and on the CPU fallback
+         they still do. And the gold contacts, the aluminium heatsinks and the tinned
          pads are only convincing because there is an environment map for them to reflect. Turn it off and
          they go to flat grey, because that is what metal is without a room around it.
 
