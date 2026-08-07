@@ -129,9 +129,11 @@ public partial class MainView : UserControl
     ///
     /// Worth printing because it is the one number that explains a CPU-renderer frame rate before anyone
     /// reads the code: the software backend shares its vertex pass across cores only when there is more
-    /// than one, and a WebAssembly tab reports exactly one unless the page was served with the two headers
-    /// that unlock <c>SharedArrayBuffer</c>. Seeing "1 core" on a sixteen-core machine is the whole
-    /// explanation, and it is invisible everywhere else.
+    /// than one, and a WebAssembly tab reports exactly one unless the application was published with
+    /// <c>WasmEnableThreads</c> <i>and</i> the page it landed on is cross-origin isolated. This demo
+    /// arranges both — see the browser head's <c>coi.js</c> — so "1 core" in a browser now means the
+    /// arrangement did not hold, which is a thing to see rather than to guess at, and it is invisible
+    /// everywhere else.
     /// </summary>
     private static string Cores()
         => Environment.ProcessorCount == 1 ? "1 core" : $"{Environment.ProcessorCount} cores";
@@ -839,8 +841,11 @@ public partial class MainView : UserControl
             // also the answer to what "all cores" means on it — which is the number the frame rate beside
             // it has to be read against.
             //
-            // One row where there is one core — which is what a browser tab is unless the application was
-            // published for threads — because two rows would then be the same renderer under two names.
+            // One row where there is one core, because two rows would then be the same renderer under two
+            // names. A browser tab used to be that case and no longer is: the head is published for
+            // threads and its page arranges the isolation they need, so the choice is offered there too —
+            // and it is the platform where the gap between the two rows is widest, because a WebAssembly
+            // tab has no other way to use a second core at all.
             if (option.Kind == RenderBackendKind.Software && Environment.ProcessorCount > 1)
             {
                 choices.Add(new EngineChoice(option.Kind, $"CPU (×{Environment.ProcessorCount})", option));

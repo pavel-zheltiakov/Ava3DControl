@@ -12,6 +12,43 @@
       workload; without it the browser build dies on the first frame.
     -->
     <WasmBuildNative>true</WasmBuildNative>
+    <!--
+      Give the tab more than one thread. Here rather than on the publish command line, because a flag
+      that only some builds carry is a flag that makes two applications out of one: the picker offers a
+      different set of renderers, the diagnostics report a different number of cores, and which one you
+      are looking at depends on how it was started.
+
+      What it turns on, layer by layer, none of which needed persuading: the wasm SDK links the runtime
+      for threads and emits dotnet.native.worker.mjs; SkiaSharp's targets switch its native
+      library from the st flavour to mt off this same property; Avalonia's browser backend already
+      prefers a managed dispatcher on a web worker and hands it a real OffscreenCanvas, so the render
+      worker issues its own WebGL calls rather than posting each one back to the page. Our own code
+      needed nothing at all — Environment.ProcessorCount stops saying 1 and SkiaBackend's existing
+      CanShareWork gate opens by itself.
+
+      The cost is not size: three quarters of a megabyte, and nothing at all after compression. The cost
+      is that a threaded build is a shared-memory build, which pays a little on every access whether a
+      second thread runs or not. Measured rather than assumed — two publishes of the same source
+      differing only in this flag, Chrome at 1400x900, the CPU renderer, two runs each and agreeing to
+      within two per cent:
+
+        scene         single-threaded build   threaded, one core   threaded, all cores
+        motherboard   76.3 ms                 77.6 ms              15.4 ms
+        stress test   53.5 ms                 55.5 ms              19.3 ms
+
+      So the tax is under four per cent and the refund is five times and nearly three. Both CPU rows are
+      in the picker because the comparison should be checkable, not because the answer is in doubt.
+
+      That is a different answer from section 8 of docs/release-journal-12.1.0-preview.3.md, which had
+      the tax growing with the scene until it won, and it is a different answer for a findable reason:
+      SoftwareThreading shares the banded pixel fill as well as the vertex pass, and at this size the
+      fill is most of the frame. What is being shared is nearly all of the work rather than a third of
+      it, which is also why holding it to one core is so much worse than never having had the cores.
+
+      And it is conditional on SharedArrayBuffer, which a browser only offers a cross-origin isolated
+      page — see wwwroot/coi.js for how a host that cannot set headers gets isolated anyway.
+    -->
+    <WasmEnableThreads>true</WasmEnableThreads>
   </PropertyGroup>
 
   <ItemGroup>

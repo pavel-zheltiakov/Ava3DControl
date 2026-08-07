@@ -83,6 +83,17 @@ try {
 report();
 
 try {
+    // Threads, checked before the runtime is fetched rather than after.
+    //
+    // This application is published for them, so the runtime it is about to download is a shared-memory
+    // one and cannot start without SharedArrayBuffer — there is no single-threaded half of it to fall back
+    // to. What the runtime does about that on its own is assert somewhere inside twenty-four megabytes of
+    // WebAssembly, which is a true answer arriving far too late and in the wrong place. coi.js should have
+    // arranged isolation and reloaded before this line was reached; if it is still false here, it could
+    // not, and the visitor should be told so before their connection is spent finding out.
+    if (!globalThis.crossOriginIsolated)
+        throw new Error('the page is not cross-origin isolated');
+
     const { dotnet } = await import('./_framework/dotnet.js');
 
     const runtime = await dotnet
@@ -103,6 +114,13 @@ try {
         failed('This page has to be served over http.',
             'A file:// page cannot fetch the runtime it needs. Serve the folder — <code>python3 -m ' +
             'http.server</code> in it will do — or open the hosted demo.');
+    else if (!globalThis.crossOriginIsolated)
+        failed('This page could not be given the threads the demo runs on.',
+            'The renderer is compiled for threads, and a browser will only share memory between them on a ' +
+            'page that is <em>cross-origin isolated</em>. This host cannot set the two headers that say so, ' +
+            'so <code>coi.js</code> asks a service worker to add them — and this browser has refused the ' +
+            'worker, or been told to. Turning service workers back on for this site, or leaving a private ' +
+            'window, is usually the whole of it.');
     else
         failed('This browser could not start the demo.',
             `It needs WebAssembly and WebGL 2. ${(error && error.message) || error || ''}`);

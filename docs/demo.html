@@ -8,6 +8,20 @@
 <link rel="stylesheet" href="header.css">
 <link rel="stylesheet" href="site.css">
 <script src="i18n.js"></script>
+<!--
+  The demo is published for threads, threads need SharedArrayBuffer, and a browser only offers
+  SharedArrayBuffer to a cross-origin isolated document. Isolation is a property of the whole frame tree
+  rather than of one document in it, so the frame below can only have it if this page has it first — which
+  is why this script is here and not only in the demo.
+
+  coi.js is the demo's own file, copied to this site's root at publish time by tools/build-demo.sh, and it
+  registers itself as a service worker that adds the two headers GitHub Pages cannot. ?site holds it to
+  this page and the application under demo/ — the rest of the site is left exactly as the server sent it,
+  because require-corp is a rule with consequences for pages that gain nothing from it.
+
+  First time here, this costs one reload. After that the worker is already in place.
+-->
+<script src="coi.js?site"></script>
 </head>
 <body class="demo-page">
 

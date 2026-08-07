@@ -6,6 +6,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./app.css" />
+    <!--
+      Threads, which this application is published for and cannot start without. See coi.js: it registers
+      itself as a service worker that marks this page cross-origin isolated, because that is what a browser
+      wants before it will hand out SharedArrayBuffer, and a static host has no other way to say it.
+
+      In the head and before anything else, because the answer may be to reload, and a reload is cheapest
+      before the twenty-four megabytes underneath have begun to arrive. ?app because everything this
+      worker's scope covers is this application — when the demo is framed by the site instead, it is the
+      site's copy at its own root that acts, and this one does nothing.
+    -->
+    <script src="./coi.js?app"></script>
 </head>
 
 <body style="margin: 0; overflow: hidden">
