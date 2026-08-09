@@ -98,17 +98,21 @@ public static class DemoSettings
     }
 
     /// <summary>
-    /// Whether the film is allowed to make a noise. Off by default.
+    /// Whether the film is allowed to make a noise. On by default, and remembered.
     ///
-    /// Off, unlike the other two, and the asymmetry is the point rather than an oversight. A demo that
-    /// starts drawing the moment it opens is doing what it was opened to do; a demo that starts making
-    /// sound the moment it opens is doing something to the room the person opening it is sitting in, and
-    /// they may be on a train, in an office, or four minutes into a call. Neither of those is a decision
-    /// this application gets to take on their behalf, and the cost of being wrong is wildly asymmetric —
-    /// a silent film is a switch away, and a loud one in a quiet office is not undoable.
+    /// It was off, on the argument that a demo which starts drawing is doing what it was opened for while a
+    /// demo which starts playing is doing something to the room the person opening it is sitting in — they
+    /// may be on a train, in an office, or four minutes into a call — and that the cost of being wrong is
+    /// asymmetric, since a silent film is a switch away and a loud one in a quiet office is not undoable.
     ///
-    /// Remembered like the others, so it is a decision taken once. Somebody who turns it on gets it on
-    /// every time after that, which is the half of this that a default cannot do.
+    /// That argument is still true and it is no longer the one that decides. The score, the cues and the
+    /// synthesis are a third of what this film is and every one of them is generated rather than played
+    /// from a file, which is a thing worth hearing and not a thing anyone thinks to go looking for a switch
+    /// for. A default nobody finds is a feature nobody sees.
+    ///
+    /// What makes it affordable is that a browser will not start audio without a gesture anyway, so the
+    /// first sound arrives on the first click rather than on load — and turning it off is remembered, so
+    /// the train case costs one switch once.
     /// </summary>
     /// <remarks>
     /// <c>AVA3D_SOUND=1</c> forces it, for the same reason <c>AVA3D_STORY</c> exists: a measured run
@@ -122,7 +126,9 @@ public static class DemoSettings
             if (Environment.GetEnvironmentVariable("AVA3D_SOUND") is { Length: > 0 } asked)
                 return asked is not ("0" or "off" or "false");
 
-            return !Measuring && Read("sound") is "on";
+            // Absent means on, and only "off" means off — so the default moves without anyone who already
+            // turned it off having their choice quietly reversed.
+            return !Measuring && Read("sound") is not "off";
         }
 
         set => Write("sound", value ? "on" : "off");

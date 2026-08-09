@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The demo — Ava3DControl</title>
-<meta name="description" content="The Ava3DControl demo, running in your browser on WebGL 2. Thirty-four scenes, starting with Contact — a sixty-second film rendered live.">
+<meta name="description" content="The Ava3DControl demo, running in your browser on WebGL 2. A ten-minute film rendered live, then the thirty-four scenes it is built out of.">
 <link rel="stylesheet" href="header.css">
 <link rel="stylesheet" href="site.css">
 <script src="i18n.js"></script>
@@ -27,7 +27,7 @@
 
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.3 · beta</span>
+  <span class="tag">12.1.0-preview.4 · beta</span>
   <div class="links">
     <a href="index.html" data-i18n="nav.home">Home</a>
     <a href="api/a-scene-from-nothing.html" data-i18n="nav.guide">3D Guide</a>
@@ -55,9 +55,13 @@
   boots. It also means the app's stylesheet and this site's cannot collide, which they would: both define a
   splash and both style the whole page.
 
-  The query string is the demo's own switch set — see Ava3D.Demo.Browser/Program.cs. It opens on the film,
-  leaves Auto running so the tour walks the remaining thirty-three scenes afterwards, and asks for WebGL 2,
-  which is the only GPU renderer a browser has.
+  The query string is the demo's own switch set — see Ava3D.Demo.Browser/Program.cs. It leaves Auto running
+  so the tour walks the scenes once the film has finished, and asks for WebGL 2, which is the only GPU
+  renderer a browser has.
+
+  It used to name a scene here — ?scene=Contact — and with the film on that opened the demo at Contact,
+  which is chapter 8 of 10. A film whose whole shape is a reveal was being framed on its own climax. A link
+  to a moment is ?at=<seconds>; ?scene= is for the picker, and the film starts where films start.
 
   What is under demo/ is a *publish* rather than a build, and that is load-bearing: publishing is what allows
   ahead-of-time compilation, which is worth about ten times the frame rate on the CPU renderer — see
@@ -65,13 +69,13 @@
 -->
 <main class="stage">
   <iframe class="stage-frame"
-          src="demo/index.html?scene=Contact&amp;tour=1&amp;engine=opengl"
+          src="demo/index.html?tour=1&amp;engine=opengl"
           title="The Ava3DControl demo"
           allow="fullscreen"></iframe>
 </main>
 
 <p class="stage-note" data-i18n-html="demo.note">
-  <strong>Contact</strong> first, then the other thirty-three scenes. Drawn live in this tab, on WebGL 2, by
+  A ten-minute film, then the thirty-four scenes it is built out of. Drawn live in this tab, on WebGL 2, by
   the same control you would install — compiled to WebAssembly, ahead of time.
 </p>
 

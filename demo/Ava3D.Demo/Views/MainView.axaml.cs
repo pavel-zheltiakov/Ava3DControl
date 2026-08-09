@@ -20,6 +20,16 @@ public partial class MainView : UserControl
     private Ava3DView _view = null!;
     private ComboBox _sceneList = null!, _engineList = null!;
     private ToggleSwitch _autoToggle = null!, _storyToggle = null!, _soundToggle = null!;
+
+    /// <summary>
+    /// Whether the next build of the film should start at the beginning rather than at the selected
+    /// entry's cue. Set when the story switch is turned on, and cleared by the build that uses it.
+    ///
+    /// Deliberately not set by anything else. Changing engine or sound rebuilds the film, and doing that
+    /// from the top would throw away the place somebody had got to in order to hear it; and a run that
+    /// names a scene — <c>AVA3D_SCENE</c>, or <c>?scene=</c> — is asking for that scene and gets it.
+    /// </summary>
+    private bool _storyFromTop;
     private TextBlock _sceneTitle = null!, _sceneNotes = null!;
     private TextBlock _noticeTitle = null!, _noticeReason = null!;
     private Border _notesPanel = null!, _engineNotice = null!;
@@ -487,6 +497,25 @@ public partial class MainView : UserControl
     private void OnStoryToggled()
     {
         DemoSettings.Story = _storyToggle.IsChecked == true;
+
+        // Turning it on is asking to watch the film, so it goes to the top — and the list goes with it,
+        // because a picker reading "38. Contact" over the opening shot is the film and the label
+        // disagreeing about where you are. Turning it off keeps the selection, which is what the
+        // paragraph above is about and is unchanged.
+        if (_storyToggle.IsChecked == true)
+        {
+            _storyFromTop = true;
+
+            // Assigning the index raises SelectionChanged, which rebuilds — but only if it changed
+            // something, so the case where the film was already on entry one needs the call anyway.
+            if (_sceneList.SelectedIndex == 0)
+                Rebuild();
+            else
+                _sceneList.SelectedIndex = 0;
+
+            return;
+        }
+
         Rebuild();
     }
 
@@ -589,9 +618,21 @@ public partial class MainView : UserControl
         if (_current is not null)
             _current.Retire();
 
+        // From the top when the film is being entered, from this entry's cue when it is being navigated.
+        //
+        // Those are two different acts and the cue is only right for one of them. Picking a scene with the
+        // story already on is asking where that scene lives in the building, and the answer is the second it
+        // happens. Opening the demo, or turning the switch on, is asking to watch the film — and a film that
+        // opens three quarters of the way through has given away the one thing it is built around, which in
+        // this case is a reveal nine minutes in the making.
+        //
+        // It mattered most where it was least visible: the landing page frames the demo with ?scene=Contact,
+        // so the public film opened on its own climax. A deep link into a moment is ?at= and always has been.
         _current = _storyToggle.IsChecked == true && entry.Cue is { } cue
-            ? new StoryScene(StoryAt ?? cue)
+            ? new StoryScene(StoryAt ?? (_storyFromTop ? 0f : cue))
             : entry.Standalone();
+
+        _storyFromTop = false;
 
         // Only the film has a soundtrack, so the switch is dead next to a standalone scene. Disabled rather
         // than hidden: a control that vanishes when you change something else is a control people stop
