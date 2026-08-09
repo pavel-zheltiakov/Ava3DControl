@@ -430,6 +430,20 @@ public partial class MainView : UserControl
 
         HandOver(_current.WantsControl);
 
+        // Auto does not take the room off somebody who is walking around it.
+        //
+        // The film's tour length is its own running time plus three quarters of a minute, so that the walk
+        // it hands over to is not taken back before anyone has crossed the gallery. That is the right
+        // number for a visitor standing still and the wrong one for a visitor going somewhere: forty-five
+        // seconds into exploring a building, the tour moved on to the next scene, which reads as the demo
+        // having a mind of its own.
+        //
+        // So the clock waits while the keys are down. It is the same rule AutoTick already applies to an
+        // open picker — a tour advances during a pause, not during use — and it is still bounded, because
+        // letting go for forty-five seconds is a pause by any measure.
+        if (_current.WantsControl && _keys + _taps != Vector2.Zero)
+            _onScreen.Restart();
+
         ShowCaption(_current.Caption, now.TotalSeconds);
         RequestFrame();
     }

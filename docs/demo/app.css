@@ -108,4 +108,11 @@ html, body { height: 100%; }
     font-size: 12px;
     white-space: nowrap;
     pointer-events: none;
+
+    /* Above the application, which is the only place it could usefully be. Avalonia's host is a positioned
+       canvas filling the page, so a label with no z-index is a label behind the picture — and this one
+       exists precisely for the case where the sound switch is on, nothing is coming out, and the reason is
+       a browser policy nobody can guess at. An invisible explanation is worse than none, because it reads
+       as the demo having no answer. */
+    z-index: 40;
 }

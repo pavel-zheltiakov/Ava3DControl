@@ -67,8 +67,19 @@ export function audioOpen() {
             // listener for the next thing the visitor does in case this browser said no.
             const wake = () => { if (ctx && ctx.state === "suspended") ctx.resume().catch(() => {}); };
 
+            // Capture, and this is the difference between the sound working and not.
+            //
+            // The application fills the frame, so every gesture a visitor makes lands on Avalonia's canvas
+            // — and Avalonia handles pointer events there and stops them. A listener on the window in the
+            // bubble phase is therefore a listener on the one part of the page nobody can click: the
+            // context stays suspended however many times somebody clicks the picture, and the only gesture
+            // that would ever have reached it is one aimed at the margin around the app. Capture runs on
+            // the way down, before the canvas gets a say.
+            //
+            // Once is enough: the context only has to be started, and after that a listener per gesture for
+            // the life of the page is work for nothing.
             for (const event of ["pointerdown", "keydown", "touchend"])
-                globalThis.addEventListener(event, wake, { passive: true });
+                globalThis.addEventListener(event, wake, { capture: true, passive: true });
 
             // And say so while it is asleep, because the alternative is a demo that answers a switch with
             // silence. Every other head opens its speaker when asked and plays; this one may be refused,

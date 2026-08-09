@@ -170,6 +170,44 @@ try {
     line.textContent = 'Starting the renderer…';
     bar.style.width = '100%';
 
+    // One click before the film starts, and it is here for exactly one reason: sound.
+    //
+    // A browser will not let a page make a noise until somebody has interacted with it, and that rule is
+    // about the document rather than about any one call — once a visitor has clicked anything, the page has
+    // what the specification calls sticky activation and an audio context opened afterwards comes up
+    // running. Before that, it does not, and there is nothing the application can do about it from inside.
+    //
+    // Which is why the wait is here and not in the application. The film opens on a dark room with one lamp
+    // and a score under it, and starting it the instant the runtime lands means the first thing anybody
+    // sees is that opening playing silently, with the sound arriving whenever they happen to touch
+    // something. The score is a third of what this demo is; it should not be a thing you discover late.
+    //
+    // The splash is already on screen and already explaining itself, so this costs no extra furniture — one
+    // line changes and the click that dismisses it is the gesture. Any key does as well as any click,
+    // because somebody who has just pressed W is not looking for a button.
+    // Not in a scripted run. ?report= is a headless browser posting its console to the server that served
+    // it, and there is nobody there to click anything — gating that would turn every automated check into
+    // a timeout whose cause is a button nobody can see.
+    if (!label) {
+        line.textContent = 'Click or press any key to start';
+        hint.textContent = '';
+
+        await new Promise(resolve => {
+            const begin = () => {
+                for (const event of ['pointerdown', 'keydown', 'touchend'])
+                    globalThis.removeEventListener(event, begin, { capture: true });
+
+                resolve();
+            };
+
+            for (const event of ['pointerdown', 'keydown', 'touchend'])
+                globalThis.addEventListener(event, begin, { capture: true, passive: true });
+        });
+
+        line.textContent = 'Starting the renderer…';
+        hint.textContent = '';
+    }
+
     await runtime.runMain(runtime.getConfig().mainAssemblyName, [globalThis.location.href]);
 } catch (error) {
     // A backstop rather than the answer. Opening the published folder from disk is by far the most common
