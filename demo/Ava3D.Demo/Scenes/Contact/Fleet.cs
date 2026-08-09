@@ -42,13 +42,29 @@ internal sealed class Ship
     public required Material[] Lamps { get; init; }
 
     /// <summary>
-    /// The one sprite a ship has, and it is not a lamp: it is the contact marker, drawn with
-    /// <see cref="SpriteNode.DepthTest"/> off so it survives the hull it belongs to. It fades out as
-    /// the camera closes, so at any range where you can see the ship at all you are seeing the lamps
-    /// and not a billboard over them — which is both the honest way to do it and the reason the feature
-    /// exists. Emissive geometry cannot hold a ship on screen once its hull is sub-pixel; this can.
+    /// The one sprite a ship has, and it is not a lamp: it is the contact marker. It fades out as the
+    /// camera closes, so at any range where you can see the ship at all you are seeing the lamps and not
+    /// a billboard over them — which is both the honest way to do it and the reason the feature exists.
+    /// Emissive geometry cannot hold a ship on screen once its hull is sub-pixel; this can.
+    ///
+    /// <b>It depth-tests, and for a while it did not.</b> The marker has to survive the hull it belongs
+    /// to, and the cheap way to arrange that is to switch the depth test off — which works exactly as
+    /// long as the only thing between the camera and the ship is that ship. It is not: the film puts a
+    /// window in front of the fleet and a metre of hull round the window, and a marker that ignores depth
+    /// ignores <i>that</i> too. What it looks like is a coloured smudge sitting on the wall of the room
+    /// you are standing in, unattached to anything. See <see cref="Mark"/> for what replaced it.
     /// </summary>
     public required SpriteNode Contact { get; init; }
+
+    /// <summary>
+    /// Whether this ship wants a contact marker at all.
+    ///
+    /// True for a battle three thousand metres across, where half the fleet is sub-pixel and finding it
+    /// is the point. False for anything meant to be <i>looked at</i> — the traffic outside the gallery
+    /// window is eight hulls at two hundred metres, close enough to read, and a glow floating in front of
+    /// each of them is an aid nobody asked for standing between the viewer and the ship.
+    /// </summary>
+    public bool Marked { get; set; } = true;
 
     public required float Length { get; init; }
 
@@ -190,6 +206,14 @@ internal sealed class Ship
     /// are in ship lengths rather than world units so one rule covers a 420-unit freighter and a
     /// 215-unit raider: the marker matters at the range where the hull stops being readable, and that
     /// range is a property of how big the ship is.
+    ///
+    /// <b>And it is moved rather than exempted.</b> The marker's whole problem is that it has to be in
+    /// front of one object — its own hull — and behind every other one, and there is no flag that says
+    /// that. So instead of switching the depth test off, it is put where the answer is already right:
+    /// six tenths of a ship length off the centre, along the line to the camera. A hull reaches half its
+    /// length in its longest direction, so that clears it from every angle, and everything else in the
+    /// world — a station, an asteroid, the metre of hull round a gallery window — occludes it the way it
+    /// occludes the ship.
     /// </summary>
     public void Mark(Vector3 cameraPosition)
     {
@@ -199,8 +223,21 @@ internal sealed class Ship
         var range = Vector3.Distance(cameraPosition, Pose.Position) / Length;
         var fade = Math.Clamp((range - 8f) / 32f, 0f, 1f);
 
-        Contact.IsVisible = fade > 0.01f;
+        Contact.IsVisible = Marked && fade > 0.01f;
         Contact.Opacity = 0.75f * fade;
+
+        if (Contact.IsVisible)
+        {
+            var toEye = cameraPosition - Pose.Position;
+
+            // Into the ship's own frame, because the marker hangs off the node the pose is on. Degenerate
+            // only if the camera is exactly at the ship's centre, which is a shot this film does not have.
+            var stand = toEye.LengthSquared() > 1e-4f
+                ? Vector3.Transform(Vector3.Normalize(toEye), Quaternion.Conjugate(Pose.Rotation))
+                : Vector3.UnitY;
+
+            Contact.Position = stand * (Length * 0.6f);
+        }
 
         Jet?.Face(cameraPosition, Pose);
     }
@@ -910,17 +947,16 @@ internal static class Fleet
 
         model.Root.Children.Add(Panels(model.Edges, 0.26f));
 
-        // Not a lamp and not attached to the hull's look — a marker for the ship as a contact, which is
-        // why it sits above the spine and draws through everything. See Ship.Contact.
+        // Not a lamp and not attached to the hull's look — a marker for the ship as a contact. It
+        // depth-tests like everything else and is stood off the hull each frame instead. See Ship.Mark.
         var contact = new SpriteNode
         {
             Texture = glow,
-            Position = new Vector3(0f, length * 0.16f, 0f),
+            Position = new Vector3(0f, length * 0.6f, 0f),
             Color = contactColor,
             Size = new Vector2(length * 0.30f),
             Opacity = 0f,
             Blend = BlendMode.Additive,
-            DepthTest = false,
             DepthWrite = false,
             RenderOrder = 3
         };

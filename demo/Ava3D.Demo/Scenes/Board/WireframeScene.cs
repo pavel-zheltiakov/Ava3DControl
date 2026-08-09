@@ -71,21 +71,41 @@ public sealed class WireframeScene : DemoScene
 
     public override Scene Build()
     {
-        Scene scene;
+        var scene = new Scene();
+        Stage(scene);
+
+        if (BuildSubject() is { } wireframe)
+            scene.Children.Add(wireframe);
+
+        return scene;
+    }
+
+    /// <summary>Near black and nothing else. Lines carry no shading model, so there is nothing to light.</summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(9, 12, 16);
+
+    /// <summary>
+    /// Every edge of every triangle, in one line node.
+    ///
+    /// <b>It does not test depth</b>, which is right on a black background and is a liability anywhere
+    /// else: a line node with <see cref="LineNode.DepthTest"/> off is drawn over whatever happens to be in
+    /// front of it, including a wall. The story mounts this over the drawing in the engine room's service
+    /// bay and switches it on only for the seconds where nothing is between the visitor and the bay —
+    /// which is a real constraint on where a subject like this can go, and is worth knowing before it is
+    /// hung in a room.
+    /// </summary>
+    public override Node? BuildSubject()
+    {
         Node root;
 
         try
         {
-            (scene, root, _detail) = BoardModel.Load();
+            (_, root, _detail) = BoardModel.Load();
         }
         catch (Exception e)
         {
-            scene = new Scene();
             _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
-            return scene;
+            return null;
         }
-
-        scene.Background = Color.FromRgb(9, 12, 16);
 
         var edges = BoardModel.Edges(root, 0f);
 
@@ -104,13 +124,10 @@ public sealed class WireframeScene : DemoScene
             DepthTest = false
         });
 
-        scene.Children.Remove(root);
-        scene.Children.Add(_pivot);
-
         _cost = $"{edges.Length / 2:N0} edges — {edges.Length:N0} vertices — in one draw, against " +
                 $"the 610 the shaded board takes.";
 
-        return scene;
+        return _pivot;
     }
 
     public override void Update(Scene scene, double elapsed)

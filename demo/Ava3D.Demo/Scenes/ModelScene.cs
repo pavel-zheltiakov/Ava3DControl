@@ -62,34 +62,19 @@ public sealed class ModelScene : DemoScene
         camera.FieldOfView = 38f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A three-point studio: key from the front left, fill from the right, and a rim from behind to pull
+    /// the silhouette off the background.
+    ///
+    /// Three lights for one object is more than most of this folder spends, and it is spent here because
+    /// this is the one asset nobody in this repository authored. The maps carry all the detail there is;
+    /// the lights only have to be fair to them, and a single key would leave half of somebody else's work
+    /// in the dark.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        Scene scene;
-
-        try
-        {
-            using var stream = AssetLoader.Open(new Uri("avares://Ava3D.Demo/Assets/camera.glb"));
-            using var memory = new MemoryStream();
-            stream.CopyTo(memory);
-
-            var bytes = memory.ToArray();
-            scene = GltfLoader.Load(bytes, "camera.glb");
-
-            var meshes = Count(scene);
-            _detail =
-                $"{bytes.Length / 1024:N0} KB of .glb, {meshes.Nodes} nodes, {meshes.Draws} primitives, " +
-                $"{meshes.Triangles:N0} triangles, {meshes.Materials} materials.";
-        }
-        catch (Exception e)
-        {
-            scene = new Scene();
-            _detail = $"The model failed to load: {e.GetType().Name}: {e.Message}";
-        }
-
         scene.Background = Color.FromRgb(16, 17, 22);
 
-        // A studio: key from the front left, fill from the right, and a rim from behind to pull the
-        // silhouette off the background. The maps carry the detail; the lights only have to be fair to it.
         scene.Lights.Clear();
         scene.Lights.Add(new DirectionalLight
         {
@@ -120,10 +105,39 @@ public sealed class ModelScene : DemoScene
             GroundColor = new Vector3(0.11f, 0.10f, 0.09f),
             Intensity = 1.1f
         };
+    }
 
-        // The loaded hierarchy is left exactly as the loader produced it — no wrapper node, no re-pivot,
-        // nothing moved. Whatever is on screen is what is in the file.
-        return scene;
+    public override Node BuildSubject()
+    {
+        var model = new Node { Name = "camera" };
+
+        try
+        {
+            using var stream = AssetLoader.Open(new Uri("avares://Ava3D.Demo/Assets/camera.glb"));
+            using var memory = new MemoryStream();
+            stream.CopyTo(memory);
+
+            var bytes = memory.ToArray();
+            var loaded = GltfLoader.Load(bytes, "camera.glb");
+
+            // The loaded hierarchy goes under one holder and is otherwise untouched — no re-pivot, no
+            // re-scale, nothing moved. The holder is identity, so it changes neither the picture nor the
+            // extent AutoFit measures; it exists because a subject has to be a single node, and it is the
+            // only thing this scene does to somebody else's file.
+            foreach (var root in loaded.Children.ToList())
+                model.Children.Add(root);
+
+            var meshes = Count(model);
+            _detail =
+                $"{bytes.Length / 1024:N0} KB of .glb, {meshes.Nodes} nodes, {meshes.Draws} primitives, " +
+                $"{meshes.Triangles:N0} triangles, {meshes.Materials} materials.";
+        }
+        catch (Exception e)
+        {
+            _detail = $"The model failed to load: {e.GetType().Name}: {e.Message}";
+        }
+
+        return model;
     }
 
     public override void Update(Scene scene, Camera camera, double elapsed)
@@ -137,14 +151,14 @@ public sealed class ModelScene : DemoScene
     }
 
     /// <summary>Walks what the loader produced, so the notes can quote it rather than claim it.</summary>
-    private static (int Nodes, int Draws, int Triangles, int Materials) Count(Scene scene)
+    private static (int Nodes, int Draws, int Triangles, int Materials) Count(Node root)
     {
         var nodes = 0;
         var draws = 0;
         var triangles = 0;
         var materials = new HashSet<Material>();
 
-        Walk(scene.Children);
+        Walk(root.Children);
         return (nodes, draws, triangles, materials.Count);
 
         void Walk(IEnumerable<Node> children)

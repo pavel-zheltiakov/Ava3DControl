@@ -92,10 +92,32 @@ public sealed class MotherboardScene : DemoScene
         camera.FarPlane = 40f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A baked studio probe carrying most of the light, and one key on top of it.
+    ///
+    /// That balance is the whole of it, and it was the wrong way round at first. Most of what is
+    /// interesting on a board is metal — gold pads, aluminium fins, the aluminium cans on the capacitors —
+    /// and a metal is only what it reflects, so the environment was pushed to 1.85 to make them read. What
+    /// that actually lit was the <em>dielectrics</em>: every connector showed so much of the room that
+    /// near-black nylon rendered as pale grey bars. With the metals at their real reflectance the probe
+    /// can come back down, and the key is left doing the one thing a probe cannot — putting an edge on the
+    /// fins and a highlight on the socket frame.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        Scene scene;
+        scene.Background = Color.FromRgb(13, 15, 19);
 
+        var studio = Environments.Studio();
+        scene.Environment = EnvironmentLight.FromTexture(studio, 1.15f);
+
+        scene.Light.Direction = Vector3.Normalize(new Vector3(-0.42f, -0.78f, -0.46f));
+        scene.Light.Color = new Vector3(1.00f, 0.98f, 0.94f);
+        scene.Light.Intensity = 1.70f;
+        scene.Light.Ambient = 0.02f;
+    }
+
+    public override Node BuildSubject()
+    {
         try
         {
             using var stream = AssetLoader.Open(new Uri("avares://Ava3D.Demo/Assets/board.glb"));
@@ -103,12 +125,13 @@ public sealed class MotherboardScene : DemoScene
             stream.CopyTo(memory);
 
             var bytes = memory.ToArray();
-            scene = GltfLoader.Load(bytes, "board.glb");
+            var loaded = GltfLoader.Load(bytes, "board.glb");
 
             // The loader gives the file one root node of its own and hangs everything under it, so this is
-            // both the thing to turn and the thing to search. Counting scene.Children instead, as the first
+            // both the thing to turn and the thing to search — and it is already a single node, which is
+            // exactly what a subject has to be. Counting the loaded scene's children instead, as the first
             // draft did, reports one node and finds no components at all.
-            _root = scene.Children.Count > 0 ? scene.Children[0] : null;
+            _root = loaded.Children.Count > 0 ? loaded.Children[0] : null;
 
             var parts = _root?.Descendants.OfType<MeshNode>().ToList() ?? [];
             _detail = $"{bytes.Length / 1024:N0} KB of .glb: {parts.Count} nodes, " +
@@ -117,36 +140,18 @@ public sealed class MotherboardScene : DemoScene
         }
         catch (Exception e)
         {
-            scene = new Scene();
+            _root = null;
             _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
             _cost = "";
-            scene.Background = Color.FromRgb(14, 16, 20);
-            return scene;
         }
-
-        scene.Background = Color.FromRgb(13, 15, 19);
-
-        // The environment is most of the lighting here, because most of what is interesting on a board is
-        // metal — gold pads, aluminium fins, the aluminium cans on the capacitors — and metal is only what
-        // it reflects. The key is there to put an edge on the fins and a highlight on the socket frame.
-        var studio = Environments.Studio();
-        scene.Environment = EnvironmentLight.FromTexture(studio, 1.15f);
-
-        // The environment and the key were balanced the wrong way round at first: the environment was
-        // carrying almost everything at 1.85, which is what a board needs only if its metals are too
-        // dark to reflect anything. With the metals at their real reflectance that much environment
-        // instead lit up the *dielectrics* — every connector on the board showed so much of the room
-        // that near-black nylon rendered as pale grey. The environment still does the metals; the key
-        // is what puts an edge on the fins and a highlight on the socket frame.
-        scene.Light.Direction = Vector3.Normalize(new Vector3(-0.42f, -0.78f, -0.46f));
-        scene.Light.Color = new Vector3(1.00f, 0.98f, 0.94f);
-        scene.Light.Intensity = 1.70f;
-        scene.Light.Ambient = 0.02f;
 
         Silkscreen();
         Split();
 
-        return scene;
+        // An empty node when the load failed, rather than null. Null means "this scene cannot be mounted",
+        // which is a statement about the scene; a missing file is a statement about this run of it, and the
+        // notes above the viewport already say which one went wrong.
+        return _root ?? new Node { Name = "board" };
     }
 
     /// <summary>

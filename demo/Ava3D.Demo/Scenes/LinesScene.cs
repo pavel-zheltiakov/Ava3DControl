@@ -80,26 +80,33 @@ public sealed class LinesScene : DemoScene
         camera.FarPlane = 30f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A dark card and nothing more. A line is one pixel wide at its thinnest, and the only thing that
+    /// helps it is having nothing behind it — a floor would put the twelve rules across a lit surface at
+    /// a grazing angle, which is the one place a hairline stops being readable.
+    /// </summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(8, 9, 14);
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
+        var chart = new Node { Name = "lines" };
 
         _left = Cube(-1.5f, depthTest: true);
         _right = Cube(1.5f, depthTest: false);
 
-        scene.Children.Add(_left);
-        scene.Children.Add(_right);
+        chart.Children.Add(_left);
+        chart.Children.Add(_right);
 
         // Left: one colour, six widths. Right: one width, six colours. The same six rows on both sides,
         // so the eye compares across rather than hunting for what changed.
         for (var i = 0; i < Widths.Length; i++)
         {
             var y = ChartTop - i * ChartStep;
-            scene.Children.Add(Rule(-2.90f, -0.65f, y, Widths[i], new Vector3(0.55f, 0.86f, 1.00f)));
-            scene.Children.Add(Rule(0.65f, 2.90f, y, 7f, Hues[i]));
+            chart.Children.Add(Rule(-2.90f, -0.65f, y, Widths[i], new Vector3(0.55f, 0.86f, 1.00f)));
+            chart.Children.Add(Rule(0.65f, 2.90f, y, 7f, Hues[i]));
         }
 
-        return scene;
+        return chart;
 
         static LineNode Rule(float x0, float x1, float y, float width, Vector3 color) => new()
         {

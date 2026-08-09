@@ -25,6 +25,27 @@ namespace Ava3D.Demo.Scenes.Contact;
 public sealed class ContactScene : DemoScene
 {
     private const float Duration = Flight.CycleSeconds;
+
+    /// <summary>How long the film runs. Public because the story cuts to it and has to know how much of
+    /// itself to give up to it.</summary>
+    public const float Length = Duration;
+
+    /// <summary>
+    /// The lens, and the two clipping planes, named rather than buried in <see cref="Frame"/>.
+    ///
+    /// They are public for one reason: the story mounts this film as a chapter and therefore has to set
+    /// the same three numbers, and a chapter that copied them would be a second place they could be
+    /// wrong. There is no version of this scene that reads correctly at the building's near plane of five
+    /// centimetres — depth resolution is set by that plane almost entirely, and a scene with a
+    /// two-and-a-half-million-unit sky sphere in it would spend the whole of its depth buffer on the first
+    /// metre.
+    /// </summary>
+    public const float Near = 5f;
+
+    public const float Far = 3_000_000f;
+
+    /// <summary>2·atan(224/420) ≈ 56.1°, the vertical field of view of the build this scale came from.</summary>
+    public static readonly float Lens = 2f * MathF.Atan(224f / 420f) * 180f / MathF.PI;
     private const float CombatStart = 23.5f;
     private const float CombatEnd = 41f;
     /// <summary>
@@ -109,9 +130,11 @@ public sealed class ContactScene : DemoScene
     private Material _collar = null!;
     private GateField _gateField = null!;
 
-    private DirectionalLight _sun = null!;
-    private PointLight _flash = null!;
-    private PointLight _gate = null!;
+    private readonly DirectionalLight _sun;
+    private readonly DirectionalLight _bounce;
+    private readonly PointLight _flash;
+    private readonly PointLight _gate;
+    private readonly EnvironmentLight _sky;
 
     private Effects _effects = null!;
     private Ship _kestrel = null!;
@@ -120,8 +143,12 @@ public sealed class ContactScene : DemoScene
 
     private Shot[] _shots = [];
 
-    private double _lastElapsed;
     private float _lastCycle;
+
+    /// <summary>How much of a second the last <see cref="Advance"/> covered. Held rather than passed
+    /// because the two halves of a frame are called separately — see <see cref="Aim"/>.</summary>
+    private float _step;
+
     private float _nextShotAt;
     private int _shotCount;
 
@@ -138,6 +165,107 @@ public sealed class ContactScene : DemoScene
     private readonly List<Impact> _inbound = [];
 
     private string? _caption;
+
+    /// <summary>
+    /// The lighting rig, built before anything it lights.
+    ///
+    /// It is in the constructor rather than in <see cref="Build"/> because none of it depends on the
+    /// geometry — the sun's bearing, the planet's, the station's and the docking bay's are all constants
+    /// of the setting rather than of the scene graph — and because the story needs to hand these four to
+    /// a room the moment it cuts here, which is before this film has been asked to build anything.
+    /// </summary>
+    public ContactScene()
+    {
+        _sun = new DirectionalLight
+        {
+            Direction = -Fleet.SunDirection,
+            Color = new Vector3(1.00f, 0.95f, 0.87f),
+            Intensity = 2.1f,
+            // Tinted rather than grey: a neutral lift reads as fog, and a lift in the scene's own sky
+            // colour reads as light somebody forgot to model.
+            AmbientColor = new Vector3(0.50f, 0.56f, 0.66f),
+            Ambient = 0.13f
+        };
+
+        // The planet bouncing sunlight back at whatever is near it: a second key, from the planet's
+        // bearing, which is a thing one light could never express.
+        _bounce = new DirectionalLight
+        {
+            Direction = Vector3.Normalize(-Fleet.PlanetCentre),
+            Color = new Vector3(0.62f, 0.80f, 0.74f),
+            Intensity = 0.85f
+        };
+
+        // Both of the point lights below are driven in units of Candela — see the constant. Written
+        // plainly they were off by five orders of magnitude and looked, at a glance, entirely reasonable.
+
+        _flash = new PointLight
+        {
+            Position = Vector3.Zero,
+            Color = new Vector3(1.00f, 0.80f, 0.45f),
+            Intensity = 0f,
+            Range = 2_600f,
+            Decay = 2f
+        };
+
+        // In the plane of the mouth rather than back inside it. Inset, the throat wall nearest the lamp
+        // took most of the light and the door around the opening — the surface a pilot actually reads —
+        // barely changed; in the plane it lights both, because half of what it throws goes down the tube
+        // and half falls across the face. The range is about twice the station's radius: far enough to
+        // wrap the arms, short enough that nothing out in the fight is lit by the dock.
+        _gate = new PointLight
+        {
+            Position = StationPosition + Fleet.BayMouth,
+            Color = new Vector3(1.00f, 0.13f, 0.06f),
+            Intensity = 0.25f * Candela,
+            // Short. The station is 1,200 units across and this light sits at one end of it, so a range
+            // of 1,500 reached the far cap, the pods and both wings: the whole relay went red, which is
+            // a station on fire rather than a bay that is shut. 820 wraps the mouth and the two docking
+            // arms and stops before the drum.
+            Range = 820f,
+            Decay = 2f
+        };
+
+        _sky = new EnvironmentLight
+        {
+            SkyColor = new Vector3(0.09f, 0.11f, 0.16f),
+            GroundColor = new Vector3(0.04f, 0.05f, 0.07f),
+            Intensity = 1f
+        };
+    }
+
+    /// <summary>
+    /// All four lights this film may hold: the sun, a bounce off the planet, one that belongs to whatever
+    /// is exploding, and the docking gate.
+    ///
+    /// The last two are the interesting ones, and they are both ranged point lights because that is the
+    /// only kind of light whose contribution is exactly zero past a distance — which is what lets a film
+    /// have local light without every hull in it knowing.
+    ///
+    /// The flash rides the newest tracer and jumps to a detonation when there is one, so a shot lights
+    /// the hull it passes and nothing else.
+    ///
+    /// The gate sits in the mouth of the docking bay and carries the bay's state as *light* rather than
+    /// as paint. The collar and the six lamps are <see cref="Material.Unlit"/>, which is right for a lamp
+    /// lens — it puts the colour on the screen unchanged instead of letting the tone map wash it out —
+    /// but an unlit surface by definition throws nothing onto anything else, so without a light there the
+    /// door around it stayed the same grey whether the bay was open or shut. This one fills the throat,
+    /// spills red or green across the surround and the near arms with a falloff no emissive can imitate,
+    /// and puts the station's answer on Kestrel's own hull as it slides in.
+    ///
+    /// It also, for most of this scene's life, did none of those things. It was authored at intensity
+    /// 3.2, which under real inverse-square at station scale is a falloff of about six millionths — the
+    /// light was on, the right colour, in the right place, and contributing nothing that would survive
+    /// being written down to four decimal places. Everything the paragraph above claims was being done by
+    /// emissive alone. See <see cref="Candela"/>: the falloff was never wrong, the units were.
+    ///
+    /// Exposed as an array because it is exactly the four a scene is allowed, and because the story hands
+    /// them straight to <c>Hall.Use</c> — a film that needed a fifth could not be cut to at all.
+    /// </summary>
+    public Light[] Lights => [_sun, _bounce, _flash, _gate];
+
+    /// <summary>The bounce that has no direction: what fills the side of a hull the sun is not on.</summary>
+    public EnvironmentLight Sky => _sky;
 
     public override string Title => "Contact";
 
@@ -167,11 +295,17 @@ public sealed class ContactScene : DemoScene
         and shot four flies the camera to twenty metres. What a sprite is right for is a thing with no
         shape of its own, which is why the dust round the station is one and the fireball is one.
 
-        The one sprite on a ship is its contact marker, and it is not pretending to be a lamp. DepthTest
-        is off so it survives the hull, and its opacity ramps in with range — nothing inside eight ship
-        lengths, everything past forty — so you never see it at a range where you can see the ship. That
-        is the case emissive geometry genuinely cannot cover: once a hull is sub-pixel there is nothing
-        left to light.
+        The one sprite on a ship is its contact marker, and it is not pretending to be a lamp. Its opacity
+        ramps in with range — nothing inside eight ship lengths, everything past forty — so you never see
+        it at a range where you can see the ship. That is the case emissive geometry genuinely cannot
+        cover: once a hull is sub-pixel there is nothing left to light.
+
+        It has to be in front of one object and behind every other one, and there is no flag for that. For
+        a while it was drawn with the depth test off, which is the same thing right up until something
+        else gets between the camera and the fleet — and in the film something does, because the last
+        chapter watches ships through a window with a metre of hull round it. Markers ignoring depth is
+        markers painted on the wall of the room you are standing in. So it depth-tests like everything
+        else and is stood off six tenths of a ship length toward the camera instead. See Ship.Mark.
 
         A two-sided material is not an inside. The docking bay was one tube drawn two-sided, which is the
         obvious way to make the far wall of a hole draw at all — and it is a trap, because both GPU
@@ -371,13 +505,12 @@ public sealed class ContactScene : DemoScene
 
     public override void Frame(Camera camera)
     {
-        // 2·atan(224/420) ≈ 56.1°, the vertical field of view of the build this scale came from.
-        camera.FieldOfView = 2f * MathF.Atan(224f / 420f) * 180f / MathF.PI;
+        camera.FieldOfView = Lens;
 
         // Explicit, and they have to stay explicit — derived planes come from the scene radius, and a
         // scene with a 2.4-million-unit sky sphere in it would put the near plane kilometres out.
-        camera.NearPlane = 5f;
-        camera.FarPlane = 3_000_000f;
+        camera.NearPlane = Near;
+        camera.FarPlane = Far;
 
         camera.Target = Vector3.Zero;
         camera.Distance = 3_000f;
@@ -385,10 +518,18 @@ public sealed class ContactScene : DemoScene
         camera.Pitch = 0f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// The sky, the star, the planet, the station and six ships — everything in the film that is not a
+    /// light.
+    ///
+    /// It is <see cref="BuildSubject"/> rather than <see cref="Build"/> so that the story can cut to it:
+    /// what comes back is one node with a world under it, and mounting a world in a building is the same
+    /// operation as mounting a cube on a plinth. There is no floor to leave behind and no backdrop to
+    /// strip, because in space there is nothing to stand on — which makes this the one scene in the demo
+    /// where the subject and the whole scene are very nearly the same thing.
+    /// </summary>
+    public override Node? BuildSubject()
     {
-        var scene = new Scene { Background = Color.FromRgb(3, 4, 8) };
-
         var glow = Space.Glow();
 
         // One plating map between the station and all six hulls. Built here rather than inside Fleet
@@ -401,10 +542,7 @@ public sealed class ContactScene : DemoScene
         // texture, so there is nothing per-ship in the images to keep them apart.
         var exhaust = (Space.Plume(), Space.PlumeCap());
 
-        BuildLights(scene);
-
-        _world = new Node();
-        scene.Children.Add(_world);
+        _world = new Node { Name = "contact.world" };
 
         Fleet.BuildSky(_world);
         Fleet.BuildStars(_world);
@@ -447,119 +585,69 @@ public sealed class ContactScene : DemoScene
         _effects = new Effects(_world, glow);
         _shots = BuildShotList();
 
-        _lastElapsed = 0;
         _lastCycle = 0;
+        _step = 0;
         _nextShotAt = CombatStart;
 
-        return scene;
+        return _world;
     }
 
     /// <summary>
-    /// All four lights a scene may hold: the sun, a bounce off the planet, one that belongs to whatever
-    /// is exploding, and the docking gate.
+    /// The lights and the black behind them: everything that is not an object.
     ///
-    /// The last two are the interesting ones, and they are both ranged point lights because that is the
-    /// only kind of light whose contribution is exactly zero past a distance — which is what lets a film
-    /// have local light without every hull in it knowing.
-    ///
-    /// The flash rides the newest tracer and jumps to a detonation when there is one, so a shot lights
-    /// the hull it passes and nothing else.
-    ///
-    /// The gate sits in the mouth of the docking bay and carries the bay's state as *light* rather than
-    /// as paint. The collar and the six lamps are <see cref="Material.Unlit"/>, which is right for a lamp
-    /// lens — it puts the colour on the screen unchanged instead of letting the tone map wash it out —
-    /// but an unlit surface by definition throws nothing onto anything else, so without a light there the
-    /// door around it stayed the same grey whether the bay was open or shut. This one fills the throat,
-    /// spills red or green across the surround and the near arms with a falloff no emissive can imitate,
-    /// and puts the station's answer on Kestrel's own hull as it slides in.
-    ///
-    /// It also, for most of this scene's life, did none of those things. It was authored at intensity
-    /// 3.2, which under real inverse-square at station scale is a falloff of about six millionths — the
-    /// light was on, the right colour, in the right place, and contributing nothing that would survive
-    /// being written down to four decimal places. Everything the paragraph above claims was being done by
-    /// emissive alone. See <see cref="Candela"/>: the falloff was never wrong, the units were.
+    /// Called when the film is shown on its own and not when the story mounts it — the story hands the
+    /// same four lights to the room it cuts to instead, which is what <see cref="Lights"/> is for. There
+    /// is no floor and no backdrop, so this is the shortest stage in the demo and the only one that is
+    /// nothing but a lighting rig.
     /// </summary>
-    private void BuildLights(Scene scene)
+    public override void Stage(Scene scene)
     {
+        scene.Background = Color.FromRgb(3, 4, 8);
+
         scene.Lights.Clear();
+        foreach (var light in Lights)
+            scene.Lights.Add(light);
 
-        _sun = new DirectionalLight
-        {
-            Direction = -Fleet.SunDirection,
-            Color = new Vector3(1.00f, 0.95f, 0.87f),
-            Intensity = 2.1f,
-            // Tinted rather than grey: a neutral lift reads as fog, and a lift in the scene's own sky
-            // colour reads as light somebody forgot to model.
-            AmbientColor = new Vector3(0.50f, 0.56f, 0.66f),
-            Ambient = 0.13f
-        };
-
-        scene.Lights.Add(_sun);
-
-        // The planet bouncing sunlight back at whatever is near it: a second key, from the planet's
-        // bearing, which is a thing one light could never express.
-        scene.Lights.Add(new DirectionalLight
-        {
-            Direction = Vector3.Normalize(-Fleet.PlanetCentre),
-            Color = new Vector3(0.62f, 0.80f, 0.74f),
-            Intensity = 0.85f
-        });
-
-        _flash = new PointLight
-        {
-            Position = Vector3.Zero,
-            Color = new Vector3(1.00f, 0.80f, 0.45f),
-            Intensity = 0f,
-            Range = 2_600f,
-            Decay = 2f
-        };
-
-        // Both of the point lights below are driven in units of Candela — see the constant. Written
-        // plainly they were off by five orders of magnitude and looked, at a glance, entirely reasonable.
-
-        scene.Lights.Add(_flash);
-
-        // In the plane of the mouth rather than back inside it. Inset, the throat wall nearest the lamp
-        // took most of the light and the door around the opening — the surface a pilot actually reads —
-        // barely changed; in the plane it lights both, because half of what it throws goes down the tube
-        // and half falls across the face. The range is about twice the station's radius: far enough to
-        // wrap the arms, short enough that nothing out in the fight is lit by the dock.
-        _gate = new PointLight
-        {
-            Position = StationPosition + Fleet.BayMouth,
-            Color = new Vector3(1.00f, 0.13f, 0.06f),
-            Intensity = 0.25f * Candela,
-            // Short. The station is 1,200 units across and this light sits at one end of it, so a range
-            // of 1,500 reached the far cap, the pods and both wings: the whole relay went red, which is
-            // a station on fire rather than a bay that is shut. 820 wraps the mouth and the two docking
-            // arms and stops before the drum.
-            Range = 820f,
-            Decay = 2f
-        };
-
-        scene.Lights.Add(_gate);
-
-        scene.Environment = new EnvironmentLight
-        {
-            SkyColor = new Vector3(0.09f, 0.11f, 0.16f),
-            GroundColor = new Vector3(0.04f, 0.05f, 0.07f),
-            Intensity = 1f
-        };
+        scene.Environment = _sky;
     }
 
     public override void Update(Scene scene, Camera camera, double elapsed)
     {
-        var dt = (float)Math.Clamp(elapsed - _lastElapsed, 0.0, 0.1);
-        _lastElapsed = elapsed;
+        Advance((float)(elapsed % Duration));
+        Aim(camera);
 
-        var cycle = (float)(elapsed % Duration);
+        scene.Invalidate();
+    }
+
+    /// <summary>
+    /// Everything in the film that is not the camera, at <paramref name="cycle"/> seconds through it: the
+    /// ships fly, the guns fire, the rounds land, and the station and the hulls are dressed.
+    ///
+    /// <b>It works out its own step</b> from the second it was last given, rather than being handed one.
+    /// That is not tidiness — it is what makes the film mountable. The story does not thread a delta
+    /// through its chapters and must not start, because a chapter that took one would be a chapter whose
+    /// output depended on how the clock got to a number rather than on the number; here the two callers
+    /// are a scene running on the compositor and a chapter running on a film clock, and neither has to
+    /// know what the other does.
+    ///
+    /// A step that comes out negative is the clock going backwards — the end of a cycle joining its
+    /// beginning, or somebody seeking — and it means the same thing in both cases: put the film back to
+    /// its first frame. That is the whole of <see cref="Rewind"/> and it is why this scene can be jumped
+    /// into at all.
+    /// </summary>
+    public void Advance(float cycle)
+    {
         if (cycle < _lastCycle)
             Rewind();
+
+        // Clamped at a tenth. Everything below is a pure function of the cycle except the tracers and the
+        // explosions, and those are the two things that would teleport across a stall.
+        _step = Math.Clamp(cycle - _lastCycle, 0f, 0.1f);
         _lastCycle = cycle;
 
         var u = cycle / Duration;
 
-        FlyEveryone(u, cycle, dt);
+        FlyEveryone(u, cycle, _step);
         Shoot(cycle);
 
         // After the ships have moved, because a round lands on a hull where the hull is now — and after
@@ -567,12 +655,22 @@ public sealed class ContactScene : DemoScene
         Land(cycle);
 
         Dress(cycle);
+    }
 
-        // The camera is aimed before the effects are advanced, because a shockwave ring is billboarded at
-        // it — aiming afterwards would face every ring at where the camera was on the previous frame.
-        Direct(camera, cycle);
+    /// <summary>
+    /// The half of a frame that needs to know where the camera is: the shot list, the effects that face
+    /// it, the one light that follows the action, and the contact markers.
+    ///
+    /// Separate from <see cref="Advance"/> because the order inside a frame is load-bearing and the story
+    /// splits a frame in two — it updates every chapter's world and then places the camera. The camera is
+    /// aimed before the effects are advanced, because a shockwave ring is billboarded at it and aiming
+    /// afterwards would face every ring at where the camera was on the previous frame.
+    /// </summary>
+    public void Aim(Camera camera)
+    {
+        Direct(camera, _lastCycle);
 
-        _effects.Update(dt, camera.Position);
+        _effects.Update(_step, camera.Position);
         AimTheLight();
 
         // Contact markers last, because they depend on where the camera ended up this frame rather than
@@ -582,11 +680,7 @@ public sealed class ContactScene : DemoScene
             escort.Mark(camera.Position);
         foreach (var raider in _raiders)
             raider.Mark(camera.Position);
-
-        scene.Invalidate();
     }
-
-
 
     /// <summary>Puts the film back to its first frame. Called when the cycle wraps.</summary>
     private void Rewind()

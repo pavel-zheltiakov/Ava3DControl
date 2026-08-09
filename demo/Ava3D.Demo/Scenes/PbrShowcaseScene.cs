@@ -39,9 +39,13 @@ public sealed class PbrShowcaseScene : DemoScene
 
     public override bool Animates => true;
 
-    public override Scene Build()
+    /// <summary>
+    /// A cool key and a warm ground bounce, and no floor. The subject already brings its own base plate,
+    /// which is what the posts stand on, so a stage floor under it would be a second one half a metre lower.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(14, 16, 21) };
+        scene.Background = Color.FromRgb(14, 16, 21);
 
         scene.Environment = new EnvironmentLight
         {
@@ -51,11 +55,13 @@ public sealed class PbrShowcaseScene : DemoScene
         };
         scene.Light.Direction = Vector3.Normalize(new Vector3(-0.5f, -0.75f, -0.42f));
         scene.Light.Color = new Vector3(1.05f, 1.0f, 0.94f);
+    }
 
+    public override Node BuildSubject()
+    {
         var maps = Procedural.Panels();
 
         _turntable = new Node { Name = "Turntable" };
-        scene.Children.Add(_turntable);
 
         // Tangents are required for the normal map and the primitives do not carry them.
         var drum = Primitives.Sphere(1.05f, 64, 32).WithGeneratedTangents();
@@ -80,7 +86,7 @@ public sealed class PbrShowcaseScene : DemoScene
                 Position = new Vector3(x, -0.05f, z)
             });
 
-        return scene;
+        return _turntable;
     }
 
     public override void Update(Scene scene, double elapsed)

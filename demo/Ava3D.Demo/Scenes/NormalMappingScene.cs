@@ -28,9 +28,15 @@ public sealed class NormalMappingScene : DemoScene
 
     public override bool Animates => true;
 
-    public override Scene Build()
+    /// <summary>
+    /// Nothing but a fresh scene's own light, which <see cref="Update"/> then swings. A floor here would be
+    /// the one surface in frame carrying no normal map, which invites exactly the wrong comparison.
+    /// </summary>
+    public override void Stage(Scene scene) { }
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene();
+        var row = new Node { Name = "normals" };
         var normalMap = Procedural.Dimples();
 
         // Tangents are generated from the UVs; the plain sphere below deliberately has none.
@@ -40,7 +46,7 @@ public sealed class NormalMappingScene : DemoScene
         float[] strengths = [0f, 0.5f, 1f, 2f];
         for (var i = 0; i < strengths.Length; i++)
         {
-            scene.Children.Add(new MeshNode(sphere, new Material
+            row.Children.Add(new MeshNode(sphere, new Material
             {
                 Name = $"scale {strengths[i]:0.#}",
                 BaseColor = new Vector4(0.72f, 0.74f, 0.78f, 1f),
@@ -55,19 +61,19 @@ public sealed class NormalMappingScene : DemoScene
             });
         }
 
-        scene.Children.Add(new MeshNode(sphere, Mapped(normalMap))
+        row.Children.Add(new MeshNode(sphere, Mapped(normalMap))
         {
             Name = "with tangents",
             Position = new Vector3(-0.6f, -0.7f, 0f)
         });
 
-        scene.Children.Add(new MeshNode(untangented, Mapped(normalMap))
+        row.Children.Add(new MeshNode(untangented, Mapped(normalMap))
         {
             Name = "no tangents — map ignored",
             Position = new Vector3(0.6f, -0.7f, 0f)
         });
 
-        return scene;
+        return row;
     }
 
     private static Material Mapped(Texture normalMap) => new()

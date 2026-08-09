@@ -49,38 +49,56 @@ public sealed class GltfScene : DemoScene
 
     public override SceneLook Look => SceneLook.Studio;
 
-    public override Scene Build()
+    /// <summary>
+    /// A dark card and a sky-and-ground environment, and no floor.
+    ///
+    /// The model carries a normal map and a metallic-roughness map, and the environment is what makes
+    /// either of them visible — the metal has to have something to reflect before the roughness channel
+    /// means anything. It is deliberately not the neutral stage: the point of this scene is what came out
+    /// of the loader, and that reads best against nothing.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
+        scene.Background = Color.FromRgb(18, 20, 26);
+        scene.Environment = new EnvironmentLight
+        {
+            SkyColor = new Vector3(0.40f, 0.45f, 0.56f),
+            GroundColor = new Vector3(0.16f, 0.14f, 0.12f)
+        };
+    }
+
+    public override Node BuildSubject()
+    {
+        var model = new Node { Name = "generated" };
+
         try
         {
             var bytes = Author();
-            var scene = GltfLoader.Load(bytes, "generated.glb");
-            scene.Background = Color.FromRgb(18, 20, 26);
-            scene.Environment = new EnvironmentLight
-            {
-                SkyColor = new Vector3(0.40f, 0.45f, 0.56f),
-                GroundColor = new Vector3(0.16f, 0.14f, 0.12f)
-            };
+            var loaded = GltfLoader.Load(bytes, "generated.glb");
 
-            var meshes = scene.EnumerateMeshes().ToList();
-            var triangles = meshes.Sum(m => m.Node.Mesh!.TriangleCount);
-            var tangents = meshes.Count(m => m.Node.Mesh!.Tangents is { Length: > 0 });
+            // The loader returns a Scene, because that is what a glTF file describes. Its roots are moved
+            // under one node rather than copied, so what is on screen is still the hierarchy the file
+            // asked for, with one holder above it — which is the price of a subject being one node.
+            foreach (var root in loaded.Children.ToList())
+                model.Children.Add(root);
+
+            var meshes = model.Descendants.OfType<MeshNode>().Where(node => node.Mesh is not null).ToList();
+            var triangles = meshes.Sum(node => node.Mesh!.TriangleCount);
+            var tangents = meshes.Count(node => node.Mesh!.Tangents is { Length: > 0 });
 
             _detail =
                 $"Loaded {bytes.Length / 1024.0:F0} KB of glb: {meshes.Count} primitives, " +
                 $"{triangles:N0} triangles, tangents generated for {tangents} of them.";
-
-            return scene;
         }
         catch (Exception e)
         {
             _detail = $"The round trip failed: {e.GetType().Name}: {e.Message}";
 
-            var fallback = new Scene();
-            fallback.Children.Add(new MeshNode(Primitives.Box(1f, 1f, 1f),
+            model.Children.Add(new MeshNode(Primitives.Box(1f, 1f, 1f),
                 Material.FromColor(0.8f, 0.3f, 0.3f)));
-            return fallback;
         }
+
+        return model;
     }
 
     /// <summary>

@@ -54,15 +54,22 @@ public sealed class EnvironmentScene : DemoScene
         camera.FarPlane = 90f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// The image, twice: once as the thing that lights the row and once as the sphere around it, so that
+    /// what is being reflected is in the frame with the reflection.
+    ///
+    /// All of it is stage, which is a slightly surprising thing to say about the sky — it is the biggest
+    /// object in the scene. But the subject here is five metals and nothing else; the sky is what is
+    /// showing them, and mounted in a room the room does that job instead. The material gallery gives the
+    /// same five spheres a probe baked from the gallery itself, and they reflect that room in the same way
+    /// they reflect this one.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
         var studio = Environments.Studio();
 
-        var scene = new Scene
-        {
-            Background = Color.FromRgb(10, 11, 14),
-            Environment = EnvironmentLight.FromTexture(studio, 1.15f)
-        };
+        scene.Background = Color.FromRgb(10, 11, 14);
+        scene.Environment = EnvironmentLight.FromTexture(studio, 1.15f);
 
         // One key light, and a weak one. The environment is doing the work here, and a strong key would
         // put a highlight on every sphere bright enough to hide what they are reflecting.
@@ -86,12 +93,17 @@ public sealed class EnvironmentScene : DemoScene
         };
 
         scene.Children.Add(_sky);
+    }
+
+    public override Node BuildSubject()
+    {
+        var row = new Node { Name = "roughness" };
 
         float[] roughness = [0.03f, 0.15f, 0.35f, 0.60f, 0.85f];
 
         for (var i = 0; i < roughness.Length; i++)
         {
-            scene.Children.Add(new MeshNode(Primitives.Sphere(0.85f, 56, 36), new Material
+            row.Children.Add(new MeshNode(Primitives.Sphere(0.85f, 56, 36), new Material
             {
                 Name = $"roughness {roughness[i]:0.00}",
                 BaseColor = new Vector4(0.92f, 0.90f, 0.86f, 1f),
@@ -103,7 +115,7 @@ public sealed class EnvironmentScene : DemoScene
             });
         }
 
-        return scene;
+        return row;
     }
 
     public override void Update(Scene scene, double elapsed)

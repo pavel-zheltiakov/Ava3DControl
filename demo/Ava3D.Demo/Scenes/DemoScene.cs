@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Ava3D;
 
 namespace Ava3D.Demo.Scenes;
@@ -32,8 +33,65 @@ public abstract class DemoScene
     /// </summary>
     public abstract string Notes { get; }
 
-    /// <summary>Builds the scene. Called once per selection; store node references for <see cref="Update"/>.</summary>
-    public abstract Scene Build();
+    /// <summary>
+    /// Builds the scene as it is seen on its own: the subject, standing on a stage.
+    ///
+    /// Called once per selection; store node references for <see cref="Update"/>.
+    ///
+    /// Every scene in this folder now uses this default, and the only overrides left are the four in
+    /// <c>Board/</c>, which tolerate a subject that failed to load rather than building anything
+    /// differently. The throw is therefore not defensive about the split any more — it is the answer to a
+    /// new scene that implements neither half, which would otherwise draw an empty grey card and look
+    /// like a rendering bug rather than an unfinished file.
+    /// </summary>
+    public virtual Scene Build()
+    {
+        var scene = new Scene();
+        Stage(scene);
+        scene.Children.Add(BuildSubject() ?? throw new InvalidOperationException(
+            $"{GetType().Name} overrides neither Build nor BuildSubject — one of them has to make something"));
+
+        return scene;
+    }
+
+    /// <summary>
+    /// The subject alone: the nodes this scene exists to show, with no ground under them, no backdrop
+    /// behind them and no lights on them.
+    ///
+    /// This is the half of a scene that can be picked up and put somewhere else, and it is what the story
+    /// mounts — on a plinth, in a niche, on a bench. Every scene here has one; there is no longer such a
+    /// thing as a scene the story cannot mount.
+    ///
+    /// Null means there is nothing to show at all, which in practice means geometry that would not load,
+    /// and a scene that can say it has to override <see cref="Build"/> to tolerate it. Only the four board
+    /// scenes do. The other three that can fail the same way return a holder instead and never say null —
+    /// the camera and the motherboard leave it empty, and the round-trip glb puts a red box in it, because
+    /// its failure is a bug in this demo rather than a missing file and should look like one. All of them
+    /// say what happened in <see cref="Notes"/>. Prefer the holder: it needs no override.
+    ///
+    /// Lights are deliberately not part of it. A light lives on the <see cref="Scene"/> rather than in the
+    /// node tree, there are four slots in the whole scene, and a room that is already spending them cannot
+    /// take an exhibit's as well — see <see cref="Stage"/> for where a scene's own lighting goes.
+    /// </summary>
+    public virtual Node? BuildSubject() => null;
+
+    /// <summary>
+    /// Everything around the subject that makes it readable on its own: the backdrop, the floor, the
+    /// lights, the environment.
+    ///
+    /// Called only when the scene is shown by itself. The story never calls it, because in the story the
+    /// room is the stage — its floor, its lamps, its walls. A scene whose subject is the lighting rather
+    /// than the object overrides this to arrange the lights it is demonstrating, and is mounted as a room
+    /// rather than as an exhibit.
+    ///
+    /// The default is currently unreached, and that is not a mistake to be tidied away. Every scene in this
+    /// folder overrides it, because a starfield and a lit still life do not want the same floor and there
+    /// is no honest average of the two — which is the finding, and it is the opposite of what was expected.
+    /// <see cref="Staging.Neutral"/> stays because it is still the right first answer for a scene nobody
+    /// has written yet: something to stand on and something to see it by, so a new file draws a picture
+    /// before its author has decided anything.
+    /// </summary>
+    public virtual void Stage(Scene scene) => Staging.Neutral(scene);
 
     /// <summary>
     /// Aims the camera, for scenes that only read correctly from one angle — a chart wants to be seen
@@ -44,6 +102,18 @@ public abstract class DemoScene
     /// scene's extent afterwards, so a scene that only states its angle still gets framed properly.
     /// </summary>
     public virtual void Frame(Camera camera) { }
+
+    /// <summary>
+    /// The scene is being taken off. Let go of anything that outlives a <see cref="Scene"/>.
+    ///
+    /// Nearly nothing needs this, which is why it is a virtual with an empty body rather than
+    /// <see cref="IDisposable"/> on every scene in the folder: a scene is meshes and materials, the picker
+    /// drops its instance, and the collector takes the lot. What it exists for is the one kind of thing a
+    /// garbage collector cannot help with — a resource that is still running when nobody is holding it.
+    /// The film's soundtrack is that: an audio device with a thread of its own, which would go on playing
+    /// a room tone from a building that is no longer on screen.
+    /// </summary>
+    public virtual void Retire() { }
 
     /// <summary>
     /// Whether <see cref="Frame"/> sets the whole camera, target and distance included, and AutoFit should
@@ -77,6 +147,27 @@ public abstract class DemoScene
     /// frame of work per frame that a static camera should not pay for.
     /// </summary>
     public virtual bool DrivesCamera => false;
+
+    /// <summary>
+    /// Whether the viewer has the controls right now: mouse to look, keys and the on-screen buttons to walk.
+    ///
+    /// Polled every frame rather than read once, because a scene can hand over partway through — the film
+    /// does exactly that, at the end, having spent nine minutes walking you around the building itself.
+    /// The shell answers it by turning the view's own orbit on and by showing its two step buttons; a scene
+    /// that says yes must also still say yes to <see cref="DrivesCamera"/>, because it is now placing the
+    /// camera from the viewer's input instead of from a script, which is still placing it.
+    /// </summary>
+    public virtual bool WantsControl => false;
+
+    /// <summary>
+    /// How the viewer is asking to move, in the camera's own frame: X is sideways, Y is forwards, each in
+    /// −1 to 1. Pushed by the shell whenever it changes rather than polled.
+    ///
+    /// It is a direction and not a distance on purpose. How fast a metre goes by is the scene's business —
+    /// it knows whether it is a person on a deck or a ship in open space — and the shell only knows which
+    /// keys are down.
+    /// </summary>
+    public virtual void Steer(Vector2 move) { }
 
     /// <summary>
     /// A line of text over the bottom of the viewport, polled every frame. Null for no caption.

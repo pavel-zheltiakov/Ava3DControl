@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Numerics;
 using Avalonia;
 using Avalonia.Media;
 
@@ -140,4 +141,45 @@ internal static class Glyphs
     public static double Measure(string text, double size) => text.Length == 0
         ? 0
         : (text.Length * Advance - (Advance - CellWidth)) * (size / CellHeight);
+
+    /// <summary>
+    /// The same alphabet as bare line segments, for a caller that is not drawing on a canvas.
+    ///
+    /// One reader wants that, and it is the reason this exists: the film's title card is geometry in the
+    /// scene rather than an overlay on top of it — see <c>Story.Curtain</c> — because a frame grab of the
+    /// demo has to be able to show it. An overlay is invisible to <c>AVA3D_CAPTURE</c>, so a title drawn
+    /// there is a title nobody can check.
+    ///
+    /// The pairs are what <see cref="LineNode.Positions"/> wants: [0]–[1] is one segment, [2]–[3] the
+    /// next, so a four-point stroke comes back as three pairs rather than as four points. Units are the
+    /// cell's: x runs right from nought, y runs <b>down</b> from nought, and the word is
+    /// <see cref="Advance"/> per glyph wide by <see cref="CellHeight"/> tall. Scaling and flipping it is
+    /// the caller's business, because the caller is the one that knows which way up its own space is.
+    /// </summary>
+    public static Vector2[] Segments(string text)
+    {
+        var pairs = new List<Vector2>();
+        var pen = 0f;
+
+        foreach (var raw in text)
+        {
+            if (Strokes.TryGetValue(char.ToUpperInvariant(raw), out var strokes))
+                foreach (var stroke in strokes.Split('|'))
+                {
+                    var points = stroke.Split(' ');
+
+                    for (var i = 1; i < points.Length; i++)
+                    {
+                        pairs.Add(At(points[i - 1]));
+                        pairs.Add(At(points[i]));
+                    }
+
+                    Vector2 At(string point) => new(pen + (point[0] - '0'), point[1] - '0');
+                }
+
+            pen += Advance;
+        }
+
+        return pairs.ToArray();
+    }
 }

@@ -139,27 +139,52 @@ public sealed class InspectorScene : DemoScene
 
     public override Scene Build()
     {
-        Scene scene;
+        var scene = new Scene();
+        Stage(scene);
 
-        try
-        {
-            (scene, _root, _detail) = BoardModel.Load();
-            _board = BoardData.Read();
-        }
-        catch (Exception e)
-        {
-            scene = new Scene();
-            _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
-            scene.Background = Color.FromRgb(14, 16, 20);
-            return scene;
-        }
+        if (BuildSubject() is { } board)
+            scene.Children.Add(board);
 
+        return scene;
+    }
+
+    /// <summary>
+    /// A dark room and one key, with the environment doing the metals.
+    ///
+    /// The story does none of this. It stands the board in a service cradle in the engine room and lights
+    /// it with the bay's own lamps, which is the difference between a subject and a scene: what is on the
+    /// board does not change, and everything around it does.
+    /// </summary>
+    public override void Stage(Scene scene)
+    {
         scene.Background = Color.FromRgb(13, 15, 19);
         scene.Environment = EnvironmentLight.FromTexture(Environments.Studio(), 1.15f);
         scene.Light.Direction = Vector3.Normalize(new Vector3(-0.42f, -0.78f, -0.46f));
         scene.Light.Color = new Vector3(1.00f, 0.98f, 0.94f);
         scene.Light.Intensity = 1.70f;
         scene.Light.Ambient = 0.02f;
+    }
+
+    /// <summary>
+    /// The board, indexed, with the highlight's line node already on it and the first stop selected.
+    ///
+    /// The story mounts it on a screen rather than on a bench, at a third of full size, and that is the
+    /// whole of what this scene is in the film: the board as information. The board as an object is the
+    /// one lying in front of the screen at fifteen hundredths, and it is a different instance because the
+    /// two are different things.
+    /// </summary>
+    public override Node? BuildSubject()
+    {
+        try
+        {
+            (_, _root, _detail) = BoardModel.Load();
+            _board = BoardData.Read();
+        }
+        catch (Exception e)
+        {
+            _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
+            return null;
+        }
 
         foreach (var node in _root.Descendants)
         {
@@ -194,9 +219,9 @@ public sealed class InspectorScene : DemoScene
 
         // Standing on the first stop from the first frame, so there is never a moment where the scene
         // is a board with nothing selected and no explanation of why anyone would click it.
-        Advance(scene, 0);
+        Advance(null, 0);
 
-        return scene;
+        return _root;
     }
 
     public override void Update(Scene scene, double elapsed)
@@ -214,7 +239,7 @@ public sealed class InspectorScene : DemoScene
         scene.Invalidate();
     }
 
-    private void Advance(Scene scene, int index)
+    private void Advance(Scene? scene, int index)
     {
         if (index == _stop || _root is null)
             return;
@@ -301,7 +326,7 @@ public sealed class InspectorScene : DemoScene
     /// What the walk is calling this selection, or null for a click — where the person already knows
     /// what they picked and the interesting half of the caption is the measurements.
     /// </param>
-    private void Select(Scene scene, IReadOnlyList<BoardPart> parts, bool copper, string? lead)
+    private void Select(Scene? scene, IReadOnlyList<BoardPart> parts, bool copper, string? lead)
     {
         var nodes = 0;
 
@@ -406,14 +431,16 @@ public sealed class InspectorScene : DemoScene
         return Vector2.Distance(point, a + span * t);
     }
 
-    private void Show(Scene scene, string caption, Vector3[] copper)
+    private void Show(Scene? scene, string caption, Vector3[] copper)
     {
         _caption = caption;
 
         if (_net is not null)
             _net.Positions = copper;
 
-        scene.Invalidate();
+        // Null while the subject is being built, because there is no scene yet — the story asks for the
+        // board before it has anywhere to stand it.
+        scene?.Invalidate();
     }
 
     private void Restore()

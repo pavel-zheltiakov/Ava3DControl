@@ -29,6 +29,44 @@ sealed class Program
             FrameCapture.Scale = scale;
 #endif
 
+        // AVA3D_WALK=1 checks every scripted camera in the film against the same solids the free walk is
+        // stopped by, prints what clips, and exits without opening a window.
+        //
+        // It needs no renderer because it is not about rendering: the building is a scene graph, the walk is
+        // a pure function of the clock, and whether a pose is inside a bench is arithmetic on two boxes. See
+        // Story.Ground.Audit, and see there for why the answer is a report to act on rather than a camera
+        // that gets pushed out of the way.
+        if (Environment.GetEnvironmentVariable("AVA3D_WALK") == "1")
+        {
+            // Avalonia is set up but never started, and no window is ever made. The building is not a
+            // picture here, it is a graph — but two of its rooms load a glTF, and a loader needs the asset
+            // resolver that only exists once the framework has been configured.
+            BuildAvaloniaApp().SetupWithoutStarting();
+
+            Console.WriteLine(Views.MainView.DescribeWalks());
+            return;
+        }
+
+        // AVA3D_SOUND_RENDER=<path> writes the film's soundtrack to a .wav and exits, with no window, no
+        // renderer and no audio device. AVA3D_SOUND_FROM and AVA3D_SOUND_TO narrow it to a stretch of film.
+        //
+        // It is AVA3D_CAPTURE for the other half of the demo, and it is here for the same reason: the only
+        // report anybody can give about a sound is that it did or did not sound right where they were
+        // sitting, and a file is something a second person can open. Ten minutes of film takes a few
+        // seconds, because nothing is drawn.
+        if (Environment.GetEnvironmentVariable("AVA3D_SOUND_RENDER") is { Length: > 0 } wav)
+        {
+            // Same reason as the walk audit above: two of the rooms load a glTF, and a loader needs the
+            // asset resolver that only exists once Avalonia has been configured. No window is ever made.
+            BuildAvaloniaApp().SetupWithoutStarting();
+
+            float.TryParse(Environment.GetEnvironmentVariable("AVA3D_SOUND_FROM"), out var soundFrom);
+            float.TryParse(Environment.GetEnvironmentVariable("AVA3D_SOUND_TO"), out var soundTo);
+
+            Console.WriteLine(Story.StoryScene.RecordSoundtrack(wav, soundFrom, soundTo));
+            return;
+        }
+
         // AVA3D_PROBE=<seconds> renders for a while, prints what the renderer did, then exits — so the
         // control can be verified from a terminal instead of by someone watching a window.
         if (double.TryParse(Environment.GetEnvironmentVariable("AVA3D_PROBE"), out var seconds) && seconds > 0)

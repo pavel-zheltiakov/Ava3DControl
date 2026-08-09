@@ -58,9 +58,17 @@ public sealed class CullingScene : DemoScene
         camera.FarPlane = 60f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// Night outside, one key that reaches every room, and a lamp standing in the middle one.
+    ///
+    /// The lamp is at the origin of the row, which is inside the room the camera flies into — there are no
+    /// shadows here, so the key lights all three interiors regardless and the lamp is warmth rather than
+    /// visibility. It is stage rather than subject because it is a fact about where the camera is going,
+    /// not about which faces are drawn.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
+        scene.Background = Color.FromRgb(8, 9, 14);
 
         scene.Lights.Clear();
         scene.Lights.Add(new DirectionalLight
@@ -89,17 +97,22 @@ public sealed class CullingScene : DemoScene
             SkyColor = new Vector3(0.10f, 0.12f, 0.17f),
             GroundColor = new Vector3(0.05f, 0.05f, 0.06f)
         };
+    }
+
+    public override Node BuildSubject()
+    {
+        var row = new Node { Name = "rooms" };
 
         Room(-9f, CullMode.None, new Vector3(0.62f, 0.64f, 0.70f));
         Room(0f, CullMode.Back, new Vector3(0.40f, 0.68f, 0.95f));
         Room(9f, CullMode.Front, new Vector3(0.95f, 0.62f, 0.38f));
 
-        return scene;
+        return row;
 
         void Room(float x, CullMode cull, Vector3 tint)
         {
             var group = new Node { Position = new Vector3(x, 0f, 0f) };
-            scene.Children.Add(group);
+            row.Children.Add(group);
 
             // The shell. A closed box with no door: the only way in is through a wall, which is exactly
             // the question this scene is about.

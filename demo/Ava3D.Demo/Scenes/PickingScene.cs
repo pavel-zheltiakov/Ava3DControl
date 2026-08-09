@@ -25,10 +25,14 @@ public sealed class PickingScene : DemoScene
 
     public override bool WantsPicking => true;
 
-    public override Scene Build()
-    {
-        var scene = new Scene();
-
+    /// <summary>
+    /// A floor, and it is doing a job rather than filling space: it is the surface behind every miss, and
+    /// it sets <see cref="Node.IsPickable"/> false so a click that lands on it reports nothing at all
+    /// rather than reporting the floor. That is stage work — a room mounting these would want its own
+    /// floor to answer a miss the same way, which is why the flag belongs to whatever is holding the
+    /// scene up rather than to the twelve objects.
+    /// </summary>
+    public override void Stage(Scene scene) =>
         scene.Children.Add(new MeshNode(Primitives.Plane(9f, 9f), new Material
         {
             BaseColor = new Vector4(0.14f, 0.15f, 0.17f, 1f),
@@ -40,6 +44,9 @@ public sealed class PickingScene : DemoScene
             IsPickable = false
         });
 
+    public override Node BuildSubject()
+    {
+        var grid = new Node { Name = "targets" };
         var sphere = Primitives.Sphere(0.34f);
         var box = Primitives.Box(0.6f, 0.6f, 0.6f);
 
@@ -49,7 +56,7 @@ public sealed class PickingScene : DemoScene
             var useBox = (x + z) % 2 == 0;
             var index = z * 4 + x;
 
-            scene.Children.Add(new MeshNode(useBox ? box : sphere, new Material
+            grid.Children.Add(new MeshNode(useBox ? box : sphere, new Material
             {
                 BaseColor = new Vector4(0.35f + x * 0.14f, 0.44f, 0.80f - z * 0.16f, 1f),
                 Roughness = 0.4f
@@ -61,6 +68,6 @@ public sealed class PickingScene : DemoScene
             });
         }
 
-        return scene;
+        return grid;
     }
 }

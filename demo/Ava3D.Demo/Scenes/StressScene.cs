@@ -37,15 +37,16 @@ public sealed class StressScene : DemoScene
         renderer with the picker above and read the counter; that is the whole argument for having a GPU path.
         """;
 
-    public override Scene Build()
-    {
-        var scene = new Scene();
-
-        // 32 x 16 is the default: 1,024 triangles each, 128,000 for the grid.
-        var sphere = Primitives.Sphere(Radius);
-
-        // The 126th draw and the two triangles that make 128,000 into 128,002 — it is in the count every
-        // published frame rate was measured against, so it stays. The bottom row rests on it exactly.
+    /// <summary>
+    /// One plane, and it is load-bearing in two different ways.
+    ///
+    /// It is the 126th draw and the two triangles that make 128,000 into 128,002, so it is in the count
+    /// every published frame rate was measured against and it stays. And <see cref="GroundY"/> is derived
+    /// from the grid rather than typed, so the bottom row rests on it exactly — anything mounting the grid
+    /// somewhere else has to put its own floor at that height or the spheres will hang above it or sink
+    /// through it, which is precisely the bug the constant was introduced to fix.
+    /// </summary>
+    public override void Stage(Scene scene) =>
         scene.Children.Add(new MeshNode(Primitives.Plane(9f, 9f), new Material
         {
             BaseColor = new Vector4(0.13f, 0.14f, 0.16f, 1f),
@@ -56,6 +57,13 @@ public sealed class StressScene : DemoScene
             IsPickable = false
         });
 
+    public override Node BuildSubject()
+    {
+        var grid = new Node { Name = "grid" };
+
+        // 32 x 16 is the default: 1,024 triangles each, 128,000 for the grid.
+        var sphere = Primitives.Sphere(Radius);
+
         for (var z = 0; z < Side; z++)
         for (var y = 0; y < Side; y++)
         for (var x = 0; x < Side; x++)
@@ -65,7 +73,7 @@ public sealed class StressScene : DemoScene
             var v = y / (Side - 1f);
             var w = z / (Side - 1f);
 
-            scene.Children.Add(new MeshNode(sphere, new Material
+            grid.Children.Add(new MeshNode(sphere, new Material
             {
                 BaseColor = new Vector4(0.25f + u * 0.65f, 0.25f + v * 0.65f, 0.30f + w * 0.60f, 1f),
                 Metallic = w > 0.5f ? 0.85f : 0f,
@@ -80,6 +88,6 @@ public sealed class StressScene : DemoScene
             });
         }
 
-        return scene;
+        return grid;
     }
 }

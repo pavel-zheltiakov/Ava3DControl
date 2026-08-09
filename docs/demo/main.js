@@ -8,6 +8,72 @@ const line = document.getElementById('boot-line');
 const bar = document.getElementById('boot-bar');
 const hint = document.getElementById('boot-hint');
 
+// ?report=<label> — send this page's console back to the server that is hosting it.
+//
+// Ava3D.SelfTest prints five checksums over the software renderer's arithmetic twelve seconds in, and the
+// only use of them is to diff one engine against another. Chrome will hand its console to a script over
+// the DevTools protocol; Safari will not hand it to anything without safaridriver, an administrator and a
+// WebDriver session, which is a lot of moving parts between a build and an answer. A page that posts what
+// it printed needs none of them, behaves identically in every engine — which matters when comparing two —
+// and works on a phone, where there is no console to open at all.
+//
+// Two guards, and both are the point rather than caution. It has to be asked for, and it only runs against
+// a loopback host, so this cannot fire on the published site: there is no server there to post to and no
+// visitor who has agreed to it. tools/serve-demo.py is the other end.
+const label = new URLSearchParams(globalThis.location.search).get('report');
+const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(globalThis.location.hostname);
+
+if (label && local) {
+    const lines = [];
+    let sent = 0;
+
+    // debug as well as log: the runtime routes a managed Console.WriteLine through whichever of the two
+    // it was configured with, and which one that is has changed between .NET versions.
+    for (const level of ['log', 'info', 'warn', 'error', 'debug']) {
+        const inner = console[level].bind(console);
+        console[level] = (...args) => {
+            lines.push(args.map(a => (typeof a === 'string' ? a : String(a))).join(' '));
+            inner(...args);
+        };
+    }
+
+    // Posted on a timer rather than at the end, because there is no end: the demo runs until the tab is
+    // closed, and a report that only arrives on unload is a report that is lost whenever anything hangs.
+    // Each post replaces the file, so the last one to land is the whole console.
+    setInterval(() => {
+        if (lines.length === sent)
+            return;
+
+        sent = lines.length;
+        fetch(`/report/${encodeURIComponent(label)}`, { method: 'POST', body: lines.join('\n') })
+            .catch(() => { /* the server went away; the console still has it */ });
+    }, 2000);
+
+    // And the picture, which is the other half of comparing two engines and the half no checksum can
+    // stand in for. The fault this is all for is a shape — scattered wrongly-coloured triangles — and a
+    // shape has to be looked at. Avalonia draws into a canvas, and a canvas can hand over its own pixels.
+    setInterval(() => {
+        // The largest, not the first. Avalonia keeps more than one canvas around and the one it draws
+        // into is not reliably first in the document — an early grab came back as an untouched 300×150.
+        const canvas = [...document.querySelectorAll('canvas')]
+            .reduce((best, c) => (!best || c.width * c.height > best.width * best.height ? c : best), null);
+
+        if (!canvas || canvas.width * canvas.height < 10000)
+            return;
+
+        // toDataURL taints on a WebGL canvas without preserveDrawingBuffer and throws on a cross-origin
+        // one; neither is fatal here, it just means this engine will not give up its frame this way.
+        let png;
+        try {
+            png = canvas.toDataURL('image/png');
+        } catch {
+            return;
+        }
+
+        fetch(`/shot/${encodeURIComponent(label)}`, { method: 'POST', body: png }).catch(() => {});
+    }, 4000);
+}
+
 let loaded = 0;
 let total = 0;
 

@@ -64,25 +64,32 @@ public sealed class DepthBiasScene : DemoScene
         camera.FarPlane = 40f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A steep key from above and a low studio fill, and no floor at all — the two panels are the floor,
+    /// near enough, and a third plane under them would be one more surface for the grid to be compared
+    /// against.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(16, 20, 28) };
+        scene.Background = Color.FromRgb(16, 20, 28);
 
         scene.Light.Direction = Vector3.Normalize(new Vector3(-0.35f, -0.85f, -0.4f));
         scene.Environment = EnvironmentLight.Studio(0.22f);
+    }
 
+    public override Node BuildSubject()
+    {
         // Long in Z so the panel recedes steeply: the near end and the far end of one surface are at very
         // different depths, which is the case a constant offset alone cannot cover.
         var panel = Primitives.Plane(2.6f, 7f, 6, 16);
         var edges = panel.GetEdges(0f);
 
-        _pair = new Node();
-        scene.Children.Add(_pair);
+        _pair = new Node { Name = "bias" };
 
         _pair.Children.Add(Panel(-1.65f, bias: 0f, "no bias"));
         _pair.Children.Add(Panel(1.65f, bias: 1f, "DepthBias 1, slope 1"));
 
-        return scene;
+        return _pair;
 
         Node Panel(float x, float bias, string name)
         {

@@ -48,12 +48,19 @@ public sealed class UnlitScene : DemoScene
         camera.FarPlane = 30f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A dark card and nothing else. No floor, and the light is left exactly as a fresh scene supplies it,
+    /// because the third sphere's whole claim is that it does not care what the lighting is — put a floor
+    /// under these three and the picture starts arguing about bounce instead.
+    /// </summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(8, 9, 14);
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
+        var three = new Node { Name = "three ways to be bright" };
         var color = new Vector4(1.00f, 0.86f, 0.52f, 1f);
 
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.95f, 40, 28), new Material
+        three.Children.Add(new MeshNode(Primitives.Sphere(0.95f, 40, 28), new Material
         {
             Name = "lit",
             BaseColor = color,
@@ -63,7 +70,7 @@ public sealed class UnlitScene : DemoScene
             Position = new Vector3(-2.4f, 0f, 0f)
         });
 
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.95f, 40, 28), new Material
+        three.Children.Add(new MeshNode(Primitives.Sphere(0.95f, 40, 28), new Material
         {
             Name = "emissive",
             BaseColor = color,
@@ -71,7 +78,7 @@ public sealed class UnlitScene : DemoScene
             EmissiveColor = new Vector3(0.55f, 0.44f, 0.20f)
         }));
 
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.95f, 40, 28), new Material
+        three.Children.Add(new MeshNode(Primitives.Sphere(0.95f, 40, 28), new Material
         {
             Name = "unlit",
             BaseColor = color,
@@ -81,7 +88,7 @@ public sealed class UnlitScene : DemoScene
             Position = new Vector3(2.4f, 0f, 0f)
         });
 
-        return scene;
+        return three;
     }
 
     public override void Update(Scene scene, double elapsed)

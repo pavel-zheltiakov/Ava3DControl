@@ -28,9 +28,16 @@ public sealed class TexturesScene : DemoScene
 
     public override SceneLook Look => SceneLook.Studio;
 
-    public override Scene Build()
+    /// <summary>
+    /// Nothing — a fresh scene's own defaults, which is what this one has always run on. Every surface here
+    /// is a texture being read rather than a material being lit, so a floor would add a reflection to judge
+    /// and a backdrop would add a colour to subtract, and neither helps anybody count squares.
+    /// </summary>
+    public override void Stage(Scene scene) { }
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene();
+        var maps = new Node { Name = "maps" };
 
         var checker = Procedural.Checker();
         var checkerMaterial = new Material
@@ -40,16 +47,16 @@ public sealed class TexturesScene : DemoScene
             Roughness = 0.45f
         };
 
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.55f), checkerMaterial)
+        maps.Children.Add(new MeshNode(Primitives.Sphere(0.55f), checkerMaterial)
         {
             Position = new Vector3(-1.5f, 0.85f, 0f)
         });
-        scene.Children.Add(new MeshNode(Primitives.Box(1.0f, 1.0f, 1.0f), checkerMaterial)
+        maps.Children.Add(new MeshNode(Primitives.Box(1.0f, 1.0f, 1.0f), checkerMaterial)
         {
             Position = new Vector3(0f, 0.85f, 0f),
             RotationDegrees = new Vector3(-18f, 28f, 0f)
         });
-        scene.Children.Add(new MeshNode(Primitives.Plane(1.3f, 1.3f), checkerMaterial)
+        maps.Children.Add(new MeshNode(Primitives.Plane(1.3f, 1.3f), checkerMaterial)
         {
             Position = new Vector3(1.5f, 0.85f, 0f),
             RotationDegrees = new Vector3(-75f, 0f, 0f)
@@ -62,7 +69,7 @@ public sealed class TexturesScene : DemoScene
         for (var i = 0; i < modes.Length; i++)
         {
             var image = Procedural.UvGrid(wrap: modes[i], name: $"uv grid ({modes[i]})");
-            scene.Children.Add(new MeshNode(tiled, new Material
+            maps.Children.Add(new MeshNode(tiled, new Material
             {
                 Name = modes[i].ToString(),
                 BaseColorTexture = image,
@@ -74,7 +81,7 @@ public sealed class TexturesScene : DemoScene
             });
         }
 
-        return scene;
+        return maps;
     }
 
     /// <summary>

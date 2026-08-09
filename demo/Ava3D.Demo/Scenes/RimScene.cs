@@ -54,10 +54,18 @@ public sealed class RimScene : DemoScene
         camera.FarPlane = 30f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// Space: a near-black card, one sun almost side-on, and an environment low enough to be a star field
+    /// rather than a room.
+    ///
+    /// The sun's angle is the scene. A rim is brightest on the limb the light comes from and the cities
+    /// only appear where it does not reach, so both halves of this scene are readings of one direction —
+    /// which is why it is set here and swung in <see cref="Update"/> rather than left to whatever is
+    /// holding the planets up. Ambient is 0.02 for the same reason: the night side has to be night.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(4, 5, 9) };
-        var (albedo, _, lights) = Space.Planet();
+        scene.Background = Color.FromRgb(4, 5, 9);
 
         scene.Lights.Clear();
         scene.Lights.Add(new DirectionalLight
@@ -73,6 +81,12 @@ public sealed class RimScene : DemoScene
             SkyColor = new Vector3(0.06f, 0.08f, 0.12f),
             GroundColor = new Vector3(0.03f, 0.03f, 0.05f)
         };
+    }
+
+    public override Node BuildSubject()
+    {
+        var pair = new Node { Name = "planets" };
+        var (albedo, _, lights) = Space.Planet();
 
         // Left: body plus atmosphere shell. Tilted so a pole is not sitting in the middle of the disc,
         // where an equirectangular map's convergence is the only thing anyone would look at.
@@ -82,7 +96,7 @@ public sealed class RimScene : DemoScene
             RotationDegrees = new Vector3(-22f, 40f, 12f)
         };
 
-        scene.Children.Add(left);
+        pair.Children.Add(left);
 
         left.Children.Add(new MeshNode(Primitives.Sphere(1.0f, 48, 32), new Material
         {
@@ -122,13 +136,13 @@ public sealed class RimScene : DemoScene
             Cull = CullMode.Back
         };
 
-        scene.Children.Add(new MeshNode(Primitives.Sphere(1.0f, 48, 32), _nightSide)
+        pair.Children.Add(new MeshNode(Primitives.Sphere(1.0f, 48, 32), _nightSide)
         {
             Position = new Vector3(1.35f, 0f, 0f),
             RotationDegrees = new Vector3(-22f, 40f, 12f)
         });
 
-        return scene;
+        return pair;
     }
 
     public override string? Caption => _phase == 0

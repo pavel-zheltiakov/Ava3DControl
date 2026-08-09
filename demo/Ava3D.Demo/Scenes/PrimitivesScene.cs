@@ -45,10 +45,14 @@ public sealed class PrimitivesScene : DemoScene
 
     private Node _turntable = null!;
 
-    public override Scene Build()
+    /// <summary>
+    /// This scene keeps its own floor rather than taking the neutral one, and that is deliberate. The
+    /// summary is "so their proportions can be compared", and a proportion is compared against something —
+    /// six solids sharing one ground line is the comparison, and a floor half a metre lower would be a
+    /// different picture of the same six meshes.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene();
-
         var ground = new MeshNode(Primitives.Plane(9f, 6f), Material.FromColor(0.16f, 0.17f, 0.19f))
         {
             Position = new Vector3(0f, -0.85f, 0f),
@@ -57,9 +61,19 @@ public sealed class PrimitivesScene : DemoScene
         };
         ground.Material.Roughness = 0.9f;
         scene.Children.Add(ground);
+    }
 
-        _turntable = new Node();
-        scene.Children.Add(_turntable);
+    /// <summary>
+    /// The six solids in a row, on one turntable.
+    ///
+    /// They are children of the turntable and each carries its own name and its own resting height, which
+    /// is what lets the story take them apart: the rotunda gives each one a niche and keeps the heights,
+    /// because a solid that sits on the ground standing in a row still sits on the ground standing alone.
+    /// The row is this scene's arrangement of them and not a fact about them.
+    /// </summary>
+    public override Node BuildSubject()
+    {
+        _turntable = new Node { Name = "primitives" };
 
         Add("Sphere", Primitives.Sphere(0.5f), new Vector4(0.85f, 0.35f, 0.30f, 1f), -2.9f, 0f);
         Add("Box", Primitives.Box(0.9f, 0.9f, 0.9f), new Vector4(0.35f, 0.62f, 0.85f, 1f), -1.7f, -0.4f);
@@ -72,7 +86,7 @@ public sealed class PrimitivesScene : DemoScene
         Add("Cone", Primitives.Cylinder(0f, 0.48f, 1.0f), new Vector4(0.85f, 0.55f, 0.35f, 1f), 1.9f, -0.35f);
         Add("Torus", Primitives.Torus(0.44f, 0.16f), new Vector4(0.72f, 0.50f, 0.85f, 1f), 3.1f, -0.2f);
 
-        return scene;
+        return _turntable;
 
         void Add(string name, Mesh mesh, Vector4 color, float x, float y)
         {

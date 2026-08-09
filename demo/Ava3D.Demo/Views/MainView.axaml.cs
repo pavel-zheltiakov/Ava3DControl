@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Ava3D.Demo.Engine;
 using Ava3D.Demo.Scenes;
+using Ava3D.Demo.Story;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -17,7 +19,7 @@ public partial class MainView : UserControl
 {
     private Ava3DView _view = null!;
     private ComboBox _sceneList = null!, _engineList = null!;
-    private ToggleSwitch _autoToggle = null!;
+    private ToggleSwitch _autoToggle = null!, _storyToggle = null!, _soundToggle = null!;
     private TextBlock _sceneTitle = null!, _sceneNotes = null!;
     private TextBlock _noticeTitle = null!, _noticeReason = null!;
     private Border _notesPanel = null!, _engineNotice = null!;
@@ -27,6 +29,16 @@ public partial class MainView : UserControl
     private Button _restartYes = null!, _restartNo = null!;
     private Diagnostics _probe = null!;
     private Codec _captionBand = null!;
+    private StackPanel _stepPad = null!;
+    private Border _stepForward = null!, _stepBack = null!;
+
+    /// <summary>Which way the viewer is asking to walk: keys, and the two buttons, summed. Kept as separate
+    /// halves so a key released while a button is held does not stop him.</summary>
+    private Vector2 _keys, _taps;
+
+    /// <summary>Whether the shell has already given the current scene the controls, so the handover is done
+    /// once rather than on every frame.</summary>
+    private bool _handedOver;
 
     /// <summary>What the notice is about, so its button knows which renderer to restart for.</summary>
     private BackendOption? _noticeOption;
@@ -46,7 +58,11 @@ public partial class MainView : UserControl
     /// <summary>The caption currently on screen, so an unchanged one is not logged sixty times a second.</summary>
     private string? _shownCaption;
 
-    private readonly IReadOnlyList<DemoScene> _catalog = DemoCatalog.Describe();
+    /// <summary>
+    /// The one list, and the switch that decides what picking an entry does. See <see cref="Contents"/>.
+    /// </summary>
+    private readonly IReadOnlyList<ContentEntry> _catalog = Contents.Entries;
+
     private DemoScene _current = null!;
     private Scene _currentScene = null!;
 
@@ -105,6 +121,15 @@ public partial class MainView : UserControl
     /// devtools console in a browser, logcat on Android and the device log on iOS — so one line of code
     /// gives every head a verifiable result without anyone watching a screen.
     /// </summary>
+    /// <summary>
+    /// The film's scripted cameras, checked against the things a person cannot walk through.
+    ///
+    /// Here rather than in the head that calls it for the same reason <see cref="Describe"/> is: the story
+    /// is internal to this assembly, and the desktop, browser and mobile heads are not. One public line so
+    /// every head can run the same check.
+    /// </summary>
+    public static string DescribeWalks() => Ground.Audit();
+
     public static string Describe(RenderInfo? info) => info is null
         ? "NO INFO — the view never rendered."
         : $"""
@@ -134,6 +159,13 @@ public partial class MainView : UserControl
     /// arranges both — see the browser head's <c>coi.js</c> — so "1 core" in a browser now means the
     /// arrangement did not hold, which is a thing to see rather than to guess at, and it is invisible
     /// everywhere else.
+    ///
+    /// And a browser number is the browser's rather than the machine's. It comes from
+    /// <c>navigator.hardwareConcurrency</c>, which WebKit clamps at eight however many the machine has,
+    /// so one Apple silicon Mac reports sixteen on the desktop, sixteen in Chrome and eight in Safari.
+    /// Eight is then really all there is: the thread pool is sized from this number, so the clamp costs
+    /// frames rather than only honesty. Nothing to chase — it is the platform's answer, and printing it
+    /// is what makes two browsers on one machine explain their own difference.
     /// </summary>
     private static string Cores()
         => Environment.ProcessorCount == 1 ? "1 core" : $"{Environment.ProcessorCount} cores";
@@ -165,6 +197,8 @@ public partial class MainView : UserControl
         _sceneList = this.FindControl<ComboBox>("SceneList")!;
         _engineList = this.FindControl<ComboBox>("EngineList")!;
         _autoToggle = this.FindControl<ToggleSwitch>("AutoToggle")!;
+        _storyToggle = this.FindControl<ToggleSwitch>("StoryToggle")!;
+        _soundToggle = this.FindControl<ToggleSwitch>("SoundToggle")!;
         _sceneTitle = this.FindControl<TextBlock>("SceneTitle")!;
         _sceneNotes = this.FindControl<TextBlock>("SceneNotes")!;
         _notesPanel = this.FindControl<Border>("NotesPanel")!;
@@ -179,6 +213,9 @@ public partial class MainView : UserControl
         _restartNo = this.FindControl<Button>("RestartNo")!;
         _probe = this.FindControl<Diagnostics>("Probe")!;
         _captionBand = this.FindControl<Codec>("CaptionBand")!;
+        _stepPad = this.FindControl<StackPanel>("StepPad")!;
+        _stepForward = this.FindControl<Border>("StepForward")!;
+        _stepBack = this.FindControl<Border>("StepBack")!;
 
         // Numbered, because twenty-six is more than a list you can hold in your head, and the number is
         // what tells you how far through it you are without opening it.
@@ -197,9 +234,17 @@ public partial class MainView : UserControl
         //
         // Three lines, because orbit, pan and zoom are properties of the control rather than something it
         // insists on. An application that wants them leaves them alone; this one is a slide deck.
+        //
+        // With one exception, and it is the last thing the film does. When a scene says it has handed the
+        // viewer the controls — see HandOver — orbit goes back on for exactly as long as that lasts. Pan
+        // and zoom stay off either way: a person walking a deck cannot slide sideways without moving his
+        // feet, and he certainly cannot pull the room towards him.
         _view.IsOrbitEnabled = false;
         _view.IsPanEnabled = false;
         _view.IsZoomEnabled = false;
+
+        OnStep(_stepForward, 1f);
+        OnStep(_stepBack, -1f);
 
         // The renderer the picker was last left on, applied before the first frame rather than after one,
         // so the demo opens on the engine you chose instead of switching under you a moment later.
@@ -210,6 +255,17 @@ public partial class MainView : UserControl
         // which is the control's own decision, and putting the picker on what was asked for.
         if (DemoSettings.Engine is { } saved)
             _view.PreferredBackend = saved;
+
+        // Before the first selection, because Select reads it to decide what to build. Assigned without
+        // the handler attached, so restoring the setting is not itself a change to be acted on.
+        _storyToggle.IsChecked = DemoSettings.Story && Contents.AnyFilmed;
+        _storyToggle.IsEnabled = Contents.AnyFilmed;
+        _storyToggle.IsCheckedChanged += (_, _) => OnStoryToggled();
+
+        // Same shape as the story switch, and for the same reason: assigned before the handler is attached,
+        // so restoring what was saved is not itself a change to be acted on.
+        _soundToggle.IsChecked = DemoSettings.Sound;
+        _soundToggle.IsCheckedChanged += (_, _) => OnSoundToggled();
 
         // AVA3D_THREADS=0 holds the CPU renderer to one core, so the comparison the picker offers can also
         // be made from a probe run — which is the only way to put a number on it that anyone can check.
@@ -260,11 +316,47 @@ public partial class MainView : UserControl
         // This used to also measure the window and collapse the notes on anything small, because the notes
         // are three or four paragraphs and on a phone they were the whole screen. They now start closed
         // everywhere, so the rule has nothing left to decide.
-        AttachedToVisualTree += (_, _) => RequestFrame();
+        AttachedToVisualTree += (_, _) =>
+        {
+            RequestFrame();
+
+            // The walk keys, taken at the top level and on the way down. See OnWalkKey.
+            if (TopLevel.GetTopLevel(this) is { } top)
+            {
+                top.AddHandler(KeyDownEvent, OnWalkKey, RoutingStrategies.Tunnel);
+                top.AddHandler(KeyUpEvent, OnWalkKey, RoutingStrategies.Tunnel);
+            }
+        };
 
         // Once warm, say what happened. This is how the browser, Android and iOS heads get verified.
-        DispatcherTimer.RunOnce(() => Console.WriteLine(Describe(LastInfo)), TimeSpan.FromSeconds(12));
+        //
+        // The self-test goes out with it, on every head, unasked. It is about two hundredths of a second
+        // and it is the only way to compare two browsers on anything but screenshots: the software
+        // renderer speckles wrongly-coloured triangles across the Safari build and draws the same
+        // WebAssembly correctly in Chrome, and a picture of that is not evidence anybody can act on. Four
+        // checksums over fixed inputs are. Open the page in both, copy both blocks, diff — the first line
+        // that disagrees is the stage the fault is in. See Ava3D.SelfTest.
+        DispatcherTimer.RunOnce(
+            () =>
+            {
+                Console.WriteLine(Describe(LastInfo));
+                Console.WriteLine(SelfTest.Run());
+            },
+            TimeSpan.FromSeconds(12));
     }
+
+    /// <summary>
+    /// AVA3D_STORY_AT=&lt;seconds&gt; opens the film at that second whatever the picker's cue says.
+    ///
+    /// The cues are the moments features are on screen, which is the right thing for a viewer and the
+    /// wrong thing for checking a chapter: most of a chapter is the walk between the cues, and a capture
+    /// can only be taken forwards from where the film was started. This is how a frame of the corridor, or
+    /// of a hand-over, gets looked at at all.
+    /// </summary>
+    private static float? StoryAt =>
+        float.TryParse(Environment.GetEnvironmentVariable("AVA3D_STORY_AT"), out var at) && at >= 0f
+            ? at
+            : null;
 
     /// <summary>
     /// The scene to open on. Accepts an index or a case-insensitive title prefix, because a probe script
@@ -326,6 +418,8 @@ public partial class MainView : UserControl
         if (_current.DrivesCamera)
             _view.InvalidateCamera();
 
+        HandOver(_current.WantsControl);
+
         ShowCaption(_current.Caption, now.TotalSeconds);
         RequestFrame();
     }
@@ -383,6 +477,54 @@ public partial class MainView : UserControl
     }
 
     /// <summary>
+    /// The story switch: remember it, and show the entry you are already on the other way.
+    ///
+    /// Keeping the selection is the whole point of one list. Somebody watching the colonnade who wants to
+    /// see what the lighting scene looks like on its own should get exactly that, not be returned to the
+    /// top — and somebody reading a scene file who wants to see where it lives should arrive at it in the
+    /// building.
+    /// </summary>
+    private void OnStoryToggled()
+    {
+        DemoSettings.Story = _storyToggle.IsChecked == true;
+        Rebuild();
+    }
+
+    /// <summary>
+    /// The sound switch. Rebuilds, because the soundtrack is opened with the film.
+    ///
+    /// Rebuilding rather than muting is what makes "off" mean the audio device is not open at all, which is
+    /// the only version of off that is true on a laptop — a muted device still holds the output and still
+    /// wakes its thread fifty times a second. It costs the film being rebuilt at the second it was on,
+    /// which is what every other switch in this toolbar costs and is nothing, because the walk is a pure
+    /// function of the time.
+    /// </summary>
+    private void OnSoundToggled()
+    {
+        DemoSettings.Sound = _soundToggle.IsChecked == true;
+        Rebuild();
+    }
+
+    /// <summary>
+    /// Builds the current entry again, when what it should build has changed rather than which entry it is.
+    ///
+    /// <see cref="Select"/> refuses to rebuild what is already shown, which is right — it is what stops
+    /// the picker paying for a scene twice — so the way to ask for the same index again is to say that
+    /// nothing is shown.
+    /// </summary>
+    private void Rebuild()
+    {
+        if (_wanted < 0)
+            return;
+
+        var index = _wanted;
+
+        _shown = -1;
+        _onScreen.Restart();
+        Select(index);
+    }
+
+    /// <summary>
     /// Takes a selection from the picker or the steppers: acknowledges it now, builds it in a moment.
     ///
     /// Building a scene is a mesh or two, sometimes a procedurally generated texture, and a fresh upload
@@ -405,8 +547,8 @@ public partial class MainView : UserControl
         _onScreen.Restart();
 
         _sceneTitle.Text = $"{index + 1}/{_catalog.Count}  ·  {_catalog[index].Title}";
-        _sceneNotes.Text = Reflow(_catalog[index].Notes);
-        Dress(_catalog[index].Look);
+        _sceneNotes.Text = Reflow(_catalog[index].Described.Notes);
+        Dress(_catalog[index].Described.Look);
 
         // The first one is built on the spot. There is no popup to get out of the way of at start-up,
         // and an empty window while a posted job waits its turn is worse than the build.
@@ -431,8 +573,31 @@ public partial class MainView : UserControl
         _shown = index;
         ClearHighlight();
 
-        // A fresh instance, so a scene's animation state cannot survive being revisited.
-        _current = DemoCatalog.Scenes[index]();
+        // A fresh instance, so a scene's animation state cannot survive being revisited — and, with the
+        // story on, so that the film is rebuilt at the second this entry happens rather than played from
+        // the start. Rebuilding rather than seeking a running film is the honest way round: the walk is a
+        // pure function of time, so there is no state to wind forward, and building the rooms is boxes.
+        //
+        // An entry the film has not reached yet falls back to its own scene even with the story on. That
+        // is the demo being half-built rather than a mode that half-works, and it goes away as the rooms
+        // land — see Contents.
+        var entry = _catalog[index];
+
+        // Whatever was on screen is let go of before the next thing is built, not after. A scene holding
+        // something that is still running — the film's audio device is the one — would otherwise overlap
+        // with its own replacement for the length of a build. See DemoScene.Retire.
+        if (_current is not null)
+            _current.Retire();
+
+        _current = _storyToggle.IsChecked == true && entry.Cue is { } cue
+            ? new StoryScene(StoryAt ?? cue)
+            : entry.Standalone();
+
+        // Only the film has a soundtrack, so the switch is dead next to a standalone scene. Disabled rather
+        // than hidden: a control that vanishes when you change something else is a control people stop
+        // trusting, and this one still shows what it will do when the story goes back on.
+        _soundToggle.IsEnabled = _current is StoryScene;
+
         _currentScene = _current.Build();
 
         // The clock restarts on the next frame rather than now: `now` is the compositor's reading and
@@ -766,6 +931,102 @@ public partial class MainView : UserControl
     }
 
     /// <summary>
+    /// Turns the viewer's controls on and off as the scene asks for them.
+    ///
+    /// Three things at once, and the third is the one that is easy to forget: the view's orbit, the two
+    /// step buttons, and the steering itself, which has to be zeroed on the way out. A scene that takes the
+    /// controls back while a key is down would otherwise be handed a direction for ever, by a key nobody is
+    /// pressing any more.
+    ///
+    /// The demo turns orbit off for every other scene on purpose — see where it does, in the constructor —
+    /// so this is the one place in the application that turns it back on, and it does it for exactly as
+    /// long as somebody has been given something to look around.
+    /// </summary>
+    private void HandOver(bool wanted)
+    {
+        if (wanted == _handedOver)
+            return;
+
+        _handedOver = wanted;
+
+        _view.IsOrbitEnabled = wanted;
+        _stepPad.IsVisible = wanted;
+
+        // And the caption gets out of their way. Both live at the bottom of the window and both are pinned
+        // to it, so the two circles landed on top of the last word of every line the film says — which is
+        // the one moment in the demo where the caption is an instruction about those very buttons. The band
+        // is stretched, so the fix is to stop stretching it that far: a hundred and fifty is the pad's own
+        // width plus its margin, taken back only while the pad is up.
+        _captionBand.Margin = wanted ? new Thickness(0, 0, 150, 14) : new Thickness(0, 0, 0, 14);
+
+        _keys = Vector2.Zero;
+        _taps = Vector2.Zero;
+        _current.Steer(Vector2.Zero);
+    }
+
+    /// <summary>
+    /// W A S D and the arrows, held.
+    ///
+    /// Bound on the top level rather than on this control, and tunnelling rather than bubbling, because a
+    /// key press has to reach the walk whatever happens to have the focus — and in this demo that is
+    /// usually the scene picker, which eats the arrows to change its selection. Nothing here types, so
+    /// taking the keys first costs nothing.
+    /// </summary>
+    private void OnWalkKey(object? sender, KeyEventArgs e)
+    {
+        if (!_handedOver)
+            return;
+
+        var down = e.RoutedEvent == KeyDownEvent;
+
+        switch (e.Key)
+        {
+            case Key.W or Key.Up: _keys.Y = down ? 1f : 0f; break;
+            case Key.S or Key.Down: _keys.Y = down ? -1f : 0f; break;
+            case Key.A or Key.Left: _keys.X = down ? -1f : 0f; break;
+            case Key.D or Key.Right: _keys.X = down ? 1f : 0f; break;
+            default: return;
+        }
+
+        e.Handled = true;
+        Steer();
+    }
+
+    /// <summary>Press and hold on one of the two step buttons.</summary>
+    private void OnStep(Border button, float forward)
+    {
+        button.PointerPressed += (_, e) =>
+        {
+            _taps.Y = forward;
+            e.Pointer.Capture(button);
+            Steer();
+        };
+
+        // Capture-lost as well as release, because a pointer dragged off the button or taken away by the
+        // system never raises one — and a step that cannot be stopped is worse than one that never starts.
+        button.PointerReleased += (_, _) =>
+        {
+            _taps.Y = 0f;
+            Steer();
+        };
+
+        button.PointerCaptureLost += (_, _) =>
+        {
+            _taps.Y = 0f;
+            Steer();
+        };
+    }
+
+    private void Steer()
+    {
+        var move = _keys + _taps;
+
+        _current.Steer(new Vector2(
+            Math.Clamp(move.X, -1f, 1f),
+            Math.Clamp(move.Y, -1f, 1f)));
+    }
+
+    /// <summary>
     /// Says something when the renderer that is drawing is not the one that was asked for.
     ///
     /// Which now happens without anybody touching the picker, because the choice is remembered: a settings
@@ -837,9 +1098,10 @@ public partial class MainView : UserControl
 
             // The CPU renderer is named by how many cores it is being given, because that is the only thing
             // about it anyone here is choosing between: CPU (×16) and CPU (×1) are one renderer with its
-            // vertex pass shared or held to a single core. The count is this machine's, so the label is
-            // also the answer to what "all cores" means on it — which is the number the frame rate beside
-            // it has to be read against.
+            // vertex pass shared or held to a single core. The count is whatever the runtime is offered —
+            // the machine's on the desktop, the browser's in a tab, and those differ: Safari clamps it to
+            // eight where Chrome hands over all sixteen. So the label is also the answer to what "all
+            // cores" means here, which is the number the frame rate beside it has to be read against.
             //
             // One row where there is one core, because two rows would then be the same renderer under two
             // names. A browser tab used to be that case and no longer is: the head is published for

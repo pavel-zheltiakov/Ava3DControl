@@ -13,6 +13,28 @@ namespace Ava3D.Demo.Textures;
 public static class Space
 {
     /// <summary>
+    /// One black pixel, used as an occlusion map to take a surface out of the room's bounce light.
+    ///
+    /// <b>What it is for.</b> The environment probe is a property of the scene, not of a room, so every lit
+    /// material in the graph gets it — including a planet thirty kilometres away seen through a window. Walk
+    /// into the gallery with the lamps down and the planet has a terminator and a night side with cities on
+    /// it; bring the lamps up and the ship's own bounce light washes straight across it, the dark side turns
+    /// grey-blue and the cities go muddy. Measured on one frame of chapter 7, the night side went from a
+    /// luminance of 19 to 27 because somebody switched a light on inside a corridor.
+    ///
+    /// <b>Why occlusion is the right instrument and not a hack.</b> Ambient occlusion is defined as how much
+    /// of the surrounding environment a point can see, and it is the one per-material term all three
+    /// backends already multiply into the indirect light and nothing else — the GL shader says so on the
+    /// line above it: <i>occlusion attenuates only the ambient and environment terms, never the key light</i>.
+    /// A planet can see none of this ship, so its occlusion is zero, and its sunlight is untouched. Nothing
+    /// in the renderer had to change to say that.
+    ///
+    /// One pixel, because a constant needs no resolution, and shared, because a texture that is the same
+    /// image everywhere should be uploaded once.
+    /// </summary>
+    public static Texture Elsewhere { get; } = Texture.FromPixels([0, 0, 0, 255], 1, 1, "elsewhere");
+
+    /// <summary>
     /// The glow every sprite in the scene is drawn from: a radial falloff, white in the middle and warm
     /// at the edge, fading to nothing.
     ///

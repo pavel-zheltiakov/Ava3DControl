@@ -50,11 +50,20 @@ public sealed class PointsScene : DemoScene
         camera.FarPlane = 120f;
     }
 
-    public override Scene Build()
-    {
-        var scene = new Scene { Background = Color.FromRgb(6, 7, 11) };
+    /// <summary>
+    /// The darkest card in the folder, and nothing else at all.
+    ///
+    /// Both clouds are additive, so every surface put anywhere near them would be something they add to,
+    /// and a point four pixels across has no margin for that. This is also the honest stage for the
+    /// argument the notes make: a starfield is drawn against nothing, because there is nothing out there.
+    /// </summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(6, 7, 11);
 
-        scene.Children.Add(new PointsNode
+    public override Node BuildSubject()
+    {
+        var corridor = new Node { Name = "clouds" };
+
+        corridor.Children.Add(new PointsNode
         {
             Positions = Corridor(-3.2f, seed: 7),
             Color = new Vector3(0.62f, 0.80f, 1.00f),
@@ -64,7 +73,7 @@ public sealed class PointsScene : DemoScene
             DepthWrite = false
         });
 
-        scene.Children.Add(new PointsNode
+        corridor.Children.Add(new PointsNode
         {
             Positions = Corridor(3.2f, seed: 7),
             Color = new Vector3(1.00f, 0.78f, 0.48f),
@@ -75,7 +84,7 @@ public sealed class PointsScene : DemoScene
             DepthWrite = false
         });
 
-        return scene;
+        return corridor;
     }
 
     /// <summary>The same cloud either side of the centre line, from the same seed, so only the flag differs.</summary>

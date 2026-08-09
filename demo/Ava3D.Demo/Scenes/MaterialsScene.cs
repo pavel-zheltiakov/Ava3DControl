@@ -25,9 +25,20 @@ public sealed class MaterialsScene : DemoScene
 
     public override SceneLook Look => SceneLook.Studio;
 
-    public override Scene Build()
+    /// <summary>
+    /// Nothing. This scene has never had a stage and must not gain one now: it is twelve spheres against
+    /// whatever a bare <see cref="Scene"/> arrives with, and the neutral stage would put a floor under them
+    /// and a backdrop behind them that were not there before.
+    ///
+    /// Which is worth saying rather than leaving as an empty method, because it looks like an omission. The
+    /// rule for the split is that every reference scene renders exactly as it did, and for a scene that was
+    /// already staging nothing the honest translation of that is a stage that does nothing.
+    /// </summary>
+    public override void Stage(Scene scene) { }
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene();
+        var row = new Node { Name = "materials" };
         var sphere = Primitives.Sphere(0.45f);
 
         Vector4[] colors =
@@ -44,7 +55,7 @@ public sealed class MaterialsScene : DemoScene
         {
             var x = (i - (colors.Length - 1) / 2f) * 1.05f;
 
-            scene.Children.Add(new MeshNode(sphere, new Material
+            row.Children.Add(new MeshNode(sphere, new Material
             {
                 Name = "dielectric",
                 BaseColor = colors[i],
@@ -55,7 +66,7 @@ public sealed class MaterialsScene : DemoScene
                 Position = new Vector3(x, 0.58f, 0f)
             });
 
-            scene.Children.Add(new MeshNode(sphere, new Material
+            row.Children.Add(new MeshNode(sphere, new Material
             {
                 Name = "metal",
                 BaseColor = colors[i],
@@ -67,7 +78,7 @@ public sealed class MaterialsScene : DemoScene
             });
         }
 
-        return scene;
+        return row;
     }
 
     /// <summary>Square-on, so the two rows can be compared column by column.</summary>

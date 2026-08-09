@@ -56,14 +56,24 @@ public sealed class FlatShadingScene : DemoScene
         camera.FarPlane = 40f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// One raking light and a studio environment, and no floor.
+    ///
+    /// The angle is the whole stage. What tells you a face is flat is the highlight sitting still on it and
+    /// then stepping to the next one, and a light square on to the row gives every facet the same shade —
+    /// which is the one lighting arrangement under which this comparison shows nothing.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(22, 21, 20) };
+        scene.Background = Color.FromRgb(22, 21, 20);
 
         scene.Light.Direction = Vector3.Normalize(new Vector3(-0.45f, -0.62f, -0.65f));
         scene.Light.Intensity = 1.15f;
         scene.Environment = EnvironmentLight.Studio(0.34f);
+    }
 
+    public override Node BuildSubject()
+    {
         // The three shapes the low-polygon look is actually made of: a drum, a ring and a dome. All three
         // share vertices as Primitives builds them, so no choice of arguments gets to the faceted version.
         Mesh[] shapes =
@@ -73,8 +83,7 @@ public sealed class FlatShadingScene : DemoScene
             Primitives.Sphere(0.72f, 14, 8, latitudeDegrees: 90f)
         ];
 
-        _turntable = new Node();
-        scene.Children.Add(_turntable);
+        _turntable = new Node { Name = "pairs" };
 
         var brass = new Material
         {
@@ -104,7 +113,7 @@ public sealed class FlatShadingScene : DemoScene
             });
         }
 
-        return scene;
+        return _turntable;
     }
 
     public override void Update(Scene scene, double elapsed)

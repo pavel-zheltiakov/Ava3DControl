@@ -37,4 +37,26 @@
   <ItemGroup Condition="'$(Ava3DFromPackage)' != 'true'">
     <ProjectReference Include="..\..\src\Ava3D\Ava3D.csproj" />
   </ItemGroup>
+
+  <!--
+    The film's sound, which follows the same one-source-two-repositories rule and needs one extra step.
+
+    AvaMediaPlayer is a separate product that happens to live here for now; it is not published, so the
+    public copy of this demo has nothing to reference. Rather than making the whole Story/Sound folder
+    conditional — which would take the score out of the copy people actually read — the boundary is one
+    file. Story/Sound/Speaker.cs names the player; Story/Sound/Speaker.Silent.cs declares the same type
+    with the same members and no sound. Exactly one of them compiles, and everything else in the folder
+    is identical in both builds.
+
+    Two files rather than #if for the same reason the reference above is two ItemGroups rather than a
+    conditional using: a file you can open and read all of beats a file with two versions interleaved.
+  -->
+  <ItemGroup Condition="'$(Ava3DFromPackage)' != 'true'">
+    <ProjectReference Include="..\..\src\AvaMediaPlayer\AvaMediaPlayer.csproj" />
+    <Compile Remove="Story\Sound\Speaker.Silent.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Ava3DFromPackage)' == 'true'">
+    <Compile Remove="Story\Sound\Speaker.cs" />
+  </ItemGroup>
 </Project>

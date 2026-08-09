@@ -21,14 +21,16 @@ public sealed class HelloCubeScene : DemoScene
         In an application, delete those three lines.
         """;
 
-    public override Scene Build()
-    {
-        var scene = new Scene();
+    public override Node BuildSubject() => new MeshNode(
+        Primitives.Box(1f, 1f, 1f),
+        Material.FromColor(0.55f, 0.62f, 0.78f));
 
-        scene.Children.Add(new MeshNode(
-            Primitives.Box(1f, 1f, 1f),
-            Material.FromColor(0.55f, 0.62f, 0.78f)));
-
-        return scene;
-    }
+    /// <summary>
+    /// Nothing, and that is the demonstration.
+    ///
+    /// This scene's whole claim is that a cube and a material are enough — no floor, no backdrop, no
+    /// lighting rig, just what a fresh <see cref="Scene"/> already provides. Dressing it with the neutral
+    /// stage the other scenes get would quietly make the claim false.
+    /// </summary>
+    public override void Stage(Scene scene) { }
 }

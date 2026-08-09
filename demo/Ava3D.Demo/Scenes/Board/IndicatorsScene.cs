@@ -26,6 +26,7 @@ public sealed class IndicatorsScene : DemoScene
 
     private readonly List<Lamp> _lamps = [];
     private readonly List<PointLight> _lights = [];
+    private Node? _root;
     private string _detail = "";
     private string _caption = "";
 
@@ -90,38 +91,65 @@ public sealed class IndicatorsScene : DemoScene
         camera.FarPlane = 20f;
     }
 
+    /// <summary>
+    /// The three lights the panel casts on the board around it, in the order they are handed to the
+    /// newest lamps.
+    ///
+    /// Empty until the panel has been wired — see <see cref="MountOn"/>. They are exposed because a room
+    /// has to be able to spend its own slots on them: the engine room's power-up gives three of its four
+    /// to these and keeps one on the bench, which is the arithmetic this scene's notes describe, done by
+    /// a room rather than by a scene.
+    /// </summary>
+    public IReadOnlyList<PointLight> Lights => _lights;
+
     public override Scene Build()
     {
-        Scene scene;
-        Node root;
-        BoardData board;
+        var scene = new Scene();
+        Stage(scene);
 
-        try
-        {
-            (scene, root, _detail) = BoardModel.Load();
-            board = BoardData.Read();
-        }
-        catch (Exception e)
-        {
-            scene = new Scene();
-            _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
-            scene.Background = Color.FromRgb(14, 16, 20);
-            return scene;
-        }
+        if (BuildSubject() is { } board)
+            scene.Children.Add(board);
 
+        foreach (var light in _lights)
+            scene.Lights.Add(light);
+
+        return scene;
+    }
+
+    /// <summary>
+    /// Dimmer than the other board scenes, but not as dim as it first was.
+    ///
+    /// A lamp is only as bright as what is around it, so the room has to come down for the coloured pools
+    /// to read at all — and at 0.55 it came down too far and took the metal with it. Every leg, pad and
+    /// flex conductor here is metallic 1, which has no diffuse term whatever: with nothing to reflect they
+    /// are black, and a row of indicators standing on two black wires each is not what any photograph of
+    /// one shows. The key is what is turned down instead.
+    /// </summary>
+    public override void Stage(Scene scene)
+    {
         scene.Background = Color.FromRgb(8, 9, 12);
-
-        // Dimmer than the other board scenes, but not as dim as it first was. A lamp is only as bright
-        // as what is around it, so the room has to come down for the coloured pools to read at all —
-        // and at 0.55 it came down too far and took the metal with it. Every leg, pad and flex
-        // conductor here is metallic 1, which has no diffuse term whatever: with nothing to reflect
-        // they are black, and a row of indicators standing on two black wires each is not what any of
-        // those photographs show. The key is what is turned down instead.
         scene.Environment = EnvironmentLight.FromTexture(Environments.Studio(), 0.80f);
         scene.Light.Direction = Vector3.Normalize(new Vector3(-0.40f, -0.86f, -0.32f));
         scene.Light.Color = new Vector3(0.94f, 0.96f, 1.00f);
         scene.Light.Intensity = 0.55f;
         scene.Light.Ambient = 0.015f;
+    }
+
+    public override Node? BuildSubject()
+    {
+        Node root;
+        BoardData board;
+
+        try
+        {
+            (_, root, _detail) = BoardModel.Load();
+            board = BoardData.Read();
+        }
+        catch (Exception e)
+        {
+            _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
+            return null;
+        }
 
         foreach (var node in root.Descendants)
         {
@@ -132,19 +160,35 @@ public sealed class IndicatorsScene : DemoScene
             }
         }
 
+        MountOn(root, board);
+
+        return root;
+    }
+
+    /// <summary>
+    /// Wires the six lamps, their glows and their three lights onto a board that already exists.
+    ///
+    /// <see cref="BuildSubject"/> loads one and calls this, which is every path this scene takes on its
+    /// own. It is public because the names it hands out are load-bearing outside this file: the engine
+    /// room fits the indicator card to the board by hand and gathers the card by name, and the two bloom
+    /// sprites per lamp are named after the lamp so they travel with it.
+    ///
+    /// Call it before the board is put anywhere. It reads the lenses' bounds to find where a glow goes,
+    /// and it converts them into the board's own space through <see cref="Node.WorldTransform"/> — which
+    /// is exact while the board is still standing at the origin and a conservative box once it is not.
+    /// </summary>
+    /// <param name="root">The board's root node.</param>
+    /// <param name="board">Its manifest, for the designators and the lamp positions.</param>
+    public void MountOn(Node root, BoardData board)
+    {
+        _root = root;
         Collect(root, board);
 
-        // Three, and the collection is full at four. They stay in the scene with Intensity 0 rather
-        // than being added and removed, because a light that comes and goes changes what Scene.Light
-        // resolves to and rebuilds the snapshot's light block every time it does.
-        for (var i = 0; i < 3; i++)
-        {
-            var light = new PointLight { Intensity = 0f, Range = 0.34f, Decay = 1.5f };
-            _lights.Add(light);
-            scene.Lights.Add(light);
-        }
-
-        return scene;
+        // Three, and the collection is full at four. They are made once and never added or removed,
+        // because a light that comes and goes changes what Scene.Light resolves to and rebuilds the
+        // snapshot's light block every time it does.
+        for (var i = _lights.Count; i < 3; i++)
+            _lights.Add(new PointLight { Intensity = 0f, Range = 0.34f, Decay = 1.5f });
     }
 
     /// <summary>
@@ -165,6 +209,14 @@ public sealed class IndicatorsScene : DemoScene
     {
         var glow = Space.Glow();
 
+        // Where a glow goes is worked out from a lens's bounds, and the bounds a node reports are in
+        // world space — so they have to come back through the root's own transform before they can be
+        // used as a position under it. On its own that inverse is the identity and this line is free;
+        // mounted in a room it is the difference between six glows on the lamps and six glows at the
+        // origin of the building.
+        if (!Matrix4x4.Invert(root.WorldTransform, out var intoRoot))
+            intoRoot = Matrix4x4.Identity;
+
         foreach (var part in board.Parts.Where(part => part.Node.StartsWith("led.", StringComparison.Ordinal)))
         {
             if (root.Find<MeshNode>($"{part.Node}.lens") is not { } lens ||
@@ -182,12 +234,16 @@ public sealed class IndicatorsScene : DemoScene
             var color = new Vector3(lens.Material.BaseColor.X, lens.Material.BaseColor.Y,
                 lens.Material.BaseColor.Z);
 
-            var bounds = lens.WorldBounds;
+            var bounds = lens.WorldBounds.Transform(intoRoot);
             var centre = new Vector3((bounds.Min.X + bounds.Max.X) / 2f, 0f,
                 (bounds.Min.Z + bounds.Max.Z) / 2f);
 
-            var halo = Glow(glow, color, centre with { Y = Up(bounds, 0.62f) });
-            var core = Glow(glow, color, centre with { Y = Up(bounds, 0.82f) });
+            // Named after the lamp they belong to, and the name is load-bearing outside this file: the
+            // engine room draws the whole indicator card out of its guides by gathering every node called
+            // led.something, and a bloom that stayed behind would be two glows hanging in the air where
+            // the card used to be.
+            var halo = Glow(glow, color, centre with { Y = Up(bounds, 0.62f) }, $"{part.Node}.halo");
+            var core = Glow(glow, color, centre with { Y = Up(bounds, 0.82f) }, $"{part.Node}.core");
 
             root.Children.Add(halo);
             root.Children.Add(core);
@@ -207,7 +263,7 @@ public sealed class IndicatorsScene : DemoScene
     private static float Up(BoundingBox bounds, float fraction) =>
         bounds.Min.Y + (bounds.Max.Y - bounds.Min.Y) * fraction;
 
-    private static SpriteNode Glow(Texture texture, Vector3 color, Vector3 at) => new()
+    private static SpriteNode Glow(Texture texture, Vector3 color, Vector3 at, string name) => new()
     {
         Texture = texture,
         Color = color,
@@ -215,6 +271,7 @@ public sealed class IndicatorsScene : DemoScene
         Size = Vector2.Zero,
         Blend = BlendMode.Additive,
         Position = at,
+        Name = name,
 
         // After everything, because a bloom is glare and glare is not behind anything. Left at the
         // default it sorts against the lenses by node origin — and every node in this file has its
@@ -235,6 +292,22 @@ public sealed class IndicatorsScene : DemoScene
         var lit = 0;
         var placed = 0;
 
+        // A light lives on the Scene rather than in the node tree, so nothing transforms it and the
+        // board's own transform has to be applied by hand. Read every frame rather than kept, because the
+        // story's board is put on a bench after this scene has been wired — and a lamp position baked at
+        // build time would be six hundred nodes of board with its lights left behind at the origin of the
+        // building. It is the identity when this scene stands on its own.
+        var onto = _root?.WorldTransform ?? Matrix4x4.Identity;
+
+        // And how big it is, because three of the numbers below are in world units rather than in the
+        // model's. The story mounts this board at fifteen hundredths, which is what makes it a component
+        // lying on a bench instead of a wall panel, and at that size a range of thirty-four millimetres is
+        // five, a bloom a hundred and fifteen across is seventeen — and the intensity is the one that
+        // bites, because a point light falls off as the square of the distance. Six and two thirds closer
+        // is forty-four times brighter. Scale it or the row of indicators renders as one white blob.
+        var scale = new Vector3(onto.M11, onto.M12, onto.M13).Length();
+        var squared = scale * scale;
+
         // Back to front, so the three lights land on the newest lamps — which is where the eye is
         // during a fill, and the only ordering under which "the row runs out of lights" reads as the
         // budget rather than as a glitch.
@@ -247,9 +320,9 @@ public sealed class IndicatorsScene : DemoScene
             lamp.Lens.EmissiveColor = lamp.Color * (level * 1.9f);
 
             lamp.Halo.Opacity = level * 0.50f;
-            lamp.Halo.Size = new Vector2(0.115f, 0.115f) * (0.55f + level * 0.45f);
+            lamp.Halo.Size = new Vector2(0.115f, 0.115f) * ((0.55f + level * 0.45f) * scale);
             lamp.Core.Opacity = level * 0.85f;
-            lamp.Core.Size = new Vector2(0.048f, 0.048f) * (0.55f + level * 0.45f);
+            lamp.Core.Size = new Vector2(0.048f, 0.048f) * ((0.55f + level * 0.45f) * scale);
 
             if (level <= 0.02f)
                 continue;
@@ -259,9 +332,10 @@ public sealed class IndicatorsScene : DemoScene
                 continue;
 
             var light = _lights[placed++];
-            light.Position = lamp.At;
+            light.Position = Vector3.Transform(lamp.At, onto);
             light.Color = lamp.Color;
-            light.Intensity = level * 0.030f;
+            light.Intensity = level * 0.030f * squared;
+            light.Range = 0.34f * scale;
         }
 
         for (var i = placed; i < _lights.Count; i++)

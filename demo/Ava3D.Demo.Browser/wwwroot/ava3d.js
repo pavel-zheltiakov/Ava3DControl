@@ -8,6 +8,47 @@ export function locationSearch() {
     return globalThis.location.search ?? "";
 }
 
+// Gives the application the keyboard, so W A S D works without anyone having clicked the picture first.
+//
+// A browser sends a key press to the element that has focus, and a page that has just finished loading has
+// it on the document body — so the walk keys, which are bound at the top level precisely so nothing can eat
+// them, were never being delivered at all. On the desktop and mobile heads the window has focus by
+// definition and the question does not arise; this is the one head where being on screen and being able to
+// hear the keyboard are two different things.
+//
+// It takes the element Avalonia is already listening on rather than the canvas, and finds it by the
+// tabindex the backend puts there for exactly this purpose. Focusing anything else would move the keyboard
+// away from the application while looking like it had done the opposite.
+//
+// <b>The host itself is a candidate, and missing that is what made the first version of this do nothing.</b>
+// Avalonia puts the tabindex on the mount point — `<div id="out" class="avalonia-container" tabindex="0">` —
+// and the canvas, the native host and the hidden input inside it carry none. querySelector only ever
+// searches descendants, so a lookup for "[tabindex]" under #out finds nothing, returns null, and this
+// function reported false and moved on while the keyboard stayed on document.body. Clicking the picture
+// does not fix it either: activeElement is BODY before the click and BODY after, which is why the walk keys
+// were dead however hard anybody clicked.
+//
+// preventScroll, because focusing an element the browser thinks is off-screen scrolls it into view, and the
+// page it would scroll is one whose body is the viewport.
+export function focusApp() {
+    try {
+        const host = document.getElementById("out");
+
+        if (!host)
+            return false;
+
+        const target = host.matches("[tabindex]") ? host : host.querySelector("[tabindex]");
+
+        if (!target)
+            return false;
+
+        target.focus({ preventScroll: true });
+        return host.contains(document.activeElement) || document.activeElement === host;
+    } catch {
+        return false;
+    }
+}
+
 // Which browser this is, for the diagnostics panel. From inside the sandbox .NET can only report
 // "Browser", and a frame rate from a tab means little without knowing whose tab.
 //

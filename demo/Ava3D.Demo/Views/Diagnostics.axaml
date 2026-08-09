@@ -288,7 +288,7 @@
                 Features last, held off the counts by a gap. It is the odd one out twice over: not a fact
                 about the model but about the renderer, and the only row here that opens. It answers a
                 question rather than reporting a number — what this renderer does that another would not.
-                Closed it is a score, which is all most people want; open it is the fifteen rows the score
+                Closed it is a score, which is all most people want; open it is the sixteen rows the score
                 is out of, each with its reason.
             -->
             <Grid Grid.Row="4" Grid.ColumnSpan="2" RowDefinitions="Auto,Auto,Auto,Auto">
@@ -320,7 +320,7 @@
                 </ToggleButton>
 
                 <!--
-                    Spanning both columns rather than sitting in the value column: fifteen names and their
+                    Spanning both columns rather than sitting in the value column: sixteen names and their
                     reasons need the width, and the tick column is a label column of its own. Scrolled
                     because the CPU fallback's eight reasons are longer than the panel is allowed to be.
                 -->

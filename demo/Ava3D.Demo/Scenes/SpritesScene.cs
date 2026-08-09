@@ -60,9 +60,17 @@ public sealed class SpritesScene : DemoScene
         camera.FarPlane = 220f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// Daylight, and the one turfed field in the demo.
+    ///
+    /// This is the only scene here that is outdoors, and the stage says so: a pale sky rather than a dark
+    /// card, a warm sun with a lot of blue ambient under it, and a ground plane whose texture repeats
+    /// rather than stretches. The grass is not part of it — 240 tufts are the subject, and they stand on
+    /// this the way anything else in the folder stands on a floor.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(126, 156, 196) };
+        scene.Background = Color.FromRgb(126, 156, 196);
 
         scene.Lights.Clear();
         scene.Lights.Add(new DirectionalLight
@@ -91,6 +99,11 @@ public sealed class SpritesScene : DemoScene
             Position = new Vector3(0f, -0.02f, 0f),
             IsPickable = false
         });
+    }
+
+    public override Node BuildSubject()
+    {
+        var field = new Node { Name = "billboards" };
 
         var grass = Billboards.Grass();
         var random = new Random(17);
@@ -103,7 +116,7 @@ public sealed class SpritesScene : DemoScene
             var radius = 2.2f + MathF.Sqrt((float)random.NextDouble()) * 24f;
             var height = 0.9f + (float)random.NextDouble() * 0.7f;
 
-            scene.Children.Add(new SpriteNode
+            field.Children.Add(new SpriteNode
             {
                 Texture = grass,
                 Position = new Vector3(MathF.Cos(angle) * radius, height * 0.5f, MathF.Sin(angle) * radius),
@@ -116,7 +129,7 @@ public sealed class SpritesScene : DemoScene
         }
 
         // The wall the lamps hide behind.
-        scene.Children.Add(new MeshNode(Primitives.Box(7.2f, 3.4f, 0.55f), new Material
+        field.Children.Add(new MeshNode(Primitives.Box(7.2f, 3.4f, 0.55f), new Material
         {
             BaseColorTexture = Billboards.Brick(),
             // Knocked back, so an additive glow drawn on top of it has somewhere to go.
@@ -132,8 +145,8 @@ public sealed class SpritesScene : DemoScene
         _lamp = Lamp(glow, new Vector3(-2.4f, 1.9f, -7.4f), depthTest: true, new Vector3(1.00f, 0.20f, 0.08f));
         _through = Lamp(glow, new Vector3(2.4f, 1.9f, -7.4f), depthTest: false, new Vector3(0.12f, 1.00f, 0.30f));
 
-        scene.Children.Add(_lamp);
-        scene.Children.Add(_through);
+        field.Children.Add(_lamp);
+        field.Children.Add(_through);
 
         // Cloud, high and wide. Same node type as a blade of grass, three orders of magnitude bigger.
         var cloud = Billboards.Cloud();
@@ -159,10 +172,10 @@ public sealed class SpritesScene : DemoScene
                 RenderOrder = -1
             };
 
-            scene.Children.Add(_clouds[i]);
+            field.Children.Add(_clouds[i]);
         }
 
-        return scene;
+        return field;
 
         static SpriteNode Lamp(Texture glow, Vector3 position, bool depthTest, Vector3 color) => new()
         {

@@ -20,6 +20,13 @@ internal sealed partial class Program
             .WithInterFont()
             .StartBrowserAppAsync("out");
 
+        // The keyboard, taken as soon as there is an application to give it to.
+        //
+        // Here rather than in the page's own script because this is the first moment the element to focus
+        // exists: main.js awaits runMain, which never returns — see below — so anything it did afterwards
+        // would run never. See focusApp for why a browser needs telling at all.
+        FocusApp();
+
         // And then never return.
         //
         // StartBrowserAppAsync completes once the application is up, so a Main that simply awaited it would
@@ -73,8 +80,21 @@ internal sealed partial class Program
             // thing about the layout that publishing guarantees.
             await JSHost.ImportAsync(Module, "../ava3d.js");
 
+            // Where the film's sound goes. Imported here and not where it is used, because an import is
+            // asynchronous and opening a speaker is not: the sound switch is a click, and a click cannot
+            // await a fetch. It is a separate module rather than more of ava3d.js because it is a separate
+            // subject, and it is imported unconditionally because a page may hold a script the application
+            // has no use for — which is what the public copy of this demo is, the player it talks to not
+            // being published. See BrowserAudio.
+            await JSHost.ImportAsync(AudioModule, "../audio.js");
+
             // Before Avalonia starts, so the demo's first frame already knows which engine was asked for.
             DemoSettings.Store = new LocalStorage();
+
+            // Does nothing at all in the public copy, where the file that implements it is not compiled —
+            // an unimplemented partial method and its call are both erased. There is no sound to install
+            // there, and this line is how that is said without a conditional.
+            InstallHostAudio();
 
             // What the panel's host line is made of here. Three separate questions because they have three
             // separate answers, any of which the string may not carry: a desktop tab knows no device, and
@@ -99,6 +119,28 @@ internal sealed partial class Program
                         break;
                     case "tour":
                         Environment.SetEnvironmentVariable("AVA3D_TOUR", value);
+                        break;
+                    case "story":
+                        // ?story=0 is the one that earns its place. The toggle is remembered between
+                        // visits, so a tab that was last left in the film opens in the film — and a
+                        // report that says "the sphere scene looks wrong here" cannot be reproduced from
+                        // a link at all until there is a way to say which of the two to start in.
+                        Environment.SetEnvironmentVariable("AVA3D_STORY", value);
+                        break;
+                    case "at":
+                        // ?at=<seconds> opens the film there whatever the picked entry's cue says. The
+                        // cues are the moments a feature is on screen, and two of the chapters have no
+                        // feature in them at all — so without this there is no link that lands in the
+                        // gallery or in the departure, and no way to look at a hand-over between two
+                        // chapters in a browser at all.
+                        Environment.SetEnvironmentVariable("AVA3D_STORY_AT", value);
+                        break;
+                    case "sound":
+                        // ?sound=1 is the only way a scripted run gets the film to make a noise, since the
+                        // switch defaults off and a measured run ignores the remembered setting. It is also
+                        // how the tab's speaker gets tested at all: opening it needs a gesture, and there is
+                        // nobody there to make one.
+                        Environment.SetEnvironmentVariable("AVA3D_SOUND", value);
                         break;
                     case "threads":
                         // ?threads=0 holds the CPU renderer to one core, which is the other half of the
@@ -142,6 +184,19 @@ internal sealed partial class Program
 
     /// <summary>The name the page's module is imported under. Shared with <see cref="LocalStorage"/>.</summary>
     internal const string Module = "ava3d";
+
+    /// <summary>The name the audio module is imported under. Declared here rather than beside the code that
+    /// uses it, because that code is not in every build of this head and the import above is.</summary>
+    internal const string AudioModule = "ava3daudio";
+
+    /// <summary>
+    /// Implemented by <c>BrowserAudio.cs</c> when there is a player for it to talk to, and by nothing at all
+    /// when there is not.
+    /// </summary>
+    static partial void InstallHostAudio();
+
+    [JSImport("focusApp", Module)]
+    private static partial bool FocusApp();
 
     [JSImport("locationSearch", Module)]
     private static partial string LocationSearch();

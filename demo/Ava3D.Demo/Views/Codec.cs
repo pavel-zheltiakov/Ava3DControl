@@ -304,7 +304,20 @@ internal sealed class Codec : Control
         foreach (var width in _widths)
             total += width;
 
-        var scanned = total * (_wanted == null ? 1 : Math.Clamp((_clock - _arrived) / Reveal, 0, 1));
+        // Whether the text is still being drawn is a question about the clock, and it has to be asked of the
+        // clock.
+        //
+        // It used to be asked of the arithmetic — draw the caret wherever the scan has not reached the end of
+        // a line — and that is the same question only if floating point says it is. It does not. The scan
+        // carries one running total across the lines and takes each line's width off it as it goes, and
+        // <c>(a + b) - a</c> is not <c>b</c>: on a two-line caption the second line's remainder lands about
+        // six hundredths of a picometre short of that line's own width, the comparison stays true, and the
+        // caret is left standing at the end of the last word for as long as the caption is up. It is one
+        // sub-pixel of arithmetic and it is three pixels of bright blue on the screen — which is what makes
+        // this class of bug worth naming rather than nudging with an epsilon. Sixteen per cent of two-line
+        // captions did it, and none of the one-line ones, because a sum of one term is exact.
+        var scanning = _wanted != null && _clock - _arrived < Reveal;
+        var scanned = total * (scanning ? Math.Clamp((_clock - _arrived) / Reveal, 0, 1) : 1);
 
         var glow = new Pen(new SolidColorBrush(Shade(0x3C, 0x54C8F5, lamp)), 6.5,
             lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
@@ -352,7 +365,7 @@ internal sealed class Codec : Control
 
             context.DrawGeometry(null, stroke, _drawn[i]);
 
-            if (shown < _widths[i])
+            if (scanning && shown < _widths[i])
                 context.DrawRectangle(caret, null, new Rect(shown, -3, 3, size + 6));
         }
     }

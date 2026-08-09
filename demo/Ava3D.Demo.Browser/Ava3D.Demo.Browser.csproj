@@ -89,4 +89,20 @@
   <ItemGroup>
     <ProjectReference Include="..\Ava3D.Demo\Ava3D.Demo.csproj" />
   </ItemGroup>
+
+  <!--
+    The tab's speaker, which exists only where there is a player for it to talk to.
+
+    BrowserAudio derives from AvaMediaPlayer's AudioDevice, and AvaMediaPlayer is a separate product that
+    is not published — so the public copy of this demo has no such assembly and no reference to it. Same
+    boundary as Story/Sound/Speaker.cs in the shared project and enforced the same way: one file, removed
+    by the same switch. Nothing else in this head knows about it, because the only thing that calls it is
+    the partial method it implements, and an unimplemented partial method is erased along with its call.
+
+    wwwroot/audio.js ships either way. It is inert without this file, and a page that carries one script it
+    does not use is a smaller wart than a publish step that has to know which scripts a build wanted.
+  -->
+  <ItemGroup Condition="'$(Ava3DFromPackage)' == 'true'">
+    <Compile Remove="BrowserAudio.cs" />
+  </ItemGroup>
 </Project>

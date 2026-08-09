@@ -74,23 +74,46 @@ public sealed class DraftsmanScene : DemoScene
 
     public override Scene Build()
     {
-        Scene scene;
+        var scene = new Scene();
+        Stage(scene);
+
+        if (BuildSubject() is { } drawing)
+            scene.Children.Add(drawing);
+
+        return scene;
+    }
+
+    /// <summary>
+    /// Paper, and light enough that the black lines carry the whole drawing. Not pure white: a page that
+    /// reaches the top of the range leaves the fills nowhere to sit behind the lines.
+    ///
+    /// It is the whole of the staging, and that is the scene. Nothing here is lit — the fill is
+    /// <see cref="Material.Unlit"/> and the lines have no shading model at all — so there is no key, no
+    /// environment and no floor to stand the drawing on. A print does not have a light on it.
+    /// </summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(243, 244, 240);
+
+    /// <summary>
+    /// The drawing: one merged fill, one line node for the folds, one for the copper.
+    ///
+    /// It is a subject the story can hang on a wall, and it is the only exhibit in the building that needs
+    /// no lamp pointed at it — see <see cref="Stage"/>. The engine room's service bay puts it on a light
+    /// table beside the board it describes, in a room with four lamps in it and all four of them somewhere
+    /// else.
+    /// </summary>
+    public override Node? BuildSubject()
+    {
         Node root;
 
         try
         {
-            (scene, root, _detail) = BoardModel.Load();
+            (_, root, _detail) = BoardModel.Load();
         }
         catch (Exception e)
         {
-            scene = new Scene();
             _detail = $"The board failed to load: {e.GetType().Name}: {e.Message}";
-            return scene;
+            return null;
         }
-
-        // Paper, and light enough that the black lines carry the whole drawing. Not pure white: a
-        // page that reaches the top of the range leaves the fills nowhere to sit behind the lines.
-        scene.Background = Color.FromRgb(243, 244, 240);
 
         var edges = BoardModel.Edges(root, 26f);
         var solid = BoardModel.Solid(root);
@@ -144,15 +167,12 @@ public sealed class DraftsmanScene : DemoScene
             RenderOrder = 1
         });
 
-        // The loaded root goes away entirely: its 610 nodes are all inside the merged mesh now, and
-        // leaving them in the scene would draw the board twice, once shaded and once as paper.
-        scene.Children.Remove(root);
-        scene.Children.Add(_pivot);
-
+        // The loaded root is dropped on the floor: its 610 nodes are all inside the merged mesh now, and
+        // handing it back as well would draw the board twice, once shaded and once as paper.
         _cost = $"That is {edges.Length / 2:N0} edges and {solid.TriangleCount:N0} triangles in two " +
                 $"draws, plus one more for {board.Runs.Count:N0} runs of copper.";
 
-        return scene;
+        return _pivot;
     }
 
     public override void Update(Scene scene, double elapsed)

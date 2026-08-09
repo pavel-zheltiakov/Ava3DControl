@@ -49,12 +49,19 @@ public sealed class BlendingScene : DemoScene
         camera.FarPlane = 40f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A dark card, so an additive panel has somewhere to add to. Nothing else: a floor under transparent
+    /// panels would be a second thing showing through them, and there is already a bright bar doing that
+    /// on purpose.
+    /// </summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(8, 9, 14);
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
+        var wall = new Node { Name = "blending" };
 
         // The thing all three panels are drawn over. Emissive so it is bright regardless of the light.
-        scene.Children.Add(new MeshNode(Primitives.Box(10.4f, 1.7f, 0.2f), new Material
+        wall.Children.Add(new MeshNode(Primitives.Box(10.4f, 1.7f, 0.2f), new Material
         {
             BaseColor = new Vector4(0.08f, 0.10f, 0.14f, 1f),
             EmissiveColor = new Vector3(0.30f, 0.42f, 0.62f)
@@ -63,19 +70,19 @@ public sealed class BlendingScene : DemoScene
             Position = new Vector3(0f, 1.5f, -1.2f)
         });
 
-        scene.Children.Add(Panel(-3.4f, 1.5f, new Vector4(1.00f, 0.52f, 0.22f, 1.00f), BlendMode.Opaque));
-        scene.Children.Add(Panel(0f, 1.5f, new Vector4(1.00f, 0.52f, 0.22f, 0.45f), BlendMode.Alpha));
-        scene.Children.Add(Panel(3.4f, 1.5f, new Vector4(1.00f, 0.52f, 0.22f, 1.00f), BlendMode.Additive));
+        wall.Children.Add(Panel(-3.4f, 1.5f, new Vector4(1.00f, 0.52f, 0.22f, 1.00f), BlendMode.Opaque));
+        wall.Children.Add(Panel(0f, 1.5f, new Vector4(1.00f, 0.52f, 0.22f, 0.45f), BlendMode.Alpha));
+        wall.Children.Add(Panel(3.4f, 1.5f, new Vector4(1.00f, 0.52f, 0.22f, 1.00f), BlendMode.Additive));
 
         // The pair that swaps. Different distances, so ordering by distance and ordering by RenderOrder
         // disagree — which is the only way to show which one wins.
         _far = Panel(-0.75f, -1.6f, new Vector4(0.30f, 0.55f, 1.00f, 0.62f), BlendMode.Alpha, z: -0.9f);
         _near = Panel(0.75f, -1.6f, new Vector4(1.00f, 0.34f, 0.62f, 0.62f), BlendMode.Alpha, z: 0.9f);
 
-        scene.Children.Add(_far);
-        scene.Children.Add(_near);
+        wall.Children.Add(_far);
+        wall.Children.Add(_near);
 
-        return scene;
+        return wall;
 
         MeshNode Panel(float x, float y, Vector4 color, BlendMode blend, float z = 0f) =>
             new(Primitives.Plane(2.6f, 2.6f), new Material

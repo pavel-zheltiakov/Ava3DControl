@@ -30,19 +30,28 @@ public sealed class AnimationScene : DemoScene
 
     public override bool Animates => true;
 
-    public override Scene Build()
+    /// <summary>
+    /// Night, and a faint sky to keep the far sides of the planets from going to pure black. No floor: an
+    /// orrery is in space, and a ground plane under one would be a question nobody wants to answer.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
-        _bodies.Clear();
+        scene.Background = Color.FromRgb(8, 9, 14);
 
         scene.Environment = new EnvironmentLight
         {
             SkyColor = new Vector3(0.10f, 0.12f, 0.18f),
             GroundColor = new Vector3(0.04f, 0.04f, 0.05f)
         };
+    }
+
+    public override Node BuildSubject()
+    {
+        var system = new Node { Name = "orrery" };
+        _bodies.Clear();
 
         // The star. Emissive, so it reads as a light source rather than as a lit ball.
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.5f), new Material
+        system.Children.Add(new MeshNode(Primitives.Sphere(0.5f), new Material
         {
             Name = "star",
             BaseColor = new Vector4(0.05f, 0.05f, 0.05f, 1f),
@@ -64,7 +73,7 @@ public sealed class AnimationScene : DemoScene
         foreach (var p in planets)
         {
             var orbit = new Node();
-            scene.Children.Add(orbit);
+            system.Children.Add(orbit);
 
             var spin = new Node { Position = new Vector3(p.Radius, 0f, 0f) };
             orbit.Children.Add(spin);
@@ -92,7 +101,7 @@ public sealed class AnimationScene : DemoScene
             _bodies.Add(new Body(orbit, spin, p.OrbitSpeed, p.SpinSpeed));
         }
 
-        return scene;
+        return system;
     }
 
     public override void Update(Scene scene, double elapsed)

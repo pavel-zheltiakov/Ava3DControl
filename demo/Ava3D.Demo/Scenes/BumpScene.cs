@@ -59,13 +59,16 @@ public sealed class BumpScene : DemoScene
         camera.FarPlane = 30f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// One light, low and from the side, and nothing else in the frame.
+    ///
+    /// This is the rare stage that the subject genuinely cannot do without. Relief is a shading effect
+    /// and shading is an angle: under a light behind the camera all four spheres are the same smooth ball,
+    /// and the whole scene says nothing. Anywhere this is mounted has to graze it, or not mount it.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
-
-        var height = Craters();
-        var bump = Grey(height);
-        var normal = Procedural.NormalFromHeight(Size, height, strength: 2.2f, name: "crater normal");
+        scene.Background = Color.FromRgb(8, 9, 14);
 
         scene.Lights.Clear();
         scene.Lights.Add(new DirectionalLight
@@ -76,20 +79,29 @@ public sealed class BumpScene : DemoScene
             Intensity = 2.4f,
             Ambient = 0.04f
         });
+    }
+
+    public override Node BuildSubject()
+    {
+        var row = new Node { Name = "relief" };
+
+        var height = Craters();
+        var bump = Grey(height);
+        var normal = Procedural.NormalFromHeight(Size, height, strength: 2.2f, name: "crater normal");
 
         // Built once and shared: the four spheres differ only in their material, and the fourth in
         // whether its mesh carries a tangent frame at all.
         var tangented = Primitives.Sphere(0.95f, 64, 48).WithGeneratedTangents();
         var plain = Primitives.Sphere(0.95f, 64, 48);
 
-        scene.Children.Add(Ball(-3.6f, tangented, new Material
+        row.Children.Add(Ball(-3.6f, tangented, new Material
         {
             Name = "smooth",
             BaseColor = new Vector4(0.62f, 0.63f, 0.66f, 1f),
             Roughness = 0.75f
         }));
 
-        scene.Children.Add(Ball(-1.2f, tangented, new Material
+        row.Children.Add(Ball(-1.2f, tangented, new Material
         {
             Name = "bump",
             BaseColor = new Vector4(0.62f, 0.63f, 0.66f, 1f),
@@ -98,7 +110,7 @@ public sealed class BumpScene : DemoScene
             BumpScale = 6f
         }));
 
-        scene.Children.Add(Ball(1.2f, tangented, new Material
+        row.Children.Add(Ball(1.2f, tangented, new Material
         {
             Name = "normal map",
             BaseColor = new Vector4(0.62f, 0.63f, 0.66f, 1f),
@@ -108,7 +120,7 @@ public sealed class BumpScene : DemoScene
 
         // The same material on a mesh with no tangents. The normal map is dropped rather than applied
         // wrongly, which is the right call and worth seeing once.
-        scene.Children.Add(Ball(3.6f, plain, new Material
+        row.Children.Add(Ball(3.6f, plain, new Material
         {
             Name = "normal map, no tangents",
             BaseColor = new Vector4(0.62f, 0.63f, 0.66f, 1f),
@@ -116,7 +128,7 @@ public sealed class BumpScene : DemoScene
             NormalTexture = normal
         }));
 
-        return scene;
+        return row;
 
         static MeshNode Ball(float x, Mesh mesh, Material material) =>
             new(mesh, material)

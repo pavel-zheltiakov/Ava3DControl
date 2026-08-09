@@ -97,9 +97,18 @@ public sealed class FourLightsScene : DemoScene
         camera.FarPlane = 60f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// All four slots, the environment that is not one of them, and a floor dark enough to show a pool of
+    /// lamplight on.
+    ///
+    /// This is the scene whose subject <em>is</em> the stage. Everything the notes claim is a property of
+    /// these four objects — that a fill at half the key does not cancel it, that a rim tipped too far
+    /// becomes a second key, that Range 4.2 reaches three columns — so the colonnade exists to be lit and
+    /// the lights are the thing being shown. A room could not mount this; it would have to become it.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(5, 5, 8) };
+        scene.Background = Color.FromRgb(5, 5, 8);
 
         scene.Lights.Clear();
 
@@ -169,6 +178,11 @@ public sealed class FourLightsScene : DemoScene
             Position = new Vector3(0f, -1.42f, 0f),
             IsPickable = false
         });
+    }
+
+    public override Node BuildSubject()
+    {
+        var colonnade = new Node { Name = "colonnade" };
 
         // Dark stone. Three lights add up, and a bright albedo under three of them saturates into the same
         // white the single-light beat already reached — which is exactly how four lights come to look
@@ -195,13 +209,13 @@ public sealed class FourLightsScene : DemoScene
             column.Children.Add(new MeshNode(shaft, stone) { Position = new Vector3(0f, -0.06f, 0f) });
             column.Children.Add(new MeshNode(block, stone) { Position = new Vector3(0f, 1.22f, 0f) });
 
-            scene.Children.Add(column);
+            colonnade.Children.Add(column);
         }
 
         // The subject: a sphere in the open floor in front of the colonnade, where a terminator has room
         // to be seen. Mid grey rather than white, so the three coloured lights land as colour instead of
         // piling up into a white ball.
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.8f, 48, 32), new Material
+        colonnade.Children.Add(new MeshNode(Primitives.Sphere(0.8f, 48, 32), new Material
         {
             BaseColor = new Vector4(0.46f, 0.46f, 0.48f, 1f),
             Roughness = 0.42f,
@@ -248,9 +262,9 @@ public sealed class FourLightsScene : DemoScene
             Position = new Vector3(0f, 0.23f, 0f)
         });
 
-        scene.Children.Add(_fixture);
+        colonnade.Children.Add(_fixture);
 
-        return scene;
+        return colonnade;
     }
 
     public override void Update(Scene scene, Camera camera, double elapsed)

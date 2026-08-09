@@ -26,16 +26,22 @@ public sealed class TransformsScene : DemoScene
 
     public override bool Animates => true;
 
-    public override Scene Build()
+    /// <summary>
+    /// Nothing. There is no floor and no backdrop, and there never was — a hierarchy hanging in the dark is
+    /// the whole picture, and a ground plane under it would only invite the question of what it is standing
+    /// on. Which is also why this is the exhibit the rotunda bolts to a turning table: it has no opinion
+    /// about what is underneath it, so a table can be.
+    /// </summary>
+    public override void Stage(Scene scene) { }
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene();
         _arms.Clear();
 
         var shaft = Primitives.Box(0.16f, 0.16f, 1.3f);
         var ball = Primitives.Sphere(0.22f);
 
         _hub = new Node { Name = "Hub" };
-        scene.Children.Add(_hub);
 
         _hub.Children.Add(new MeshNode(
             Primitives.Sphere(0.35f),
@@ -67,7 +73,7 @@ public sealed class TransformsScene : DemoScene
             }));
         }
 
-        return scene;
+        return _hub;
     }
 
     public override void Update(Scene scene, double elapsed)

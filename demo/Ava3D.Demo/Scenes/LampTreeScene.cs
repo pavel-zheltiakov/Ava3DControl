@@ -109,9 +109,17 @@ public sealed class LampTreeScene : DemoScene
         camera.FarPlane = 60f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// Four point lights and no directional one at all, which is legal and worth seeing: what keeps the
+    /// room from being black between the pools is <see cref="EnvironmentLight"/>, and that costs no slot.
+    ///
+    /// The four are built empty, at zero intensity, pointing nowhere. <see cref="Update"/> aims them.
+    /// They live here rather than in the subject because they are the budget the scene is about, and the
+    /// sixteen bulbs are only what the budget is spent on.
+    /// </summary>
+    public override void Stage(Scene scene)
     {
-        var scene = new Scene { Background = Color.FromRgb(6, 7, 12) };
+        scene.Background = Color.FromRgb(6, 7, 12);
 
         scene.Lights.Clear();
 
@@ -145,6 +153,11 @@ public sealed class LampTreeScene : DemoScene
         {
             IsPickable = false
         });
+    }
+
+    public override Node BuildSubject()
+    {
+        var tree = new Node { Name = "tree" };
 
         var needles = new Material
         {
@@ -154,14 +167,14 @@ public sealed class LampTreeScene : DemoScene
         };
 
         foreach (var (bottom, top, bottomRadius, topRadius) in Tiers)
-            scene.Children.Add(new MeshNode(
+            tree.Children.Add(new MeshNode(
                 Primitives.Cylinder(topRadius, bottomRadius, top - bottom, 40),
                 needles)
             {
                 Position = new Vector3(0f, (bottom + top) * 0.5f, 0f)
             });
 
-        scene.Children.Add(new MeshNode(Primitives.Cylinder(0.16f, 0.19f, 0.66f, 20), new Material
+        tree.Children.Add(new MeshNode(Primitives.Cylinder(0.16f, 0.19f, 0.66f, 20), new Material
         {
             BaseColor = new Vector4(0.20f, 0.12f, 0.07f, 1f),
             Roughness = 0.9f,
@@ -173,11 +186,11 @@ public sealed class LampTreeScene : DemoScene
 
         // Boxes at the foot of the tree, at angles, because a coloured light needs a surface facing some
         // other way before you can tell it is coloured.
-        AddBox(scene, new Vector3(-1.35f, 0.32f, 0.95f), new Vector3(0.9f, 0.64f, 0.72f), 0.5f,
+        AddBox(tree, new Vector3(-1.35f, 0.32f, 0.95f), new Vector3(0.9f, 0.64f, 0.72f), 0.5f,
             new Vector4(0.34f, 0.10f, 0.12f, 1f));
-        AddBox(scene, new Vector3(1.20f, 0.24f, 1.15f), new Vector3(0.72f, 0.48f, 0.60f), -0.7f,
+        AddBox(tree, new Vector3(1.20f, 0.24f, 1.15f), new Vector3(0.72f, 0.48f, 0.60f), -0.7f,
             new Vector4(0.14f, 0.20f, 0.34f, 1f));
-        AddBox(scene, new Vector3(0.45f, 0.20f, -1.55f), new Vector3(0.86f, 0.40f, 0.66f), 0.25f,
+        AddBox(tree, new Vector3(0.45f, 0.20f, -1.55f), new Vector3(0.86f, 0.40f, 0.66f), 0.25f,
             new Vector4(0.28f, 0.26f, 0.12f, 1f));
 
         var glow = Space.Glow();
@@ -218,12 +231,12 @@ public sealed class LampTreeScene : DemoScene
                 RenderOrder = 1
             };
 
-            scene.Children.Add(_bulbs[i]);
-            scene.Children.Add(_halos[i]);
+            tree.Children.Add(_bulbs[i]);
+            tree.Children.Add(_halos[i]);
         }
 
         // The star, which never goes out and never takes a slot.
-        scene.Children.Add(new MeshNode(Primitives.Sphere(0.15f, 20, 12), new Material
+        tree.Children.Add(new MeshNode(Primitives.Sphere(0.15f, 20, 12), new Material
         {
             BaseColor = new Vector4(1.00f, 0.93f, 0.62f, 1f),
             Unlit = true
@@ -232,7 +245,7 @@ public sealed class LampTreeScene : DemoScene
             Position = new Vector3(0f, 3.44f, 0f)
         });
 
-        scene.Children.Add(new SpriteNode
+        tree.Children.Add(new SpriteNode
         {
             Texture = glow,
             Position = new Vector3(0f, 3.44f, 0f),
@@ -244,7 +257,7 @@ public sealed class LampTreeScene : DemoScene
             RenderOrder = 1
         });
 
-        return scene;
+        return tree;
     }
 
     public override void Update(Scene scene, Camera camera, double elapsed)
@@ -339,8 +352,8 @@ public sealed class LampTreeScene : DemoScene
         return radius;
     }
 
-    private static void AddBox(Scene scene, Vector3 at, Vector3 size, float turn, Vector4 color) =>
-        scene.Children.Add(new MeshNode(Primitives.Box(size.X, size.Y, size.Z), new Material
+    private static void AddBox(Node root, Vector3 at, Vector3 size, float turn, Vector4 color) =>
+        root.Children.Add(new MeshNode(Primitives.Box(size.X, size.Y, size.Z), new Material
         {
             BaseColor = color,
             Roughness = 0.75f,

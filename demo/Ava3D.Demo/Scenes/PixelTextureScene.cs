@@ -12,6 +12,8 @@ public sealed class PixelTextureScene : DemoScene
     private const int Live = 128;
 
     private MeshNode _live = null!;
+    private Texture _liveTexture = null!;
+    private readonly byte[] _livePixels = new byte[Live * Live * 4];
     private int _generation = -1;
     private double _lastBuildMs;
 
@@ -34,6 +36,12 @@ public sealed class PixelTextureScene : DemoScene
         so that the renderer can immediately decode it again, and four 1024×512 maps of that is
         comfortably over a second of stall in a 32-bit WebAssembly heap.
 
+        It is the same Texture instance throughout, written over and marked with Refresh. That matters more
+        than it looks: textures are cached by identity, so a renderer that has uploaded one never reads its
+        bytes again, and building a new instance each time means asking it to upload something it has never
+        seen — which draws as flat white until its turn on the upload queue comes round. Once every second
+        and a half that is a blink. At a game's frame rate it is a flicker.
+
         Nothing else changes. A raw texture and an encoded one are the same class, wrap the same way,
         filter the same way and are cached against the same identity.
         """;
@@ -54,17 +62,27 @@ public sealed class PixelTextureScene : DemoScene
         camera.FarPlane = 30f;
     }
 
-    public override Scene Build()
+    /// <summary>
+    /// A dark card, and no light of any kind that matters: all three panels are unlit, so what is on them
+    /// is exactly what is in the arrays. Staging one of these would be staging a photograph.
+    /// </summary>
+    public override void Stage(Scene scene) => scene.Background = Color.FromRgb(8, 9, 14);
+
+    public override Node BuildSubject()
     {
-        var scene = new Scene { Background = Color.FromRgb(8, 9, 14) };
+        var panels = new Node { Name = "pixels" };
 
-        scene.Children.Add(Panel(-2.8f, Tiny()));
-        scene.Children.Add(Panel(0f, Generated()));
+        panels.Children.Add(Panel(-2.8f, Tiny()));
+        panels.Children.Add(Panel(0f, Generated()));
 
-        _live = Panel(2.8f, Noise(0));
-        scene.Children.Add(_live);
+        Noise(0, _livePixels);
+        _liveTexture = Texture.FromPixels(_livePixels, Live, Live, "live");
 
-        return scene;
+        _live = Panel(2.8f, _liveTexture);
+        _live.Material.EmissiveTexture = _liveTexture;
+        panels.Children.Add(_live);
+
+        return panels;
 
         // Unlit, so what is on the panel is exactly what is in the array — a lit surface would answer a
         // question about lighting instead of one about texture data.
@@ -93,14 +111,15 @@ public sealed class PixelTextureScene : DemoScene
         _generation = generation;
 
         var started = DateTime.UtcNow;
-        var texture = Noise(generation);
+        Noise(generation, _livePixels);
         _lastBuildMs = (DateTime.UtcNow - started).TotalMilliseconds;
 
-        // A new Texture instance, so the renderer uploads it and drops the old one. Textures are cached
-        // by identity; mutating the array behind one that has already been uploaded would change nothing
-        // on screen.
-        _live.Material.BaseColorTexture = texture;
-        _live.Material.EmissiveTexture = texture;
+        // The same array and the same Texture, written over and marked. A texture is cached by identity, so
+        // without the mark the renderer would never look at the bytes a second time — and with a new
+        // instance instead it would have to upload one it has never seen, which draws as flat white until
+        // its turn on the upload queue comes round. Once every second and a half that is a blink; at a
+        // game's frame rate it is a flicker. See Texture.Refresh.
+        _liveTexture.Refresh();
 
         scene.Invalidate();
     }
@@ -146,10 +165,9 @@ public sealed class PixelTextureScene : DemoScene
         return Texture.FromPixels(pixels, size, size, "generated");
     }
 
-    /// <summary>The one that is rebuilt while you watch.</summary>
-    private static Texture Noise(int seed)
+    /// <summary>The one that is rebuilt while you watch, written into the buffer it already has.</summary>
+    private static void Noise(int seed, byte[] pixels)
     {
-        var pixels = new byte[Live * Live * 4];
         var random = new Random(seed * 7919 + 13);
 
         // A few blobs rather than per-pixel static, so consecutive generations are visibly different
@@ -181,7 +199,5 @@ public sealed class PixelTextureScene : DemoScene
             pixels[o + 2] = (byte)Math.Clamp(b * 255f, 0f, 255f);
             pixels[o + 3] = 255;
         }
-
-        return Texture.FromPixels(pixels, Live, Live, $"live {seed}");
     }
 }

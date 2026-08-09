@@ -168,8 +168,26 @@
                     <Button x:Name="NextButton" Classes="step" Content="›" ToolTip.Tip="Next scene" />
                 </StackPanel>
 
+                <!--
+                    The same list, shown two ways. On, an entry is a moment of the exhibition and picking
+                    it walks you to the thing; off, it is that feature on its own against a black
+                    background, which is what this demo has always been. Named for what it shows rather
+                    than for what pressing it does, because it is a mode and not an action.
+                -->
+                <ToggleSwitch x:Name="StoryToggle" OnContent="Story" OffContent="Story"
+                              ToolTip.Tip="On: one building, first person, every feature in a room. Off: each feature on its own, nothing else in the frame" />
+
                 <ToggleSwitch x:Name="AutoToggle" OnContent="Auto" OffContent="Auto"
                               ToolTip.Tip="Move on by itself — a scene with a script when it reaches the end, anything else after a few seconds" />
+
+                <!--
+                    Sound, and it is the one switch in this toolbar that starts off. Drawing when you open
+                    a demo is what you opened it for; making a noise is something done to whatever room you
+                    happen to be sitting in, and this one cannot know it is not a train. Only the film has
+                    any, so it is disabled next to the standalone scenes rather than lying.
+                -->
+                <ToggleSwitch x:Name="SoundToggle" OnContent="Sound" OffContent="Sound"
+                              ToolTip.Tip="The film's soundtrack: air, lamps, footsteps, an alarm. Generated, like the textures — there is not an audio file in the repository" />
 
                 <Border Width="1" Background="#262B36" Margin="4,0" />
 
@@ -284,6 +302,37 @@
             <views:Codec x:Name="CaptionBand"
                          VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
                          Height="150" Margin="0,0,0,14" />
+
+            <!--
+                The two steps, shown only while a scene has handed the viewer the controls.
+
+                They exist for the heads with no keyboard. WASD is the right way to walk a ship and it is
+                also a thing a phone does not have, and the browser build is the one most people will ever
+                open; two buttons under the thumb are the whole of what a touch screen needs, because the
+                other axis is the drag that turns you.
+
+                Held rather than clicked — press and he walks, let go and he stops — which is why these are
+                Borders with pointer handlers instead of Buttons. A Button raises Click on release, and a
+                control whose entire job is to report that it is still being held cannot be built out of
+                one.
+            -->
+            <StackPanel x:Name="StepPad" IsVisible="False"
+                        Orientation="Horizontal" Spacing="10"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                        Margin="0,0,18,26">
+                <Border x:Name="StepBack" Width="58" Height="58" CornerRadius="29" Cursor="Hand"
+                        Background="#B0141821" BorderThickness="1" BorderBrush="#3A4456"
+                        ToolTip.Tip="Step back (S)">
+                    <TextBlock Text="&#x25BC;" FontSize="17" Foreground="#C9D4E4"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <Border x:Name="StepForward" Width="58" Height="58" CornerRadius="29" Cursor="Hand"
+                        Background="#B0141821" BorderThickness="1" BorderBrush="#3A4456"
+                        ToolTip.Tip="Step forward (W)">
+                    <TextBlock Text="&#x25B2;" FontSize="17" Foreground="#C9D4E4"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </StackPanel>
         </Grid>
 
         <!--

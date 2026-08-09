@@ -62,6 +62,73 @@ public static class DemoSettings
     }
 
     /// <summary>
+    /// Whether the demo shows the exhibition or the features on their own. On by default.
+    ///
+    /// On by default because the default is what somebody who has never heard of this library sees, and a
+    /// list of thirty-four unrelated scenes asks them to decide, unpaid, whether to click it thirty-three
+    /// more times. Off is the reference: the same list, the same names, each feature against a black
+    /// background with nothing else in the frame — which is what somebody reading the source wants, and
+    /// nobody else.
+    ///
+    /// Remembered for the same reason the engine is. It is a decision about how you are using the demo,
+    /// not a per-session whim, and re-answering it on every launch is a small tax on the person using it
+    /// most.
+    ///
+    /// A measured run gets the default rather than the file's, exactly as the engine does: a capture or a
+    /// probe measures the configuration on its command line, and a figure that depends on what the last
+    /// person clicked is not a figure.
+    /// </summary>
+    /// <remarks>
+    /// <c>AVA3D_STORY=1</c> asks for it explicitly and beats everything, which is how a capture or a probe
+    /// gets at the film at all: a measured run ignores the settings file by design, so without a switch
+    /// there would be no way to photograph a room from a script. Same shape as <c>AVA3D_SOFTWARE</c> and
+    /// <c>AVA3D_THREADS</c> — the command line says what is being measured, and nothing else gets a vote.
+    /// </remarks>
+    public static bool Story
+    {
+        get
+        {
+            if (Environment.GetEnvironmentVariable("AVA3D_STORY") is { Length: > 0 } asked)
+                return asked is not ("0" or "off" or "false");
+
+            return !Measuring && Read("story") is not "off";
+        }
+
+        set => Write("story", value ? "on" : "off");
+    }
+
+    /// <summary>
+    /// Whether the film is allowed to make a noise. Off by default.
+    ///
+    /// Off, unlike the other two, and the asymmetry is the point rather than an oversight. A demo that
+    /// starts drawing the moment it opens is doing what it was opened to do; a demo that starts making
+    /// sound the moment it opens is doing something to the room the person opening it is sitting in, and
+    /// they may be on a train, in an office, or four minutes into a call. Neither of those is a decision
+    /// this application gets to take on their behalf, and the cost of being wrong is wildly asymmetric —
+    /// a silent film is a switch away, and a loud one in a quiet office is not undoable.
+    ///
+    /// Remembered like the others, so it is a decision taken once. Somebody who turns it on gets it on
+    /// every time after that, which is the half of this that a default cannot do.
+    /// </summary>
+    /// <remarks>
+    /// <c>AVA3D_SOUND=1</c> forces it, for the same reason <c>AVA3D_STORY</c> exists: a measured run
+    /// ignores the settings file, so without a switch there would be no way to ask a scripted run for
+    /// audio at all.
+    /// </remarks>
+    public static bool Sound
+    {
+        get
+        {
+            if (Environment.GetEnvironmentVariable("AVA3D_SOUND") is { Length: > 0 } asked)
+                return asked is not ("0" or "off" or "false");
+
+            return !Measuring && Read("sound") is "on";
+        }
+
+        set => Write("sound", value ? "on" : "off");
+    }
+
+    /// <summary>
     /// Whether this process is being measured rather than used.
     ///
     /// A probe or capture run measures the configuration it was handed, and its whole value is that
