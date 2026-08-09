@@ -270,8 +270,25 @@ internal sealed class Outside(EngineRoom room, Illuminator gallery, Traffic lane
     /// </summary>
     private void Spend(Hall hall, int bank)
     {
+        // <b>The star is in both banks, and that is the whole of this method's second draft.</b>
+        //
+        // It was in bank 1 only, on the reading that bank 0 belongs to the room being left behind. But this
+        // chapter occupies both rooms for its whole length — see Enter, and the argument there about the
+        // engine room staying in frame through the doorway — so the planet is on screen throughout, and a
+        // <see cref="DirectionalLight"/> that is not one of the four is not shining on anything at all. The
+        // planet was therefore unlit until the bank changed and then lit afterwards, which reads as a
+        // planet that brightens because somebody turned a lamp on inside a ship.
+        //
+        // Nothing in a room can change what a star does to a world ninety thousand kilometres away. That is
+        // not a lighting preference, it is the one thing about this shot that has to be true, so the star
+        // is not something a bank gets to spend.
+        //
+        // It costs the third indicator light on the engine room's panel, which is the cheapest of the four
+        // by a distance: the card carries six and only three were ever lit, the room is behind the camera
+        // and going further behind it every second, and what is being given up is one small glow on a
+        // surface seen edge-on through a doorway.
         if (bank == 0)
-            hall.Use(room.Task.Light, room.Panel.Lights[0], room.Panel.Lights[1], room.Panel.Lights[2]);
+            hall.Use(gallery.Sunlight, room.Task.Light, room.Panel.Lights[0], room.Panel.Lights[1]);
         else
             hall.Use(gallery.Sunlight);
     }
