@@ -35,29 +35,53 @@ html, body { height: 100%; }
     transition: opacity 200ms, display 200ms;
 }
 
+/* Sized against the viewport rather than in fixed pixels.
+
+   This was laid out on a laptop and read correctly there, and on a large display the whole thing —
+   wordmark, the line asking for a key, the bar under it — sat in the middle of an acre of black at the
+   size of a caption. It is the only thing on screen at that moment and the one instruction the visitor
+   has to follow, so it should be legible from where somebody sits to watch a film.
+
+   clamp rather than a media query: the small end is what this already was, the large end stops the
+   wordmark becoming a banner on a 5K monitor, and everything between is one continuous scale. The em
+   sizes below then follow the brand rather than repeating the arithmetic. */
 .boot {
-    width: min(420px, calc(100vw - 48px));
+    width: min(clamp(420px, 30vw, 780px), calc(100vw - 48px));
     text-align: center;
 }
 
 .boot-brand {
-    margin: 0 0 22px;
-    font-size: 21px;
+    margin: 0 0 1.05em;
+    font-size: clamp(21px, 2.1vw, 42px);
     font-weight: 650;
     letter-spacing: -0.01em;
 }
 
 .boot-brand span { color: #7fd8a0; }
 
+/* The version, beside the wordmark and deliberately quieter than it: same baseline, because they are one
+   line of type rather than a title and a caption, and grey because which build this is matters to somebody
+   reporting a fault and to nobody else. */
+.boot-brand .boot-version {
+    color: #6f7889;
+    font-size: 0.52em;
+    font-weight: 500;
+    letter-spacing: 0;
+    margin-right: 0.6em;
+    font-variant-numeric: tabular-nums;
+}
+
+.boot-brand .boot-version:empty { display: none; }
+
 .boot-line {
-    margin: 0 0 12px;
-    font-size: 13.5px;
+    margin: 0 0 0.85em;
+    font-size: clamp(13.5px, 1.15vw, 23px);
     color: #949dad;
     font-variant-numeric: tabular-nums;
 }
 
 .boot-track {
-    height: 4px;
+    height: clamp(4px, 0.32vw, 7px);
     border-radius: 999px;
     background: #222a36;
     overflow: hidden;
@@ -72,8 +96,8 @@ html, body { height: 100%; }
 }
 
 .boot-hint {
-    margin: 18px 0 0;
-    font-size: 12px;
+    margin: 1.3em 0 0;
+    font-size: clamp(12px, 0.95vw, 18px);
     line-height: 1.55;
     color: #6f7889;
 }
