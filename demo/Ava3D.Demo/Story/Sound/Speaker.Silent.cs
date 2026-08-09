@@ -6,8 +6,9 @@ namespace Ava3D.Demo.Story;
 /// This is the file the generated public repository compiles instead of <c>Speaker.cs</c>. That copy of
 /// the demo restores the control from nuget.org and has no <c>src</c> directory beside it, so
 /// <c>AvaMediaPlayer</c> — which is not published — is not there to reference. See the csproj, which
-/// chooses between the two on the same <c>Ava3DFromPackage</c> switch that chooses between the project
-/// reference and the package.
+/// chooses between the two on <c>Ava3DNoPlayer</c> — a switch of its own, because whether the player's
+/// source is on disk and where Ava3D itself comes from are two separate questions, and the demo the site
+/// ships answers them differently: released package, sound intact.
 ///
 /// <see cref="Open"/> returns null, which is the same answer the real one gives on a machine with no audio
 /// device, so the film's silent path is not a second path — it is the one that already had to work.

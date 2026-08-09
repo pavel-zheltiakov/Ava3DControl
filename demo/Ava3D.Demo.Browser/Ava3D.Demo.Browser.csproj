@@ -102,7 +102,7 @@
     wwwroot/audio.js ships either way. It is inert without this file, and a page that carries one script it
     does not use is a smaller wart than a publish step that has to know which scripts a build wanted.
   -->
-  <ItemGroup Condition="'$(Ava3DFromPackage)' == 'true'">
+  <ItemGroup Condition="'$(Ava3DNoPlayer)' == 'true'">
     <Compile Remove="BrowserAudio.cs" />
   </ItemGroup>
 </Project>

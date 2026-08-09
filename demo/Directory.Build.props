@@ -7,6 +7,9 @@
     <PropertyGroup>
         <Ava3DFromPackage>true</Ava3DFromPackage>
 
+        <!-- And no src/ to take the player from, which is a separate fact and now a separate switch. -->
+        <Ava3DNoPlayer>true</Ava3DNoPlayer>
+
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
