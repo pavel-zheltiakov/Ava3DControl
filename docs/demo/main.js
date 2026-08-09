@@ -7,6 +7,7 @@
 const line = document.getElementById('boot-line');
 const bar = document.getElementById('boot-bar');
 const hint = document.getElementById('boot-hint');
+const boot = document.querySelector('.boot');
 
 // ?report=<label> — send this page's console back to the server that is hosting it.
 //
@@ -182,15 +183,19 @@ try {
     // sees is that opening playing silently, with the sound arriving whenever they happen to touch
     // something. The score is a third of what this demo is; it should not be a thing you discover late.
     //
-    // The splash is already on screen and already explaining itself, so this costs no extra furniture — one
-    // line changes and the click that dismisses it is the gesture. Any key does as well as any click,
-    // because somebody who has just pressed W is not looking for a button.
+    // The splash is already on screen, so this costs no new furniture: the status line and the line under
+    // the bar are both already there, and the click that dismisses them is the gesture. Any key does as
+    // well as any click, because somebody who has just pressed W is not looking for a button.
+    //
     // Not in a scripted run. ?report= is a headless browser posting its console to the server that served
     // it, and there is nobody there to click anything — gating that would turn every automated check into
     // a timeout whose cause is a button nobody can see.
     if (!label) {
-        line.textContent = 'Click or press any key to start';
-        hint.textContent = '';
+        // The call to action goes under the bar, in the hint's slot, because that is where the eye has
+        // arrived by then — name, status, progress, and then what to do about it.
+        line.textContent = 'Renderer loaded';
+        hint.textContent = 'Click or press any key to start';
+        boot?.classList.add('waiting');
 
         await new Promise(resolve => {
             const begin = () => {
@@ -204,6 +209,7 @@ try {
                 globalThis.addEventListener(event, begin, { capture: true, passive: true });
         });
 
+        boot?.classList.remove('waiting');
         line.textContent = 'Starting the renderer…';
         hint.textContent = '';
     }
