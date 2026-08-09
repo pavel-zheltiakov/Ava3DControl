@@ -19,6 +19,9 @@ public partial class MainView : UserControl
 {
     private Ava3DView _view = null!;
     private ComboBox _sceneList = null!, _engineList = null!;
+
+    /// <summary>The steppers either side of the scene list. Held because they are disabled with it.</summary>
+    private Button _prevButton = null!, _nextButton = null!;
     private ToggleSwitch _autoToggle = null!, _storyToggle = null!, _soundToggle = null!;
 
     /// <summary>
@@ -232,8 +235,10 @@ public partial class MainView : UserControl
         _sceneList.ItemsSource = _catalog.Select((s, i) => $"{i + 1}.  {s.Title}").ToArray();
         _sceneList.SelectionChanged += (_, _) => Want(_sceneList.SelectedIndex);
 
-        this.FindControl<Button>("PrevButton")!.Click += (_, _) => Step(-1);
-        this.FindControl<Button>("NextButton")!.Click += (_, _) => Step(1);
+        _prevButton = this.FindControl<Button>("PrevButton")!;
+        _nextButton = this.FindControl<Button>("NextButton")!;
+        _prevButton.Click += (_, _) => Step(-1);
+        _nextButton.Click += (_, _) => Step(1);
 
         // No camera input anywhere in the demo.
         //
@@ -429,20 +434,6 @@ public partial class MainView : UserControl
             _view.InvalidateCamera();
 
         HandOver(_current.WantsControl);
-
-        // Auto does not take the room off somebody who is walking around it.
-        //
-        // The film's tour length is its own running time plus three quarters of a minute, so that the walk
-        // it hands over to is not taken back before anyone has crossed the gallery. That is the right
-        // number for a visitor standing still and the wrong one for a visitor going somewhere: forty-five
-        // seconds into exploring a building, the tour moved on to the next scene, which reads as the demo
-        // having a mind of its own.
-        //
-        // So the clock waits while the keys are down. It is the same rule AutoTick already applies to an
-        // open picker — a tour advances during a pause, not during use — and it is still bounded, because
-        // letting go for forty-five seconds is a pause by any measure.
-        if (_current.WantsControl && _keys + _taps != Vector2.Zero)
-            _onScreen.Restart();
 
         ShowCaption(_current.Caption, now.TotalSeconds);
         RequestFrame();
@@ -653,6 +644,20 @@ public partial class MainView : UserControl
         // trusting, and this one still shows what it will do when the story goes back on.
         _soundToggle.IsEnabled = _current is StoryScene;
 
+        // And the scene list is dead while the film is on.
+        //
+        // It used to jump the film to the picked entry's cue, which reads well written down and badly in
+        // use: every one of those jumps rebuilds the building and throws away wherever the visitor had got
+        // to, and there is nothing in the toolbar that says so before it happens. The switch beside it is
+        // the honest control — turn the film off and the list is a list of scenes again.
+        //
+        // The steppers go with it. They are the same selection by another route, and a control that still
+        // works when the thing next to it does not is a control nobody trusts.
+        var filming = _current is StoryScene;
+        _sceneList.IsEnabled = !filming;
+        _prevButton.IsEnabled = !filming;
+        _nextButton.IsEnabled = !filming;
+
         _currentScene = _current.Build();
 
         // The clock restarts on the next frame rather than now: `now` is the compositor's reading and
@@ -784,6 +789,20 @@ public partial class MainView : UserControl
         // on the thread that also delivers input — and a list that the viewer has open is a list they are
         // reading, whichever of the two it is.
         if (_current is null || _sceneList.IsDropDownOpen || _engineList.IsDropDownOpen || _wanted != _shown)
+            return;
+
+        // And never once the scene has been handed over.
+        //
+        // The film ends by giving the building to the visitor, and a tour that takes it back is a tour
+        // interrupting the thing it was showing them. It did: forty-five seconds after the hand-over, or
+        // forty-five seconds after they last touched a key, whichever came later — and standing still to
+        // look at something is not a signal that you have finished.
+        //
+        // There is no timeout that is right here. Someone reading a console in the engine room and someone
+        // who has walked away from the machine look identical from in here, and only one of those wants a
+        // scene change. So the tour stops instead, which is what a tour does when the visitor takes over,
+        // and Auto is a switch anybody can turn off if they want the scenes to keep moving.
+        if (_current.WantsControl)
             return;
 
         if (_onScreen.Elapsed >= _current.TourDuration)
