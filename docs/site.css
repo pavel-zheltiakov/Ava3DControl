@@ -545,14 +545,32 @@ tbody td.num { font-weight: 650; }
 
 .rel-body { max-width: 82ch; }
 .rel-body p { color: var(--dim); }
+/* The Markdown renderer shifts every heading down a level to sit under the card's own title, so the notes'
+   "## API" arrives as an h3 and its "### Scene" as an h4. The two were styled the wrong way round: the
+   section headings came out smaller, greyer and uppercase, while the subsections nested inside them were
+   larger and white — which reads as the hierarchy running backwards. API, Improvements and Known limits
+   are the three things somebody scans for, so they get the weight; Scene and Renderers are subdivisions of
+   one of them and take the quiet label style that used to be on their parent. */
 .rel-body h3 {
-  margin: 26px 0 4px;
-  font-size: 13px;
+  margin: 28px 0 10px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--text);
+}
+
+/* A rule reads as a separator between sections, not as the top of the first one. */
+.rel-body h3:first-child { margin-top: 6px; padding-top: 0; border-top: 0; }
+
+.rel-body h4 {
+  margin: 18px 0 6px;
+  font-size: 12.5px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--dim);
 }
-.rel-body h4 { margin: 20px 0 6px; font-size: 16px; color: var(--text); }
 .rel-body ul { margin: 0 0 14px; padding-left: 22px; color: var(--dim); }
 .rel-body .scroller { max-width: none; }
 .rel-body table { min-width: 480px; }
