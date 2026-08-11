@@ -46,7 +46,8 @@ public sealed class StressScene : DemoScene
     /// somewhere else has to put its own floor at that height or the spheres will hang above it or sink
     /// through it, which is precisely the bug the constant was introduced to fix.
     /// </summary>
-    public override void Stage(Scene scene) =>
+    public override void Stage(Scene scene)
+    {
         scene.Children.Add(new MeshNode(Primitives.Plane(9f, 9f), new Material
         {
             BaseColor = new Vector4(0.13f, 0.14f, 0.16f, 1f),
@@ -56,6 +57,64 @@ public sealed class StressScene : DemoScene
             Position = new Vector3(0f, GroundY, 0f),
             IsPickable = false
         });
+
+        Relight(scene);
+    }
+
+    /// <summary>
+    /// <c>AVA3D_LIGHTS=n</c> brings the scene up to n lights, for measuring what a light costs.
+    ///
+    /// The point of putting it on this scene rather than a new one is that the answer has to be comparable
+    /// with the published frame rates, and those were measured here — on this grid, at this triangle count,
+    /// with these materials. A benchmark that changes the geometry to change the lighting is measuring two
+    /// things at once.
+    ///
+    /// Every added light is a point light on a ring wide enough to sit outside the grid, with a range that
+    /// reaches all of it. That is deliberately the expensive case: a light that reaches nothing still costs
+    /// its distance test and then stops, so a rig of lights that miss would report the cost of the test
+    /// rather than the cost of the shading. Here every one of them shades every lit pixel.
+    ///
+    /// Intensity falls as the count rises so the picture stays a picture. It is the same total light shared
+    /// out, which keeps a 16-light frame legible next to a 4-light one instead of white.
+    /// </summary>
+    private static void Relight(Scene scene)
+    {
+        if (!int.TryParse(Environment.GetEnvironmentVariable("AVA3D_LIGHTS"), out var wanted) || wanted < 1)
+            return;
+
+        var have = scene.Lights.Count;
+
+        // Fewer than there are is a real request too — one light is the floor of the curve, and the way to
+        // ask for it is to take the staging's fill and rim back off.
+        while (scene.Lights.Count > wanted)
+            scene.Lights.RemoveAt(scene.Lights.Count - 1);
+
+        var extra = wanted - have;
+        var share = 1.6f / MathF.Max(wanted, 1);
+
+        for (var i = 0; i < extra; i++)
+        {
+            var angle = i * MathF.Tau / extra;
+
+            scene.Lights.Add(new PointLight
+            {
+                Position = new Vector3(MathF.Cos(angle) * 3.6f, 1.2f, MathF.Sin(angle) * 3.6f),
+                // Cycled through three tints rather than white, so a picture of the rig shows how many
+                // lights are in it — a row of white point lights is indistinguishable from one bright one.
+                Color = (i % 3) switch
+                {
+                    0 => new Vector3(1f, 0.82f, 0.62f),
+                    1 => new Vector3(0.62f, 0.78f, 1f),
+                    _ => new Vector3(0.72f, 1f, 0.76f)
+                },
+                Intensity = share,
+                Range = 14f,
+                Decay = 1f
+            });
+        }
+
+        Console.WriteLine($"[lights] asked for {wanted}, staged {have}, scene now holds {scene.Lights.Count}");
+    }
 
     public override Node BuildSubject()
     {

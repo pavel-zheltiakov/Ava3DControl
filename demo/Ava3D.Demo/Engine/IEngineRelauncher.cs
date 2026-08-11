@@ -80,7 +80,12 @@ public static class EngineRelauncher
         BackendAvailability.RequiresRestart =>
             $"{option.Name} can't be started from inside this app.",
 
-        _ => $"{option.Name} can't be used on this platform."
+        // "Not available here" rather than "not on this platform", because the two Unavailable rows mean
+        // different things and only one of them is about the platform. Metal on Windows is a platform
+        // fact. Vulkan on a Mac is not — Vulkan runs there perfectly well, and a reader with MoltenVK
+        // installed can see that it does; what is missing is a way to ask Avalonia for a Vulkan device.
+        // The Reason underneath says which of the two this is, so the headline must not guess.
+        _ => $"{option.Name} isn't available here."
     };
 
     /// <summary>What to tell the user when a backend needs a restart this platform cannot perform.</summary>

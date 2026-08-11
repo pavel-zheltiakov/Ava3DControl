@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.4 · beta</span>
+  <span class="tag">12.1.0-preview.5 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -244,7 +244,8 @@ texture.Refresh();</code></pre>
 <h2 id="lights">Lights</h2>
 
 <p>
-  Up to four, in <code>Scene.Lights</code>, of two kinds — plus an environment that is not one of the four.
+  As many as you like, in <code>Scene.Lights</code>, of two kinds — plus an environment that is not one of
+  them and costs nothing whether there is a light in the scene or not.
 </p>
 
 <pre><code>scene.Lights.Clear();
@@ -263,6 +264,18 @@ scene.Lights.Add(<span class="k">new</span> PointLight
     Range = 12f,                <span class="c">// dead at 12 units; 0 means no limit</span>
     Decay = 2f                  <span class="c">// inverse square, like the real thing and like three.js</span>
 });</code></pre>
+
+<div class="tip">
+  <p>
+    <strong>How many is sensible.</strong> Sixteen. Not a limit —
+    <a href="Ava3D.LightCollection.html">Scene.Lights</a> takes what you give it, and on either GPU renderer
+    sixteen lights cost no measurable frame time over one. The number is the CPU renderer's: it shades once
+    per vertex rather than per pixel, so each light is another pass over every vertex in the scene, and
+    sixteen of them costs about a third of its frame rate. <code>LightCollection.Capacity</code> is the
+    figure, and it is also the fewest OpenGL will ever draw — that backend builds its light loop for
+    whatever the driver it started on has room for, which on current hardware is far more.
+  </p>
+</div>
 
 <p>
   <a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a> is the fill: the light that comes from
@@ -350,7 +363,7 @@ AVA3D_SCENE=<span class="s">"Four lights"</span> dotnet run --project samples/Av
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.4 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.5 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

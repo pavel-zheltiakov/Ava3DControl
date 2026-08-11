@@ -18,6 +18,11 @@
   --codebg: #0b0e14;
   --shadow: 0 8px 32px rgb(0 0 0 / 45%);
   --bar: 58px;
+
+  /* What header.css puts the bar's contents on. The same pair every <section> below uses, written here
+     rather than left to the header's defaults so that changing the page's column moves the brand with it. */
+  --bar-width: 1240px;
+  --bar-pad: 28px;
 }
 
 @media (prefers-color-scheme: light) {

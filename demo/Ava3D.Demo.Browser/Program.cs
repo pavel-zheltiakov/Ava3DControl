@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Logging;
+using Avalonia.Threading;
 using Ava3D;
 using Ava3D.Demo;
 using Ava3D.Demo.Engine;
@@ -27,6 +28,8 @@ internal sealed partial class Program
         // would run never. See focusApp for why a browser needs telling at all.
         FocusApp();
 
+        ReportWhenSettled();
+
         // And then never return.
         //
         // StartBrowserAppAsync completes once the application is up, so a Main that simply awaited it would
@@ -35,6 +38,28 @@ internal sealed partial class Program
         // devtools console, and stops dispatching. Managed timers keep firing, so the application looks
         // alive and prints diagnostics about itself, but nothing is ever drawn again.
         await Task.Delay(Timeout.Infinite);
+    }
+
+    /// <summary>
+    /// Prints the same summary every other head prints, once the tab has settled.
+    ///
+    /// <see cref="Ava3D.Demo.Views.MainView.Describe"/> exists to be read from a terminal, a devtools console, logcat
+    /// or a device log — every head but this one already had something to call it. So a browser was the one
+    /// place where a fact about the renderer could only be got at by looking at a panel on a screen, which
+    /// is exactly the platform where nobody is looking at the screen: the tab is usually being driven by
+    /// <c>tools/cdp.py</c>, which reads the console.
+    ///
+    /// Seconds rather than immediately, and settable, because the interesting fields are not filled in
+    /// until frames have been drawn — a report taken at startup says the view has never rendered.
+    /// </summary>
+    private static void ReportWhenSettled()
+    {
+        if (!double.TryParse(Environment.GetEnvironmentVariable("AVA3D_PROBE"), out var seconds) || seconds <= 0)
+            return;
+
+        DispatcherTimer.RunOnce(
+            () => Console.WriteLine(Ava3D.Demo.Views.MainView.Describe(Ava3D.Demo.Views.MainView.LastInfo)),
+            TimeSpan.FromSeconds(seconds));
     }
 
     /// <summary>
@@ -148,6 +173,12 @@ internal sealed partial class Program
                         // This head is published with WasmEnableThreads, so there is more than one core in
                         // the tab to hold it back from.
                         Environment.SetEnvironmentVariable("AVA3D_THREADS", value);
+                        break;
+                    case "probe":
+                        // ?probe=<seconds> is the desktop head's AVA3D_PROBE, which prints what the
+                        // renderer did and exits. Here it only prints: a tab cannot exit without taking
+                        // the runtime down with it, and there is nothing to return an exit code to.
+                        Environment.SetEnvironmentVariable("AVA3D_PROBE", value);
                         break;
                     case "engine":
                         PreferEngine(value);

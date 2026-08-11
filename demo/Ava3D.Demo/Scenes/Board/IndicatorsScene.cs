@@ -63,10 +63,14 @@ public sealed class IndicatorsScene : DemoScene
 
          And the light on the board is a real light. Emission illuminates nothing — an emissive surface
          is bright and the surface beside it is exactly as dark as it was — so each lit lamp gets a
-         PointLight at its die, in its own colour, Range 34 mm. A scene holds four lights and the key is
-         one of them, so three can cast and all six can glow. Watch the row during the fill: the pools
-         of colour follow the newest three and the older lamps keep their glow with no light under them.
-         That is the constraint, not a simplification, and the sequence is built around it.
+         PointLight at its die, in its own colour, Range 34 mm. Three of them, so three can cast and all
+         six can glow. Watch the row during the fill: the pools of colour follow the newest three and the
+         older lamps keep their glow with no light under them.
+
+         Three was the renderer's number once and is the scene's own now. Nothing stops six lamps having
+         six lights — and the reason this one still has three is that it is also the board on the bench in
+         chapter 6, where the row lighting itself three lamps at a time is a shot somebody framed. Which
+         is the better argument for a number than a shader ever was.
          """;
 
     public override SceneLook Look => SceneLook.Studio;
@@ -184,9 +188,9 @@ public sealed class IndicatorsScene : DemoScene
         _root = root;
         Collect(root, board);
 
-        // Three, and the collection is full at four. They are made once and never added or removed,
-        // because a light that comes and goes changes what Scene.Light resolves to and rebuilds the
-        // snapshot's light block every time it does.
+        // Three, which used to be everything left after the key light and is now a choice — see the
+        // notes. They are made once and never added or removed, because a light that comes and goes
+        // changes what Scene.Light resolves to and rebuilds the snapshot's light block every time it does.
         for (var i = _lights.Count; i < 3; i++)
             _lights.Add(new PointLight { Intensity = 0f, Range = 0.34f, Decay = 1.5f });
     }

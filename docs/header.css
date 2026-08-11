@@ -9,6 +9,13 @@
  *
  * Required from the host: --bar (the bar's height) and --bg-alt --panel --line --text --dim --accent.
  *
+ * Optional from the host: --bar-width and --bar-pad, which put the bar's contents on the same centred
+ * column as the page beneath it. The bar itself stays full width — a sticky rule that stopped short of
+ * the window edges would read as a floating box rather than as the top of the page — but a brand jammed
+ * against the left edge of a wide monitor while the first heading below it starts two hundred pixels in
+ * is the kind of misalignment that is invisible until it is pointed out and impossible to unsee after.
+ * The defaults suit a single-column page; a site with a different content width says so.
+ *
  * The feedback popup is a <details>. Disclosure is something HTML already does, so the header needs no
  * script — which matters, because the generated reference pages have none and are meant to keep working
  * from a file:// URL.
@@ -27,7 +34,9 @@
   align-items: center;
   gap: 16px;
   height: var(--bar);
-  padding: 0 22px;
+  max-width: var(--bar-width, 1240px);
+  margin: 0 auto;
+  padding: 0 var(--bar-pad, 28px);
 }
 
 .brand {
@@ -137,6 +146,8 @@
 
 @media (max-width: 860px) {
   .bar .nav { flex-wrap: wrap; height: auto; padding: 10px 16px; row-gap: 10px; }
+  /* The centring is what a narrow screen has no room for: below this width the content column is the
+     window, so the max-width would only take the padding back off again. */
   .bar .links:not(.tools) { order: 1; width: 100%; gap: 16px; flex-wrap: wrap; row-gap: 8px; }
   .fb-pop { width: min(274px, calc(100vw - 32px)); }
 }

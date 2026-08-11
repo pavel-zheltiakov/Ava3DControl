@@ -666,10 +666,15 @@ internal sealed class Illuminator
     /// reaches its own hull and nothing else. The gallery is well outside it, the lane is well outside
     /// it, and the planet is six hundred metres past the end of it.
     ///
-    /// <b>It exists because there is a slot.</b> Nothing else in the film can have one: a scene holds
-    /// four lights, the battle spends all four, and eight ships in a lane would want eight. The last
-    /// chapter spends two and then one, so the ship the film ends looking at can be lit properly — and
-    /// what that buys is the difference between a shape with a glow on it and a vehicle.
+    /// <b>It exists because there is a slot.</b> Not the renderer's — the film's. This building is lit
+    /// by four lights and no more, a rule the whole score is written to and the reason a room reads as a
+    /// room rather than as a lighting demonstration; the battle spends all four, and eight ships in a
+    /// lane would want eight. The last chapter spends two and then one, so the ship the film ends looking
+    /// at can be lit properly — and what that buys is the difference between a shape with a glow on it
+    /// and a vehicle.
+    ///
+    /// The renderer would now carry sixteen. That changes what the film could be, not what it is: a
+    /// budget somebody chose is worth keeping when the pictures were composed against it.
     /// </summary>
     public PointLight Running { get; }
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ava3DControl — a 3D viewport for Avalonia that works everywhere</title>
-<meta name="description" content="A metallic-roughness PBR 3D view for Avalonia. One binary renders through Metal, OpenGL, WebGL 2 or the CPU, on desktop, mobile and in the browser. Freeware, commercial use included.">
+<meta name="description" content="A metallic-roughness PBR 3D view for Avalonia. One binary renders through Metal, Vulkan, OpenGL, WebGL 2 or the CPU, on desktop, mobile and in the browser. Freeware, commercial use included.">
 <link rel="stylesheet" href="header.css">
 <link rel="stylesheet" href="site.css">
 <script src="i18n.js"></script>
@@ -22,7 +22,7 @@
 -->
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.4 · beta</span>
+  <span class="tag">12.1.0-preview.5 · beta</span>
   <div class="links">
     <a href="index.html" data-i18n="nav.home">Home</a>
     <a href="api/a-scene-from-nothing.html" data-i18n="nav.guide">3D Guide</a>
@@ -59,8 +59,8 @@
     <h1 data-i18n="hero.title">A 3D viewport for Avalonia that actually works everywhere.</h1>
     <p class="lede" data-i18n="hero.lede">
       Metallic-roughness PBR, glTF loading and triangle-accurate picking, in one control that renders through
-      Metal on a Mac, OpenGL on Windows and Linux, WebGL 2 in a browser tab, and the CPU when a host offers no
-      GPU at all — chosen at runtime, from the same binary.
+      Metal on a Mac, OpenGL or Vulkan on Windows and Linux, WebGL 2 in a browser tab, and the CPU when a host
+      offers no GPU at all — chosen at runtime, from the same binary.
     </p>
 
     <div class="get">
@@ -92,7 +92,7 @@
     </p>
 
     <p class="beta-note" data-i18n-html="hero.beta">
-      <strong>This is a beta.</strong> <code>12.1.0-preview.4</code> is a NuGet prerelease, which is why the
+      <strong>This is a beta.</strong> <code>12.1.0-preview.5</code> is a NuGet prerelease, which is why the
       flag is there. Everything below was measured on the code you would install; the suffix is there because
       the API may still move in response to the first people to use it.
     </p>
@@ -272,8 +272,8 @@
             additive <code>SpriteNode</code>s a lamp at <code>RenderOrder = 1</code>, because a renderer with
             no post-processing has none of its own. And each lit lamp gets a real <code>PointLight</code> —
             emission illuminates nothing, so without one a lamp is bright and the board under it is exactly
-            as dark as it was. A scene holds four lights and the key is one of them, so three cast and all
-            six glow.
+            as dark as it was. Three of the six cast, and all six glow — a shot somebody framed rather than
+            a number the renderer imposed.
           </p>
         </figcaption>
       </figure>
@@ -351,14 +351,14 @@
   </p>
 
   <div class="diagram">
-  <svg viewBox="0 0 1170 320" role="img" aria-labelledby="flow-title flow-desc">
+  <svg viewBox="0 0 1170 380" role="img" aria-labelledby="flow-title flow-desc">
     <title id="flow-title">The path from your scene graph to a composited frame</title>
     <desc id="flow-desc">
       On the UI thread you hold a scene graph of Scene, Node and Material objects and change them freely.
       Once a frame it is copied into one immutable SceneSnapshot, which crosses to the render thread. There
       one renderer draws it: Metal on macOS and iOS, OpenGL on Windows, Linux, Android and as WebGL 2 in a
-      browser, or Skia on the CPU when there is no GPU at all — one of the three, whichever this host can
-      give. The
+      browser, Vulkan where the host asked for it, or Skia on the CPU when there is no GPU at all — one of
+      the four, whichever this host can give. The
       result is an SKImage, a picture, which Avalonia composites like any other control content, and then the
       compositor asks for the next frame.
     </desc>
@@ -394,8 +394,8 @@
 
     <path class="d-edge" d="M398 151 H454" marker-end="url(#arrow-flow)"/>
 
-    <!-- 3. the renderer — one of three, and the platforms each one covers -->
-    <rect class="d-box-accent" x="454" y="36" width="280" height="230" rx="10"/>
+    <!-- 3. the renderer — one of four, and the platforms each one covers -->
+    <rect class="d-box-accent" x="454" y="36" width="280" height="292" rx="10"/>
     <text class="d-band-label" x="470" y="60">what this host can give</text>
 
     <rect class="d-row" x="470" y="74" width="248" height="56" rx="6"/>
@@ -407,8 +407,12 @@
     <text class="d-sub" x="486" y="181">Windows · Linux · Android · WebGL 2</text>
 
     <rect class="d-row" x="470" y="198" width="248" height="56" rx="6"/>
-    <text class="d-title" x="486" y="225">Skia, on the CPU</text>
-    <text class="d-sub" x="486" y="243">when there is no GPU at all</text>
+    <text class="d-title" x="486" y="225">Vulkan</text>
+    <text class="d-sub" x="486" y="243">Windows · Linux · Android, on request</text>
+
+    <rect class="d-row" x="470" y="260" width="248" height="56" rx="6"/>
+    <text class="d-title" x="486" y="287">Skia, on the CPU</text>
+    <text class="d-sub" x="486" y="305">when there is no GPU at all</text>
 
     <path class="d-edge" d="M734 151 H772" marker-end="url(#arrow-flow)"/>
 
@@ -432,8 +436,8 @@
     <text class="d-sub" x="986" y="180">composites it as a control</text>
 
     <!-- and round again: you never drive this loop, the compositor does -->
-    <text class="d-note" x="690" y="292" text-anchor="middle">then the compositor asks for the next one</text>
-    <path class="d-edge" d="M1065 206 V298 H308 V210" marker-end="url(#arrow-flow)"/>
+    <text class="d-note" x="690" y="354" text-anchor="middle">then the compositor asks for the next one</text>
+    <path class="d-edge" d="M1065 206 V360 H308 V210" marker-end="url(#arrow-flow)"/>
   </svg>
   </div>
 
@@ -484,9 +488,9 @@
     <article>
       <h3 data-i18n="features.f1.h">The renderer is a runtime decision</h3>
       <p data-i18n="features.f1.p">
-        A control library does not get to choose its host's graphics API, so this one asks. Metal, OpenGL or
-        the CPU, decided from what the graphics lease returns — and reported, with a reason, for every option
-        the platform cannot offer.
+        A control library does not get to choose its host's graphics API, so this one asks. Metal, Vulkan,
+        OpenGL or the CPU, decided from what the graphics lease returns — and reported, with a reason, for
+        every option the platform cannot offer.
       </p>
     </article>
     <article>
@@ -571,7 +575,7 @@
       <h3 data-i18n="start.s1.h">1 · Add the package</h3>
       <pre><code>dotnet add package Ava3DControl --prerelease</code></pre>
       <p data-i18n-html="start.s1.p">
-        The flag is required while this is a preview. Pin <code>12.1.0-preview.4</code> exactly if you would
+        The flag is required while this is a preview. Pin <code>12.1.0-preview.5</code> exactly if you would
         rather nothing moved under you.
       </p>
 
@@ -619,7 +623,8 @@ View.Scene = scene;</code></pre>
     A short list is worth more than a long one you have to discover for yourself.
   </p>
   <ul>
-    <li data-i18n-html="limits.l1"><strong>No shadows.</strong> Up to four lights plus an environment, forward-shaded, single pass.</li>
+    <li data-i18n-html="limits.l1"><strong>No shadows.</strong> As many lights as you like plus an environment, forward-shaded, single pass —
+        though more than sixteen is not advised, because the CPU renderer pays for each one per vertex.</li>
     <li data-i18n-html="limits.l2"><strong>No high-dynamic-range environments.</strong> An environment map is eight bits a channel, so it
         cannot carry a sun ten thousand times brighter than the sky. Put the sun in a light.</li>
     <li data-i18n-html="limits.l3"><strong>No animation or skinning.</strong> glTF node transforms are read; animation channels are not.</li>
@@ -635,7 +640,7 @@ View.Scene = scene;</code></pre>
 
 <footer>
   <p data-i18n-html="footer.p1">
-    <strong>Ava3DControl 12.1.0-preview.4</strong> — a 3D viewport control for
+    <strong>Ava3DControl 12.1.0-preview.5</strong> — a 3D viewport control for
     <a href="https://avaloniaui.net/">Avalonia</a>.
     Freeware; see the licence in the repository for the exact terms.
   </p>

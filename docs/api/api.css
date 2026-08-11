@@ -3,6 +3,9 @@
   --bg: #0f1219; --bg-alt: #131822; --panel: #151a23; --line: #232a36;
   --text: #dbe0ea; --dim: #8f98a9; --accent: #7fd8a0; --code: #cbd4e4;
   --codebg: #10141c; --bar: 56px;
+  /* header.css centres the bar's contents on these. They are .shell's width and .side's own
+     padding, so the brand sits directly above the first entry in the table of contents. */
+  --bar-width: 1360px; --bar-pad: 14px;
 }
 @media (prefers-color-scheme: light) {
   :root {

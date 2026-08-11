@@ -42,16 +42,17 @@ public sealed class FourLightsScene : DemoScene
 
     public override string Notes =>
         """
-        Scene.Lights holds four. This scene turns them on one at a time and then loops, because four
-        lights arriving together are four lights nobody can count.
+        This scene holds four and turns them on one at a time, because four lights arriving together are
+        four lights nobody can count. Four is this scene's number, not the library's — Scene.Lights takes
+        as many as you want, and each one costs about what the last one did.
 
         A warm key from the left, a cool fill from the right, a green rim from behind, and last a lamp that
         travels the colonnade. Each one is a separate entry in Scene.Lights, and switching one off is
         Intensity = 0 rather than removing it — the collection stays four long, so Scene.Light keeps
-        meaning the same object and no slot is ever reshuffled mid-scene.
+        meaning the same object and nothing is reshuffled mid-scene.
 
         The environment light is not one of the four. It is what fills the shadow side during the first
-        beat, when there is genuinely only one light in the scene, and it costs no slot: EnvironmentLight
+        beat, when there is genuinely only one light in the scene, and it costs nothing: EnvironmentLight
         is a two-colour gradient evaluated per pixel, not a light with a direction.
 
         Watch where the lamp stops mattering. The falloff matches three.js exactly —
@@ -71,8 +72,9 @@ public sealed class FourLightsScene : DemoScene
         hole in the frame. The small halo around the bulb is the only sprite here, and it is sized to hug
         the bulb rather than to be the light.
 
-        Adding a fifth light throws rather than silently dropping it. Four is what all three backends carry
-        in one pass, and a light that is quietly ignored is worse than one that says so.
+        Adding a fifth light is ordinary. It used to throw, on the reasoning that a light which quietly
+        goes missing gets diagnosed as a shader bug; the throw is gone and the reasoning survives as the
+        features panel, which says in so many words how many this renderer will draw.
         """;
 
     public override SceneLook Look => SceneLook.Studio;

@@ -20,6 +20,6 @@
         <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
 
         <!-- Consumed when Ava3DFromPackage is set: the public repository, and the demo the site ships. -->
-        <PackageVersion Include="Ava3DControl" Version="12.1.0-preview.4" />
+        <PackageVersion Include="Ava3DControl" Version="12.1.0-preview.5" />
     </ItemGroup>
 </Project>

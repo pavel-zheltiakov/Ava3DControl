@@ -28,9 +28,10 @@ public partial class MainView : UserControl
     /// Whether the next build of the film should start at the beginning rather than at the selected
     /// entry's cue. Set when the story switch is turned on, and cleared by the build that uses it.
     ///
-    /// Deliberately not set by anything else. Changing engine or sound rebuilds the film, and doing that
-    /// from the top would throw away the place somebody had got to in order to hear it; and a run that
-    /// names a scene — <c>AVA3D_SCENE</c>, or <c>?scene=</c> — is asking for that scene and gets it.
+    /// Deliberately not set by anything else. A run that names a scene — <c>AVA3D_SCENE</c>, or
+    /// <c>?scene=</c> — is asking for that scene and gets it, and nothing else in the toolbar rebuilds the
+    /// film at all: the sound switch opens and closes the device where the film stands, and changing
+    /// engine restarts the process.
     /// </summary>
     private bool _storyFromTop;
     private TextBlock _sceneTitle = null!, _sceneNotes = null!;
@@ -525,18 +526,33 @@ public partial class MainView : UserControl
     }
 
     /// <summary>
-    /// The sound switch. Rebuilds, because the soundtrack is opened with the film.
+    /// The sound switch. Opens or closes the device on the film that is running.
     ///
-    /// Rebuilding rather than muting is what makes "off" mean the audio device is not open at all, which is
+    /// Closing rather than muting is what makes "off" mean the audio device is not open at all, which is
     /// the only version of off that is true on a laptop — a muted device still holds the output and still
-    /// wakes its thread fifty times a second. It costs the film being rebuilt at the second it was on,
-    /// which is what every other switch in this toolbar costs and is nothing, because the walk is a pure
-    /// function of the time.
+    /// wakes its thread fifty times a second. That part was always right.
+    ///
+    /// What was wrong was the way it got there: this rebuilt the film, and the film is the most expensive
+    /// build in the demo. Three thousand four hundred nodes, three glTF models and a starfield, measured at
+    /// 215 ms in release and 880 ms in debug, on the UI thread, so the window stopped answering for the
+    /// length of it — reported from the outside as the toolbar freezing for two or three seconds. And it
+    /// restarted the film at the selected entry's cue, so hearing the room you were in moved you out of it.
+    ///
+    /// The switch is only enabled next to the film, so there is nothing to do when anything else is on
+    /// screen: no other scene has a sound to open. See <see cref="StoryScene.Sound"/>.
     /// </summary>
     private void OnSoundToggled()
     {
-        DemoSettings.Sound = _soundToggle.IsChecked == true;
-        Rebuild();
+        // The switch's own value, not the setting read back. AVA3D_SOUND wins over the settings file by
+        // design — a measured run takes its configuration from its command line — and reading through it
+        // here would mean that in a run started with the switch forced on, clicking the toolbar off turned
+        // the sound off and immediately back on again. What somebody just clicked is not a setting to be
+        // resolved; it is the answer.
+        var on = _soundToggle.IsChecked == true;
+        DemoSettings.Sound = on;
+
+        if (_current is StoryScene film)
+            film.Sound(on);
     }
 
     /// <summary>

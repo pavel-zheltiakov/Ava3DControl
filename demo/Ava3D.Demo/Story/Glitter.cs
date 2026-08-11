@@ -24,9 +24,9 @@ namespace Ava3D.Demo.Story;
 /// sixty concentric circles, which is exactly the flower every one of these things puts on a ceiling and none
 /// of it is authored.
 ///
-/// Everything here is unlit, additive and writes no depth, so the whole show costs not one of the four light
-/// slots — the same property the alcove's original dots had and the same one chapter 7 turns the building off
-/// to prove. It is still depth <i>tested</i>, so a patch behind the sofa is behind the sofa.
+/// Everything here is unlit, additive and writes no depth, so the whole show costs no light at all — the
+/// same property the alcove's original dots had and the same one chapter 7 turns the building off to prove.
+/// It is still depth <i>tested</i>, so a patch behind the sofa is behind the sofa.
 /// </summary>
 internal sealed class Glitter
 {

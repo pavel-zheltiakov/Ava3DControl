@@ -490,7 +490,7 @@ internal sealed class EngineRoom
     ///
     /// It is the one exhibit in the building that needs no lamp pointed at it. The fill is
     /// <see cref="Material.Unlit"/> — base colour, emitted exactly, with no shading term — so a metre of
-    /// drawing is perfectly legible on a screen in a room whose four light slots are all somewhere else.
+    /// drawing is perfectly legible on a screen in a room whose four lamps are all somewhere else.
     /// Chapter 4 spends eighty seconds arguing that; this is a service terminal running on none of the
     /// budget.
     ///

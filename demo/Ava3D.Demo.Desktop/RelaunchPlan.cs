@@ -111,6 +111,7 @@ public static class RelaunchPlan
         var switches = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["AVA3D_GL"] = kind == RenderBackendKind.OpenGL ? "1" : "",
+            ["AVA3D_VULKAN"] = kind == RenderBackendKind.Vulkan ? "1" : "",
             ["AVA3D_SOFTWARE"] = "",
             ["AVA3D_PROBE"] = "",
             ["AVA3D_CAPTURE"] = ""

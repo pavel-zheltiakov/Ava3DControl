@@ -73,8 +73,10 @@ public sealed class StoryScene : DemoScene
         set that can reach your eye is one room, so a browser tab is never drawing a hangar while it looks
         at a cube.
 
-        The four light slots are the other constraint the plan is built on. One room at a time needs about
-        four lamps, and rooms hand their lights over at the threshold rather than adding to them.
+        Four lights are the other constraint the plan is built on. One room at a time needs about four
+        lamps, and rooms hand their lights over at the threshold rather than adding to them. That was the
+        renderer's number when the building was drawn and it is the film's own now — Scene.Lights will take
+        as many as you ask it for.
 
         Switch the story off in the toolbar and the same list shows the same features on a black
         background, one at a time, which is what this demo has always been. Neither is a copy of the
@@ -116,17 +118,7 @@ public sealed class StoryScene : DemoScene
         Hush();
 
         if (DemoSettings.Sound)
-        {
-            _sound = Soundtrack.Open(_film);
-
-            // Said out loud, because "asked for sound and did not get any" is the one state nobody can see.
-            // A silent film looks exactly like a film whose switch is off, and on the browser and mobile
-            // heads there is no other way to find out which of the two happened — the console is the whole
-            // instrument panel there. It is one line, once, on a switch nobody turns on by accident.
-            Console.WriteLine(_sound is null
-                ? "[Ava3D.Demo] sound was asked for and there is no device to play it — the film is silent."
-                : $"[Ava3D.Demo] sound is going to {_sound.Describe()}.");
-        }
+            Listen();
 
         // Put the building into the state the opening second wants before the first frame is drawn, rather
         // than on it. A film that starts at 96 seconds and spends its first frame lit like second zero has
@@ -556,6 +548,46 @@ public sealed class StoryScene : DemoScene
             return (new Vector3(x, Deck.Eye, z),
                 where.Length == 3 && float.TryParse(where[2], out var bearing) ? bearing : null);
         }
+    }
+
+    /// <summary>
+    /// Turns the soundtrack on or off where the film stands, without touching the building.
+    ///
+    /// The switch used to be answered by building the film again, which gave "off" the meaning it should
+    /// have — the device is closed, not a score playing to nobody — and charged the whole exhibition for
+    /// it. <see cref="Hush"/> already closes the device, and the score is a pure function of the film's
+    /// clock, so one opened mid-film starts at the second the picture is on rather than at the beginning.
+    /// What the rebuild added was three glTF models, seven plated hulls and a starfield: a fifth of a
+    /// second on this machine and nearly a whole one in a debug build, spent on the UI thread with the
+    /// window frozen, every time somebody touched a checkbox.
+    ///
+    /// It also cost the viewer their place. The rebuild restarted the film at the selected entry's cue, so
+    /// turning the sound on to hear the room you were standing in moved you out of it.
+    /// </summary>
+    public void Sound(bool on)
+    {
+        // Before the first Build there is no film to score, and Build will read the setting itself.
+        if (_film is null)
+            return;
+
+        Hush();
+
+        if (on)
+            Listen();
+    }
+
+    /// <summary>Opens the machine's audio for this film, and says whether it got any.</summary>
+    private void Listen()
+    {
+        _sound = Soundtrack.Open(_film);
+
+        // Said out loud, because "asked for sound and did not get any" is the one state nobody can see.
+        // A silent film looks exactly like a film whose switch is off, and on the browser and mobile
+        // heads there is no other way to find out which of the two happened — the console is the whole
+        // instrument panel there. It is one line, once, on a switch nobody turns on by accident.
+        Console.WriteLine(_sound is null
+            ? "[Ava3D.Demo] sound was asked for and there is no device to play it — the film is silent."
+            : $"[Ava3D.Demo] sound is going to {_sound.Describe()}.");
     }
 
     /// <summary>Stops the sound and lets go of the device, if there was one.</summary>

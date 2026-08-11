@@ -112,39 +112,76 @@ sealed class Program
             .WithInterFont()
             .LogToTrace();
 
-        // Ava3D picks its backend from whatever the graphics lease hands back, so on macOS this sample
-        // runs on Metal by default, exactly as a real macOS app would. These two switches ask Avalonia
-        // for a different graphics API so all three of Ava3D's backends can be measured on one machine:
+        // Ava3D picks its backend from whatever the graphics lease hands back, so this sample runs on
+        // whatever its platform starts with — Metal on macOS, GLX on Linux — exactly as a real
+        // application would. These switches ask Avalonia for a different graphics API instead, so all
+        // four of Ava3D's backends can be reached from a command line:
         //
-        //   AVA3D_GL=1        OpenGL 4.1        → GlBackend
         //   AVA3D_SOFTWARE=1  no GPU context    → SkiaBackend
-        //   (neither)         Metal             → MetalBackend
+        //   AVA3D_GL=1        OpenGL / GLX      → GlBackend
+        //   AVA3D_VULKAN=1    Vulkan            → VulkanBackend   (not on macOS; see below)
+        //   (none)            the default       → MetalBackend on macOS, GlBackend elsewhere
         //
-        // The software switch earns its keep: with Metal covering macOS and iOS and GL covering
-        // everything else, the CPU fallback is now only reached by Vulkan and software hosts, and a
-        // path nothing exercises is a path that quietly stops working.
+        // The software switch earns its keep: with Metal covering macOS and iOS, GL covering everything
+        // else and Vulkan needing to be asked for, the CPU fallback is only reached by a host that wants
+        // it — and a path nothing exercises is a path that quietly stops working.
         //
-        // The engine picker's saved choice is read here too, and only for OpenGL. That is the one option
-        // a running process cannot reach on its own, so it is the one that has to be answered before the
-        // application is built; Metal is the default on the platforms that have it, and the CPU fallback
-        // is the control's own decision, made per frame from the same saved setting in MainView. The
-        // environment wins where it speaks, because a probe or capture run is measuring the configuration
-        // it was handed and must not inherit whatever the last person to open the demo clicked.
-        var options = new AvaloniaNativePlatformOptions();
-        var asked = false;
+        // The engine picker's saved choice is read here too, for the two options a running process cannot
+        // reach on its own. Those are the ones that have to be answered before the application is built;
+        // Metal is the default on the platforms that have it, and the CPU fallback is the control's own
+        // decision, made per frame from the same saved setting in MainView. The environment wins where it
+        // speaks, because a probe or capture run is measuring the configuration it was handed and must not
+        // inherit whatever the last person to open the demo clicked.
+        var wanted =
+            Environment.GetEnvironmentVariable("AVA3D_SOFTWARE") == "1" ? RenderBackendKind.Software :
+            Environment.GetEnvironmentVariable("AVA3D_GL") == "1" ? RenderBackendKind.OpenGL :
+            Environment.GetEnvironmentVariable("AVA3D_VULKAN") == "1" ? RenderBackendKind.Vulkan :
+            Engine.DemoSettings.Engine is RenderBackendKind.OpenGL or RenderBackendKind.Vulkan
+                ? Engine.DemoSettings.Engine
+                : RenderBackendKind.Automatic;
 
-        if (Environment.GetEnvironmentVariable("AVA3D_SOFTWARE") == "1")
-        {
-            options.RenderingMode = [AvaloniaNativeRenderingMode.Software];
-            asked = true;
-        }
-        else if (Environment.GetEnvironmentVariable("AVA3D_GL") == "1" ||
-                 Engine.DemoSettings.Engine == RenderBackendKind.OpenGL)
-        {
-            options.RenderingMode = [AvaloniaNativeRenderingMode.OpenGl, AvaloniaNativeRenderingMode.Software];
-            asked = true;
-        }
+        if (wanted == RenderBackendKind.Automatic)
+            return builder;
 
-        return asked ? builder.With(options) : builder;
+        // All three platforms' options are set, not just this one's. Only the platform actually running
+        // reads its own, so naming the other two costs nothing and means the switches mean the same thing
+        // on every desktop rather than being a macOS feature that silently does nothing on Linux — which
+        // is what they were, and is why the engine picker on Linux offered a restart into Vulkan that
+        // landed straight back on GLX.
+        //
+        // Each list keeps the software renderer on the end as a fallback, except Vulkan's: a run asking
+        // for Vulkan is asking to measure Vulkan, and quietly getting a CPU frame buffer instead is the
+        // failure this whole exercise exists to make visible.
+        builder = builder
+            .With(new X11PlatformOptions
+            {
+                RenderingMode = wanted switch
+                {
+                    RenderBackendKind.Software => [X11RenderingMode.Software],
+                    RenderBackendKind.Vulkan => [X11RenderingMode.Vulkan],
+                    _ => [X11RenderingMode.Glx, X11RenderingMode.Egl, X11RenderingMode.Software]
+                }
+            })
+            .With(new Win32PlatformOptions
+            {
+                RenderingMode = wanted switch
+                {
+                    RenderBackendKind.Software => [Win32RenderingMode.Software],
+                    RenderBackendKind.Vulkan => [Win32RenderingMode.Vulkan],
+                    _ => [Win32RenderingMode.Wgl, Win32RenderingMode.AngleEgl, Win32RenderingMode.Software]
+                }
+            });
+
+        // Apple has no Vulkan mode to ask for, so asking leaves the platform on its default rather than
+        // naming a mode that does not exist. BackendCatalog already reports Vulkan as unavailable there,
+        // and this is the same statement made where it has to be acted on.
+        return wanted == RenderBackendKind.Vulkan
+            ? builder
+            : builder.With(new AvaloniaNativePlatformOptions
+            {
+                RenderingMode = wanted == RenderBackendKind.Software
+                    ? [AvaloniaNativeRenderingMode.Software]
+                    : [AvaloniaNativeRenderingMode.OpenGl, AvaloniaNativeRenderingMode.Software]
+            });
     }
 }

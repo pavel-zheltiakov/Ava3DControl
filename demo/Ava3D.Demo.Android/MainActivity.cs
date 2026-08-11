@@ -40,6 +40,34 @@ public class MainActivity : AvaloniaMainActivity
     {
         Switches();
         base.OnCreate(savedInstanceState);
+        ReportWhenSettled();
+    }
+
+    /// <summary>
+    /// <c>--es probe &lt;seconds&gt;</c> prints the same summary every other head prints, into logcat:
+    ///
+    /// <code>
+    /// adb shell am start -S -n com.ava3dcontrol.demo/.MainActivity --es probe 12
+    /// adb logcat -s DOTNET
+    /// </code>
+    ///
+    /// Printing only, where the desktop head also exits. A phone application does not get to end itself
+    /// tidily — <c>Finish</c> tears the activity down mid-frame and the log arrives truncated or not at
+    /// all — and there is no exit code going anywhere, so the run is left up for whoever asked to look at.
+    ///
+    /// Seconds rather than immediately, because the fields worth reading are filled in by drawing frames:
+    /// a report taken at startup says the view has never rendered.
+    /// </summary>
+    private static void ReportWhenSettled()
+    {
+        // System, not Android.OS — both are in scope here and only one of them has environment variables.
+        if (!double.TryParse(System.Environment.GetEnvironmentVariable("AVA3D_PROBE"), out var seconds)
+            || seconds <= 0)
+            return;
+
+        Avalonia.Threading.DispatcherTimer.RunOnce(
+            () => Console.WriteLine(Demo.Views.MainView.Describe(Demo.Views.MainView.LastInfo)),
+            TimeSpan.FromSeconds(seconds));
     }
 
     private void Switches()
@@ -50,6 +78,8 @@ public class MainActivity : AvaloniaMainActivity
             ("tour", "AVA3D_TOUR"),
             ("threads", "AVA3D_THREADS"),
             ("captions", "AVA3D_CAPTIONS"),
+            ("story", "AVA3D_STORY"),
+            ("probe", "AVA3D_PROBE"),
         })
         {
             if (Read(extra) is { Length: > 0 } value)
