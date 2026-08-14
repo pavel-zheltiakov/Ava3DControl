@@ -69,22 +69,29 @@ public static class EngineRelauncher
     /// the demo can say about a renderer being out of reach should be readable in one place. Split across
     /// a view and a catalogue, two of them drift apart and nobody notices until a screenshot.
     /// </summary>
-    public static string Headline(BackendOption option) => option.Availability switch
+    public static string Headline(BackendOption option) => option switch
     {
         // Reachable, just not from this process. Stated rather than acted on: the demo does not restart
         // itself in answer to a preference it read at start-up, because a restart that cannot fix the
         // problem is a restart that happens again on the way up, forever. The notice offers a button.
-        BackendAvailability.RequiresRestart when Current is { CanRelaunch: true } =>
+        { Availability: BackendAvailability.RequiresRestart } when Current is { CanRelaunch: true } =>
             $"{option.Name} needs the demo restarted.",
 
-        BackendAvailability.RequiresRestart =>
+        { Availability: BackendAvailability.RequiresRestart } =>
             $"{option.Name} can't be started from inside this app.",
+
+        // Something is missing that could be here. Named in the headline rather than left to the reason
+        // underneath, because it is the only one of these four sentences a reader can act on: every other
+        // way to be unavailable is a fact about the platform, and telling somebody to install Metal on
+        // Windows would be worse than saying nothing.
+        { Availability: BackendAvailability.Unavailable, MissingComponents.Count: > 0 } =>
+            $"{option.Name} needs {Names(option.MissingComponents)}, which isn't installed.",
 
         // "Not available here" rather than "not on this platform", because the two Unavailable rows mean
         // different things and only one of them is about the platform. Metal on Windows is a platform
         // fact. Vulkan on a Mac is not — Vulkan runs there perfectly well, and a reader with MoltenVK
-        // installed can see that it does; what is missing is a way to ask Avalonia for a Vulkan device.
-        // The Reason underneath says which of the two this is, so the headline must not guess.
+        // installed can see that it does. The Reason underneath says which of the two this is, so the
+        // headline must not guess.
         _ => $"{option.Name} isn't available here."
     };
 
@@ -142,6 +149,13 @@ public static class EngineRelauncher
             ? option.Reason
             : "this process was started with another graphics API");
 
+        // What to do about it, when there is something. The library keeps the package, the command and
+        // the link as separate fields precisely so a host does not have to take its word for the wording
+        // — this demo turns them back into a sentence because it has one line to say it in, and a real
+        // application with room would make them a button and a link instead.
+        if (option.MissingComponents.Count > 0)
+            return $"{reason} {Install(option.MissingComponents)}";
+
         // Whether the demo can restart itself is only part of the answer when a restart would help. Metal
         // on Windows is not a question about this application's lifetime.
         if (option.Availability != BackendAvailability.RequiresRestart || Current is { CanRelaunch: true })
@@ -149,6 +163,39 @@ public static class EngineRelauncher
 
         var blocked = Current?.Unsupported ?? "this platform cannot restart the application from inside it";
         return $"{reason} {Sentence(blocked)}";
+    }
+
+    /// <summary>The missing things by name, joined for a sentence: "MoltenVK", or "A and B".</summary>
+    private static string Names(IReadOnlyList<MissingComponent> missing) =>
+        missing.Count == 1
+            ? missing[0].Name
+            : string.Join(" and ", missing.Select(m => m.Name));
+
+    /// <summary>
+    /// How to get what is missing, as one sentence.
+    ///
+    /// Both routes where both exist, and in this order: the package first because it is one line in a
+    /// csproj, the command second because an application that would rather not carry somebody else's
+    /// binary needs to know it has that choice. The URL is left out — this is a line of text in a notice
+    /// over a 3D scene, not a document, and a link nobody can click is noise.
+    /// </summary>
+    private static string Install(IReadOnlyList<MissingComponent> missing)
+    {
+        var routes = missing
+            .Select(m => (m.Name, Package: m.Package, Command: m.Command))
+            .Where(m => m.Package is { Length: > 0 } || m.Command is { Length: > 0 })
+            .Select(m => m switch
+            {
+                { Package: { Length: > 0 } p, Command: { Length: > 0 } c } =>
+                    $"add the {p} package, or install {m.Name} yourself with \"{c}\"",
+                { Package: { Length: > 0 } p } => $"add the {p} package",
+                var only => $"install {m.Name} with \"{only.Command}\""
+            })
+            .ToArray();
+
+        return routes.Length == 0
+            ? $"{Names(missing)} has to be on the machine."
+            : Sentence($"To fix it, {string.Join("; ", routes)}");
     }
 
     /// <summary>

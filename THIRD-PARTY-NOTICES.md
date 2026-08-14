@@ -20,6 +20,20 @@ application's user interface.
 SkiaSharp is a managed wrapper around [Skia](https://skia.org/), which is distributed by Google under the
 BSD 3-Clause licence. The Skia notice travels inside the SkiaSharp package.
 
+## Shipped in the optional MoltenVK package
+
+`Ava3DControl.MoltenVK` is a separate package containing no code of ours at all. It exists so that the
+Vulkan renderer can be selected on a Mac without installing anything by hand, and it is optional: the
+library loads MoltenVK by name at run time and never links against it, so a system-wide install works
+just as well.
+
+| Component | Version | Licence |
+| --- | --- | --- |
+| [MoltenVK](https://github.com/KhronosGroup/MoltenVK) | 1.4.2 | Apache-2.0 |
+
+The full Apache 2.0 text travels inside that package as `MOLTENVK-LICENSE.txt`. MoltenVK is a product of
+the Khronos Group; nothing in its licence requires attribution in your application's user interface.
+
 ## Used by the demo application only
 
 These are not dependencies of the library. They are here because the demo's source is included and builds

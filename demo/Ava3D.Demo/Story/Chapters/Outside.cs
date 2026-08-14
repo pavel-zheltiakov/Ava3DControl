@@ -187,10 +187,11 @@ internal sealed class Outside(EngineRoom room, Illuminator gallery, Traffic lane
         room.Fill.Dim(0f);
         room.Task.Dim(0.48f * bench);
 
+        // Still on the screenful chapter 7 finished with, going down with the rest of the bench. He is
+        // walking away from it and it is behind him; a terminal that changed view now would be a terminal
+        // somebody was still at.
         room.Backlight(bench);
-        room.Print(0f);
-        room.Grid(0f);
-        room.Schematic(bench > 0.01f);
+        room.Show(EngineRoom.Onscreen.Overview, bench);
 
         room.Seat(1f, 1f, 1f);
         room.Plug(1f);

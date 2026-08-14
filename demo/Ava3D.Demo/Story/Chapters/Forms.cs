@@ -171,7 +171,14 @@ internal sealed class Forms : Chapter
 
     public override string? Caption(float seconds) => seconds switch
     {
-        < 8f => "Rule two. There are only four lamps for this whole floor. They follow you",
+        // The rule is the hand-over, not the count. It used to say there were only four lamps for the
+        // whole floor, which was true of the renderer when it was written and is not true of anything
+        // now — the film still spends four because the rooms were composed against four, but a caption
+        // that names a ceiling is a caption that goes stale the moment the ceiling moves. What the
+        // chapter actually shows is lamps arriving in the room he walks into and leaving the one behind
+        // him, and that is worth saying whether the budget is four or sixteen. Solitude is the better
+        // reason for it anyway: lights that follow one man are lights nobody else is using.
+        < 8f => "Rule two. The lamps follow you. Nobody else is on this floor",
         < 24f => "You see the shapes one at a time. The floor was built that way",
 
         // The first of the night's three late things, and the only one nobody but him could see. It is a

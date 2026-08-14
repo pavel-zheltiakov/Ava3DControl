@@ -159,9 +159,28 @@ public partial class MainView : UserControl
            textures  : {info.Textures ?? "(none)"}
            backends  : {string.Join(", ", info.AvailableBackends.Select(b => b.ToString()))}
            features  : {Features(info)}
+           notice    : {DescribeNotice(info)}
            error     : {info.Error ?? "(none)"}
            =======================================
            """;
+
+    /// <summary>
+    /// The message on the picture, in the report from the terminal.
+    ///
+    /// The probe exists so the control can be verified without somebody watching a window, and this is
+    /// the one thing it was still missing: what the person watching the window would be reading. It is
+    /// composed from the library's own catalogue rather than restated here, so a probe run proves the
+    /// sentence a user sees rather than a second sentence that agrees with it today.
+    /// </summary>
+    private static string DescribeNotice(RenderInfo info)
+    {
+        if (info.PreferredBackend == RenderBackendKind.Automatic ||
+            info.PreferredBackend == info.ActiveBackend ||
+            info.AvailableBackends.FirstOrDefault(o => o.Kind == info.PreferredBackend) is not { } option)
+            return "(none)";
+
+        return $"{EngineRelauncher.Headline(option)} {EngineRelauncher.Explain(option)}";
+    }
 
     /// <summary>
     /// How many cores the runtime will admit to, which is not always how many the machine has.
@@ -707,6 +726,28 @@ public partial class MainView : UserControl
         // target and distance, so a scene's chosen yaw and pitch survive being framed.
         _view.AutoFit = !_current.FramesItself;
         _current.Frame(_view.Camera);
+
+        // AVA3D_BAKE=<yaw> takes the scene as it is and looks straight down at it, which is the one
+        // camera no scene chooses for itself and the one a screen wants: a plan, with no perspective to
+        // speak of and nothing standing out of the picture. It is how Assets/screen-*.png are made — see
+        // Story.EngineRoom.Picture — and it is a switch rather than a tool because the scene, its lights
+        // and its background are already right here, and only the camera is wrong.
+        //
+        // Eight degrees rather than an orthographic projection, which this control does not offer: at the
+        // distance AutoFit then chooses, a component ten millimetres tall leans by about a pixel.
+        if (Environment.GetEnvironmentVariable("AVA3D_BAKE")?.Split(',') is { Length: > 0 } bake)
+        {
+            _view.AutoFit = true;
+            camera.Roll = 0f;
+
+            if (bake.Length > 0 && float.TryParse(bake[0], out var yaw))
+                camera.Yaw = yaw;
+
+            camera.Pitch = bake.Length > 1 && float.TryParse(bake[1], out var pitch) ? pitch : -85f;
+
+            if (bake.Length > 2 && float.TryParse(bake[2], out var fov))
+                camera.FieldOfView = fov;
+        }
         _view.Scene = _currentScene;
         _view.IsPickingEnabled = _current.WantsPicking;
         _view.InvalidateCamera();

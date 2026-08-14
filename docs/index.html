@@ -22,7 +22,7 @@
 -->
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.5 · beta</span>
+  <span class="tag">12.1.0-preview.6 · beta</span>
   <div class="links">
     <a href="index.html" data-i18n="nav.home">Home</a>
     <a href="api/a-scene-from-nothing.html" data-i18n="nav.guide">3D Guide</a>
@@ -59,8 +59,8 @@
     <h1 data-i18n="hero.title">A 3D viewport for Avalonia that actually works everywhere.</h1>
     <p class="lede" data-i18n="hero.lede">
       Metallic-roughness PBR, glTF loading and triangle-accurate picking, in one control that renders through
-      Metal on a Mac, OpenGL or Vulkan on Windows and Linux, WebGL 2 in a browser tab, and the CPU when a host
-      offers no GPU at all — chosen at runtime, from the same binary.
+      Metal or Vulkan on a Mac, OpenGL or Vulkan on Windows and Linux, WebGL 2 in a browser tab, and the CPU
+      when a host offers no GPU at all — chosen at runtime, from the same binary.
     </p>
 
     <div class="get">
@@ -92,7 +92,7 @@
     </p>
 
     <p class="beta-note" data-i18n-html="hero.beta">
-      <strong>This is a beta.</strong> <code>12.1.0-preview.5</code> is a NuGet prerelease, which is why the
+      <strong>This is a beta.</strong> <code>12.1.0-preview.6</code> is a NuGet prerelease, which is why the
       flag is there. Everything below was measured on the code you would install; the suffix is there because
       the API may still move in response to the first people to use it.
     </p>
@@ -357,8 +357,8 @@
       On the UI thread you hold a scene graph of Scene, Node and Material objects and change them freely.
       Once a frame it is copied into one immutable SceneSnapshot, which crosses to the render thread. There
       one renderer draws it: Metal on macOS and iOS, OpenGL on Windows, Linux, Android and as WebGL 2 in a
-      browser, Vulkan where the host asked for it, or Skia on the CPU when there is no GPU at all — one of
-      the four, whichever this host can give. The
+      browser, Vulkan where the host asked for it and on a Mac with MoltenVK, or Skia on the CPU when there
+      is no GPU at all — one of the four, whichever this host can give. The
       result is an SKImage, a picture, which Avalonia composites like any other control content, and then the
       compositor asks for the next frame.
     </desc>
@@ -408,7 +408,7 @@
 
     <rect class="d-row" x="470" y="198" width="248" height="56" rx="6"/>
     <text class="d-title" x="486" y="225">Vulkan</text>
-    <text class="d-sub" x="486" y="243">Windows · Linux · Android, on request</text>
+    <text class="d-sub" x="486" y="243">Windows · Linux · Android · macOS</text>
 
     <rect class="d-row" x="470" y="260" width="248" height="56" rx="6"/>
     <text class="d-title" x="486" y="287">Skia, on the CPU</text>
@@ -442,10 +442,11 @@
   </div>
 
   <p class="footnote" data-i18n="concepts.note">
-    Two things fall out of that picture. The renderer is picked at startup from what the host can give, so the
-    same binary is Metal on a Mac and WebGL 2 in a browser tab and you write neither. And because what crosses
-    back is a picture rather than a native child surface, clipping, opacity, z-order and transforms all behave
-    — by the time the compositor sees the 3D, it is already pixels.
+    Two things fall out of that picture. The renderer is picked from what the host can give, so the same
+    binary is Metal on a Mac and WebGL 2 in a browser tab and you write neither — and where the host has none
+    to give, as with Vulkan on a Mac, the control makes its own device and changes over between frames. And
+    because what crosses back is a picture rather than a native child surface, clipping, opacity, z-order and
+    transforms all behave — by the time the compositor sees the 3D, it is already pixels.
   </p>
 
   <div class="cards">
@@ -460,7 +461,7 @@
       <h3 data-i18n="concepts.c2.h">How the renderer is chosen →</h3>
       <p data-i18n="concepts.c2.p">
         One lease, three outcomes, and no such thing as a graphics initialisation failure. Also why swapping
-        between two GPU APIs needs a relaunch and swapping to the CPU does not.
+        between two GPU APIs usually needs a relaunch, and why Vulkan on a Mac does not.
       </p>
     </a>
     <a class="card" href="api/gltf-mapping.html">
@@ -536,7 +537,7 @@
 <section id="measured" class="measured">
   <h2 data-i18n="measured.h">Measured, not estimated</h2>
   <p class="lede" data-i18n-html="measured.lede">
-    All five figures are the same scene: 128,002 triangles in 126 draw calls, the "Stress test" scene in the
+    All six figures are the same scene: 128,002 triangles in 126 draw calls, the "Stress test" scene in the
     demo. Reproduce them by opening that scene and reading the counter — and in a browser, by adding
     <code>?scene=stress</code> to the URL.
   </p>
@@ -553,6 +554,7 @@
       <tbody>
         <tr><td>macOS, Apple M3 Max</td><td>Metal</td><td class="num">120.0</td><td data-i18n="measured.n1">Avalonia's default on macOS</td></tr>
         <tr><td>macOS, Apple M3 Max</td><td>OpenGL 4.1</td><td class="num">120.2</td><td data-i18n="measured.n2">host started in OpenGL mode</td></tr>
+        <tr><td>macOS, Apple M3 Max</td><td>Vulkan, via MoltenVK</td><td class="num">120.0</td><td data-i18n="measured.n6">chosen at runtime, no restart</td></tr>
         <tr><td>Chrome, WebAssembly</td><td>WebGL 2</td><td class="num">120.0</td><td data-i18n="measured.n3">same binary, no plugin</td></tr>
         <tr><td>iOS 26.5 simulator</td><td>Metal</td><td class="num">60.1</td><td data-i18n="measured.n4">vsync-capped at 60</td></tr>
         <tr><td>macOS, Apple M3 Max</td><td>Skia, CPU</td><td class="num">55.1</td><td data-i18n="measured.n5">the fallback, across sixteen cores</td></tr>
@@ -560,10 +562,10 @@
     </table>
   </div>
   <p class="footnote" data-i18n="measured.note">
-    The first four are frame-rate limited rather than GPU limited — the renderer is waiting for the display,
+    The first five are frame-rate limited rather than GPU limited — the renderer is waiting for the display,
     not the other way round, and the demo's panel now says so in the same breath: 0.52 ms of work inside an
     8.33 ms frame on Metal, 1.07 inside the same frame on OpenGL. The CPU figure is the honest one: it is
-    what a Vulkan or software host gets, and the reason the GPU paths exist.
+    what a host with no GPU to lease gets, and the reason the GPU paths exist.
   </p>
 </section>
 
@@ -575,7 +577,7 @@
       <h3 data-i18n="start.s1.h">1 · Add the package</h3>
       <pre><code>dotnet add package Ava3DControl --prerelease</code></pre>
       <p data-i18n-html="start.s1.p">
-        The flag is required while this is a preview. Pin <code>12.1.0-preview.5</code> exactly if you would
+        The flag is required while this is a preview. Pin <code>12.1.0-preview.6</code> exactly if you would
         rather nothing moved under you.
       </p>
 
@@ -615,6 +617,15 @@ View.Scene = scene;</code></pre>
     first GL call: the P/Invoke trampolines for functions taking several floats are generated at native link
     time, and that link only happens when this is set.
   </p>
+
+  <h3 data-i18n="start.mvk.h">Vulkan on a Mac needs one extra package</h3>
+  <pre><code>dotnet add package Ava3DControl.MoltenVK --prerelease</code></pre>
+  <p class="footnote" data-i18n="start.mvk.p">
+    Only if you want Vulkan there: a Mac renders through Metal by default and is welcome to carry on. The
+    package carries MoltenVK, which is what Vulkan is on a Mac — a machine that already has it, from Homebrew
+    or the Vulkan SDK, needs nothing added. With neither, nothing breaks: Vulkan reports itself unavailable,
+    names what is missing, and the control keeps drawing with Metal.
+  </p>
 </section>
 
 <section class="limits">
@@ -635,12 +646,15 @@ View.Scene = scene;</code></pre>
         uses, but nobody has run it on a device yet, and an unverified claim is not a feature.</li>
     <li data-i18n-html="limits.l7"><strong>OpenGL on iOS renders nothing.</strong> An upstream defect in Avalonia's iOS GL surface, not a
         device limit. Metal is the working GPU path there and the control picks it automatically.</li>
+    <li data-i18n-html="limits.l8"><strong>Vulkan on a Mac is not a speed-up.</strong> It runs on Metal, through MoltenVK, so it costs a
+        little more than the Metal renderer does — on the scene measured above, 0.28 ms a frame against 0.20.
+        Choose it to run Vulkan code paths on a Mac, not to go faster.</li>
   </ul>
 </section>
 
 <footer>
   <p data-i18n-html="footer.p1">
-    <strong>Ava3DControl 12.1.0-preview.5</strong> — a 3D viewport control for
+    <strong>Ava3DControl 12.1.0-preview.6</strong> — a 3D viewport control for
     <a href="https://avaloniaui.net/">Avalonia</a>.
     Freeware; see the licence in the repository for the exact terms.
   </p>

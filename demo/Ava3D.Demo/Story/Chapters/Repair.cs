@@ -52,6 +52,16 @@ internal sealed class Repair(Corridor corridor, EngineRoom room) : Chapter
     private const float Schematic = 30f;
 
     /// <summary>
+    /// When the screen stops showing him one view and shows him all of them.
+    ///
+    /// Placed where he leaves it: the build starts at 50 and his eyes are on the bench from then on, so
+    /// the change happens in the corner of the frame rather than in front of him. A monitor that rearranges
+    /// itself while somebody is reading it is a monitor asking to be read again, and this one has finished
+    /// making its argument.
+    /// </summary>
+    private const float Overview = 46f;
+
+    /// <summary>
     /// The build, in the order a board is built: the processor, the cooler over it, both memory modules,
     /// and only then the card that was the fault.
     ///
@@ -239,20 +249,23 @@ internal sealed class Repair(Corridor corridor, EngineRoom room) : Chapter
         // green surface rather than the only thing in the room.
         room.Task.Dim(Ramp(seconds, Wake - 1f, 4f) * (1f - 0.52f * Ramp(seconds, Dim, 4f)));
 
-        // The display: backlight, then the drawing, then every edge over it, then the schematic instead of
-        // both. Only one view is ever on, and the wireframe is switched off rather than faded because it
-        // does not test depth — see EngineRoom.Grid.
+        // The display: the backlight comes up, and then the terminal works through the drawing, the
+        // wireframe, the shaded board and finally all of them at once. One picture at a time, cut between
+        // rather than dissolved, because there is one surface and because that is what software does — see
+        // EngineRoom.Show. The brightness is the terminal waking, not a transition between views.
         room.Backlight(Ramp(seconds, Wake - 1f, 2f));
-        room.Print(Ramp(seconds, Wake, 3f) * (1f - Ramp(seconds, Schematic - 1f, 1.5f)));
-        room.Grid(Ramp(seconds, Grid, 1.6f) * (1f - Ramp(seconds, GridOut, 1.6f)));
-        room.Schematic(seconds >= Schematic - 0.5f);
+        room.Show(
+            seconds >= Overview ? EngineRoom.Onscreen.Overview
+            : seconds >= Schematic - 0.5f ? EngineRoom.Onscreen.Schematic
+            : seconds >= Grid && seconds < GridOut ? EngineRoom.Onscreen.Wireframe
+            : EngineRoom.Onscreen.Drawing,
+            Ramp(seconds, Wake, 3f));
 
-        // The probe. Clamped at both ends rather than gated by an if, because the scene reads the clock it
-        // is handed and nothing else: below zero its stop index goes negative, and past the end of the
-        // walk it wraps round to the beginning and starts naming the processor again while he is already
-        // holding a card.
-        room.Probe.Update(hall.Scene, Math.Clamp(
-            seconds - Schematic, 0f, (float)room.Probe.TourDuration.TotalSeconds - 0.01f));
+        // The probe used to be driven from here — the inspector scene, walking itself through its eight
+        // selections on the screen while he watched. The screen is a picture now, so the walk it was
+        // stepping through is one frame of it, and there is nothing left to advance. See
+        // EngineRoom.Picture, and the standalone Board inspector scene, which still does the whole walk
+        // and still answers a click.
 
         // The build, part by part, and every one of them a ramp off the film clock rather than a step in a
         // sequence. Seeking to the middle of the cooler going on shows a cooler halfway on.

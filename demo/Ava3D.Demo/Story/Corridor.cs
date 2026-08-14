@@ -322,9 +322,11 @@ internal sealed class Corridor
     ///
     /// It is a separate method because chapter 4 calls it. The alarm starts while he is still in the lounge
     /// with every slot in the building spent on the mirror ball, and it starts <i>visibly</i> — a corridor
-    /// full of turning red seen through a doorway, drawn by nothing but emission. There is no other way to
-    /// have two rooms doing something at once in a renderer with four lights, and it is the reason the
-    /// lounge spent eighty seconds arguing that an unlit material is free.
+    /// full of turning red seen through a doorway, drawn by nothing but emission. Two rooms both doing
+    /// something is otherwise two rooms both wanting lamps, and the film gives the lamps to the room he is
+    /// standing in — which is why the lounge spent eighty seconds arguing that an unlit material is free.
+    /// A bigger light budget would not change this. Emission is not the cheap way to do it, it is the
+    /// right way: these lenses are not lit surfaces, they are surfaces that are added to the frame.
     /// </summary>
     public void Glow(float clock, float level)
     {

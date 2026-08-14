@@ -4,7 +4,7 @@ namespace Ava3D.Demo.Story;
 /// One chapter of the film: a room, a walk through it, and whatever the room does while he is in it.
 ///
 /// A chapter is not a scene. It builds nothing — the rooms are already standing and the exhibits are
-/// already mounted — it says which room exists right now, which four lights are spending the slots, and
+/// already mounted — it says which room exists right now, which four lights the building is spending, and
 /// where the visitor is at every second of it. That is the whole interface, and it is small on purpose:
 /// everything expensive happens once, in <see cref="Film"/>, and a chapter change is a handful of
 /// booleans and a camera.

@@ -1,5 +1,6 @@
 using System.Numerics;
 using Ava3D.Demo.Scenes.Board;
+using Avalonia.Platform;
 
 namespace Ava3D.Demo.Story;
 
@@ -87,24 +88,31 @@ internal sealed class EngineRoom
     private const float ScreenTall = 1f;
 
     /// <summary>
-    /// How big the board is on the display: a metre and a tenth across, which is what fits the glass.
+    /// The picture's extent on the glass: the client area, inside the title bar and the status line.
     ///
-    /// The model is authored at a hundred millimetres to the unit, so this is three tenths of full size
-    /// and the board on the bench is fifteen hundredths of it. Both numbers are here rather than in the
-    /// scenes, because the scenes have no opinion about how big a board is — they build one at the size
-    /// the file says and let whoever mounts it decide.
+    /// The images are cropped to this ratio rather than the glass's, because the chrome is part of the
+    /// window and a board drawn over a title bar is not a window. See <see cref="Chrome"/> for where the
+    /// two bars sit; between them is eight tenths of a metre of screen.
     /// </summary>
-    private const float ViewScale = 0.30f;
+    private const float PictureWide = 1.22f;
+
+    private const float PictureTall = 0.80f;
 
     /// <summary>
-    /// How far the views are shifted along the glass to sit in the middle of it.
-    ///
-    /// The model's origin is the <i>motherboard's</i> centre, and there is a panel hanging two hundred
-    /// millimetres off its right-hand edge that is part of the same object — so a view centred on the
-    /// origin is a board in the middle of the screen with its indicator card off the side of it. Half the
-    /// overhang, in the direction the yaw sends it, is the offset that centres the whole picture.
+    /// How far down the picture sits, to leave the title bar the more of the two margins.
     /// </summary>
-    private const float ViewShift = 0.10f;
+    private const float PictureDrop = 0.012f;
+
+    /// <summary>
+    /// How far the picture stands off the middle of the glass: four millimetres clear of its face.
+    ///
+    /// A screen is a surface, so the number wants to be the smallest one that still keeps the depth test
+    /// out of a tie — the glass is a centimetre thick and its front face is five millimetres out, the
+    /// window furniture reaches eight, and nine puts the picture a millimetre in front of all of it with
+    /// nothing coplanar anywhere. At a metre and a third across, four millimetres is a quarter of one per
+    /// cent and no camera in the film can find it.
+    /// </summary>
+    private const float Proud = 0.009f;
 
     /// <summary>
     /// And how big it is on the bench: four hundred and fifty-eight millimetres, which is a server board.
@@ -233,12 +241,18 @@ internal sealed class EngineRoom
     /// a stick instead of a stick being one colour.</summary>
     private readonly Material[] _bars = new Material[2 * Segments];
 
-    private readonly Material? _paper;
-    private readonly LineNode? _folds;
-    private readonly LineNode? _copper;
-    private readonly LineNode? _edges;
-    private readonly Node? _wireframe;
-    private readonly Node? _schematic;
+    /// <summary>The one quad on the glass, and the paint on it. The picture is unlit, so its base colour
+    /// <i>is</i> its output, and scaling that is the screen coming up.</summary>
+    private readonly Node? _viewNode;
+
+    private readonly Material? _view;
+
+    /// <summary>The four screenfuls, decoded once each and indexed by <see cref="Onscreen"/>. Changing
+    /// what is displayed is assigning one of these, which is why there is one quad and not four.</summary>
+    private readonly Texture[] _screens = [];
+
+    /// <summary>Which of them is on the paint now, so a frame that changes nothing assigns nothing.</summary>
+    private Onscreen _showing = Onscreen.Drawing;
 
     private readonly Node? _card;
     private readonly Vector3 _cardHome;
@@ -308,39 +322,34 @@ internal sealed class EngineRoom
         root.Children.Add(Task.Fixture);
         Arm(root, Task.Fixture.Position);
 
-        Draft = new DraftsmanScene();
-        Mesh = new WireframeScene();
-        Probe = new InspectorScene();
         Panel = new IndicatorsScene();
 
-        // Three views on one screen, all three of them the same model and none of them built here. They
-        // are stacked a few millimetres apart in front of the glass so no two are ever coplanar, and only
-        // one is ever switched on.
-        if (Draft.BuildSubject() is { } drawing)
-        {
-            View(root, drawing, 0.012f);
+        // Four screenfuls on one screen, all of them the same model, and all of them pictures of it rather
+        // than the model itself.
+        //
+        // They used to be the models, stood a few millimetres in front of the glass. Square on that is
+        // exactly right and it is how every frame of this chapter was composed — but a monitor is a
+        // surface, and the moment the camera is anywhere else a heatsink standing a centimetre out of the
+        // screen reads as a board taped to the front of it rather than as something being displayed. The
+        // free walk goes anywhere. So the views are rendered once, offline, and hung on the glass.
+        //
+        // <b>One quad, four textures.</b> The first version of this was four quads at four depths, each
+        // switched on when its moment came, and it had exactly the fault the models had: seen from square
+        // on it is a screen, and seen from the side it is four sheets fanned out of a monitor. A display
+        // showing two things at different distances is not a display. So there is one surface at one
+        // depth — which is what a screen is — and what changes is the picture on it.
+        //
+        // Unlit, like every other bright thing in this room, so a screen that is on spends no light slot.
+        _screens =
+        [
+            Screen("screen-drawing.png"),
+            Screen("screen-wireframe.png"),
+            Screen("screen-schematic.png"),
+            Screen("screen-grid.png")
+        ];
 
-            _paper = drawing.Find<MeshNode>("drawing.fill")?.Material;
-            _folds = drawing.Find<LineNode>("drawing.lines");
-            _copper = drawing.Find<LineNode>("drawing.copper");
-        }
-
-        if (Mesh.BuildSubject() is { } wireframe)
-        {
-            View(root, wireframe, 0.028f);
-            wireframe.IsVisible = false;
-
-            _wireframe = wireframe;
-            _edges = wireframe.Find<LineNode>("wireframe.edges");
-        }
-
-        if (Probe.BuildSubject() is { } schematic)
-        {
-            View(root, schematic, 0.052f);
-            schematic.IsVisible = false;
-
-            _schematic = schematic;
-        }
+        (_viewNode, _view) = Picture(root, _screens[0]);
+        _viewNode.IsVisible = false;
 
         // And the board itself, on the bench, at its own size. It is IndicatorsScene's subject rather than
         // the Inspector's, and the two are separate boards for the first time — which is what the display
@@ -417,16 +426,6 @@ internal sealed class EngineRoom
     /// opens it.</summary>
     public Door Way { get; private set; } = null!;
 
-    /// <summary>The board as a drawing. First on the screen.</summary>
-    public DraftsmanScene Draft { get; }
-
-    /// <summary>The same model as every edge it has. Second.</summary>
-    public WireframeScene Mesh { get; }
-
-    /// <summary>The board named part by part, with the copper lit. Third, and it is what tells him what is
-    /// wrong.</summary>
-    public InspectorScene Probe { get; }
-
     /// <summary>The board on the bench, and the six lamps on the card he fits to it.</summary>
     public IndicatorsScene Panel { get; }
 
@@ -485,68 +484,54 @@ internal sealed class EngineRoom
     public static Vector3 Exit =>
         Deck.Engine + new Vector3(Doorway, 1.45f, Depth + Thickness / 2f);
 
+    /// <summary>What the service terminal has on it. One picture at a time, which is what a monitor does.</summary>
+    public enum Onscreen
+    {
+        /// <summary>The draughtsman's plan: the paper, its folds and its copper, together.</summary>
+        Drawing,
+
+        /// <summary>The same board as wireframe, which is the view a technician switches to and back.</summary>
+        Wireframe,
+
+        /// <summary>The same board shaded, with its parts lit and one of them selected.</summary>
+        Schematic,
+
+        /// <summary>All three at once, in four panes, with the parts list in the fourth.</summary>
+        Overview
+    }
+
     /// <summary>
-    /// The drawing on the display: the paper, its folds and its copper, together.
+    /// Puts one of the four screenfuls on the display, at <paramref name="level"/> brightness.
     ///
     /// It is the one exhibit in the building that needs no lamp pointed at it. The fill is
     /// <see cref="Material.Unlit"/> — base colour, emitted exactly, with no shading term — so a metre of
-    /// drawing is perfectly legible on a screen in a room whose four lamps are all somewhere else.
-    /// Chapter 4 spends eighty seconds arguing that; this is a service terminal running on none of the
-    /// budget.
+    /// screen is perfectly legible in a room whose four lamps are all somewhere else. Chapter 4 spends
+    /// eighty seconds arguing that; this is a service terminal running on none of the budget.
     ///
-    /// The paper is taken well down from the white the standalone scene prints it on. At 0.965 a metre of
+    /// The white is taken well down from the white the standalone scenes print on. At 0.965 a metre of
     /// unlit white in a dark hangar is not a drawing, it is a window, and the tone mapping takes the rest
     /// of the frame down to meet it.
-    /// </summary>
-    public void Print(float level)
-    {
-        level = Math.Clamp(level, 0f, 1f);
-
-        if (_paper is not null)
-            _paper.BaseColor = new Vector4(new Vector3(0.62f, 0.63f, 0.62f) * level, 1f);
-
-        if (_folds is not null)
-            _folds.Opacity = 0.92f * level;
-
-        if (_copper is not null)
-            _copper.Opacity = 0.75f * level;
-    }
-
-    /// <summary>
-    /// The wireframe over the drawing, and the one node in the building that has to be switched off rather
-    /// than dimmed.
     ///
-    /// It carries <see cref="LineNode.DepthTest"/> false, which is right on a black background and is a
-    /// liability in a room: a line node that does not test depth is drawn over whatever is in front of it,
-    /// including the bench, the board and the wall. So it exists for six seconds, while he is standing
-    /// square to the display with nothing between him and it, and the rest of the time it is not in the
-    /// scene at all. That is a real constraint on where a subject like this can be hung, and it is worth
-    /// meeting honestly rather than by turning the depth test on and losing the density that is the whole
-    /// point of the scene.
+    /// <b>Switching views is a cut, not a dissolve.</b> There is one surface, so there is nothing to
+    /// cross-fade with — and that is the right answer rather than a limitation accepted. Software redraws;
+    /// it does not dissolve. What <paramref name="level"/> fades is the terminal itself coming up and
+    /// going down, which is the only thing about a screen that is ever gradual.
     /// </summary>
-    public void Grid(float level)
+    public void Show(Onscreen what, float level)
     {
         level = Math.Clamp(level, 0f, 1f);
 
-        if (_edges is null || _wireframe is null)
+        if (_view is null || _viewNode is null)
             return;
 
-        _edges.Opacity = 0.34f * level;
-        _wireframe.IsVisible = level > 0.002f;
-    }
+        if (what != _showing && _screens.Length > (int)what)
+        {
+            _view.BaseColorTexture = _screens[(int)what];
+            _showing = what;
+        }
 
-    /// <summary>
-    /// The third view: the board with its parts named and its copper lit.
-    ///
-    /// It is a shaded model on a screen rather than a drawing, and it reads as one because almost
-    /// everything the scene changes is emission — the tint on a selected part carries an emissive term and
-    /// the copper is an additive line node — so the selection is bright whatever the room is doing to the
-    /// rest of it.
-    /// </summary>
-    public void Schematic(bool on)
-    {
-        if (_schematic is not null)
-            _schematic.IsVisible = on;
+        _view.BaseColor = new Vector4(new Vector3(0.62f, 0.63f, 0.62f) * level, 1f);
+        _viewNode.IsVisible = level > 0.002f;
     }
 
     /// <summary>How lit the screen is: the glass behind the view and the window furniture around it.</summary>
@@ -790,22 +775,72 @@ internal sealed class EngineRoom
     }
 
     /// <summary>
-    /// One of the three views, standing in front of the display's glass at a third of full size.
+    /// The display's picture: one quad, lying on the glass, carrying whichever screenful is up.
     ///
-    /// A pitch of ninety stands the model up and a yaw of a hundred and eighty turns it to face him, and
-    /// the yaw is not optional. Without it the model's own +X points along the room's +X, which is the
-    /// visitor's <i>left</i> — he is looking up the deck's +Z and this is a right-handed world — so the
-    /// whole board comes out mirrored. On the drawing nothing would have given it away, because a drawing
-    /// is geometry and the silkscreen is a texture; on the schematic every designator was written
-    /// backwards, which is a thing you see instantly and attribute to anything but a sign.
+    /// The images are renders of the standalone scenes taken square on and wrapped in an application —
+    /// <c>Assets/screen-*.png</c>, redrawn by <c>tools/screen-images.py</c>. They are the view a person is
+    /// meant to be looking at, which is the one thing standing the model there could not guarantee: a model
+    /// has a side, and the side is what you get from anywhere but the seat the shot was composed for.
+    ///
+    /// <b>One quad, and it sits on the glass.</b> See <see cref="Proud"/> for the four millimetres. Four
+    /// quads at four depths was the version before this one and it moved the fault rather than fixing it:
+    /// from the seat it was a screen, and from anywhere else it was a stack of sheets fanned out of a
+    /// monitor — the same complaint the models drew, made by their replacement.
+    ///
+    /// Two turns, and the second is the one worth explaining. A plane is built lying down, facing +Y, so a
+    /// quarter turn back about x stands it up facing the room — which is down the deck's −Z, because that
+    /// is the way he is looking. That leaves both of its texture axes running the wrong way: u along the
+    /// world's +X, which is his <i>left</i> in a right-handed world, and v up the wall where an image
+    /// counts its rows down. Half a turn about z answers both at once, and the normal is on the z axis so
+    /// it does not move. Without it the board arrives upside down and back to front, which at screen size
+    /// looks like nothing much until you magnify the silkscreen and find AVA3D reading the other way.
+    ///
+    /// Done to the mesh rather than to the files, so that <c>Assets/screen-*.png</c> are the right way up
+    /// when somebody opens one.
     /// </summary>
-    private static void View(Node root, Node subject, float proud)
+    private static (Node Node, Material Paint) Picture(Node root, Texture first)
     {
-        subject.Position = ScreenAt + new Vector3(ViewShift, 0f, -proud);
-        subject.RotationDegrees = new Vector3(90f, 180f, 0f);
-        subject.Scale = new Vector3(ViewScale);
+        // Opaque, and it writes depth. That is not a detail: the glass behind is additive and does not
+        // write depth, so anything that fails to occlude it gets the glow added on top and comes out
+        // white. The models this replaced occluded it with their own silhouette and let the glass show
+        // around them; a picture occludes the whole rectangle, which is why each image carries the
+        // background its own view was rendered on.
+        var paint = new Material
+        {
+            BaseColor = Vector4.One,
+            BaseColorTexture = first,
+            Unlit = true,
+            Name = "screen"
+        };
 
-        root.Children.Add(subject);
+        var node = new MeshNode(
+            Primitives.Plane(PictureWide, PictureTall)
+                .Transformed(Matrix4x4.CreateRotationX(-MathF.PI / 2f) * Matrix4x4.CreateRotationZ(MathF.PI)),
+            paint)
+        {
+            Position = ScreenAt + new Vector3(0f, -PictureDrop, -Proud),
+            Name = "screen"
+        };
+
+        root.Children.Add(node);
+        return (node, paint);
+    }
+
+    /// <summary>
+    /// One baked view, decoded once and kept.
+    ///
+    /// Encoded rather than pixels: the control decodes it when a renderer first wants it, so four
+    /// screenfuls of board cost four PNGs in the assembly and nothing in the frame that builds the room.
+    /// All four are made here, once, because the alternative is decoding one in the middle of a chapter.
+    /// </summary>
+    private static Texture Screen(string asset)
+    {
+        using var stream = AssetLoader.Open(new Uri($"avares://Ava3D.Demo/Assets/{asset}"));
+        using var memory = new MemoryStream();
+
+        stream.CopyTo(memory);
+
+        return Texture.FromEncoded(memory.ToArray(), asset, TextureWrap.ClampToEdge);
     }
 
     /// <summary>

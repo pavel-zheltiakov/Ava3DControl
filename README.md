@@ -1,4 +1,4 @@
-# Ava3DControl · 12.1.0-preview.5
+# Ava3DControl · 12.1.0-preview.6
 
 A 3D viewport control for [Avalonia](https://avaloniaui.net/). Metallic-roughness PBR, glTF loading and
 triangle-accurate picking, in one binary that renders through Metal, Vulkan, OpenGL, WebGL 2 or the CPU —
@@ -16,6 +16,10 @@ dotnet add package Ava3DControl --prerelease
 ```
 
 The major and minor version track the Avalonia release this is built against, so 12.1.x is for Avalonia 12.1.
+
+Vulkan on a Mac needs MoltenVK, which is what Vulkan is there. Add `Ava3DControl.MoltenVK` to have it travel
+with your application, or install it yourself with `brew install molten-vk`. Metal is the default on a Mac and
+needs neither.
 
 ## In this repository
 
@@ -42,8 +46,8 @@ drawing-office print, and as a wireframe. Last is Contact — a sixty-second fil
 shot list and a camera that flies itself.
 
 Switch scenes from the toolbar, or turn on Touring to have them advance by themselves. The Engine picker
-switches renderer. Switches, on every head: AVA3D_SCENE, AVA3D_TOUR, AVA3D_GL, AVA3D_SOFTWARE, AVA3D_THREADS,
-AVA3D_PROBE. In a browser the first two are query-string parameters instead.
+switches renderer. Switches, on every head: AVA3D_SCENE, AVA3D_TOUR, AVA3D_ENGINE, AVA3D_GL, AVA3D_SOFTWARE,
+AVA3D_THREADS, AVA3D_PROBE. In a browser the first two are query-string parameters instead.
 
 ## Using it
 
@@ -88,6 +92,7 @@ call:
 - Binary .glb only.
 - Android builds but has not been run on a device.
 - OpenGL on iOS renders nothing, which is an upstream Avalonia defect. Metal is used there instead.
+- Vulkan on a Mac runs on Metal through MoltenVK, so it costs a little more than the Metal renderer does.
 
 ## Licence
 

@@ -45,10 +45,22 @@ public static class DemoSettings
     /// <see cref="RenderBackendKind.Automatic"/>. Automatic is a choice, and choosing it is how you undo
     /// having chosen something else.
     /// </summary>
+    /// <remarks>
+    /// <c>AVA3D_ENGINE=vulkan</c> asks for one explicitly and beats everything, the same shape as
+    /// <c>AVA3D_STORY</c> and <c>AVA3D_SOFTWARE</c>. It exists because a measured run ignores the settings
+    /// file by design, and on a Mac the renderer is now a decision the running process can make — so
+    /// without a switch there would be no way to photograph the same scene on two engines and compare
+    /// them, which is the only check that says a new backend draws what the old one drew.
+    /// </remarks>
     public static RenderBackendKind? Engine
     {
         get
         {
+            if (Environment.GetEnvironmentVariable("AVA3D_ENGINE") is { Length: > 0 } asked &&
+                Enum.TryParse<RenderBackendKind>(asked, ignoreCase: true, out var wanted) &&
+                Enum.IsDefined(wanted))
+                return wanted;
+
             if (Measuring)
                 return null;
 

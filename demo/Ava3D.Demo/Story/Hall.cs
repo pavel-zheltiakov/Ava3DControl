@@ -17,10 +17,12 @@ namespace Ava3D.Demo.Story;
 /// so the answer is always "the room he is in, and the one he can see through the door" — which the
 /// chapter already knows, because knowing where he is is what a chapter is for.
 ///
-/// <see cref="Use"/> is the other half. Four light slots exist in the whole scene, one room needs about
-/// four, and the arithmetic only works because a room hands its lights over at the threshold rather than
-/// adding to them. Chapter 7 is the proof: with every lamp in the building switched off, the picture still
-/// has the screens and the exit strips in it, which is only possible because nothing accumulated.
+/// <see cref="Use"/> is the other half. Four lights light the whole building, one room needs about four,
+/// and the arithmetic only works because a room hands its lights over at the threshold rather than adding
+/// to them. Four is the film's number and not the renderer's: it was the cap when the building was drawn,
+/// <see cref="LightCollection.Capacity"/> is sixteen now, and it is kept because every room in here was
+/// composed against it. Chapter 7 is the proof: with every lamp in the building switched off, the picture
+/// still has the screens and the exit strips in it, which is only possible because nothing accumulated.
 /// </summary>
 internal sealed class Hall
 {
@@ -93,16 +95,18 @@ internal sealed class Hall
     }
 
     /// <summary>
-    /// Hands the four slots to these lights. Anything previously lighting the building stops.
+    /// Hands the building's lights to these. Anything previously lighting it stops.
     /// </summary>
-    /// <exception cref="InvalidOperationException">More lights than the renderer has slots for. Better
-    /// here, naming the chapter, than as a scene that silently drops its key light.</exception>
+    /// <exception cref="InvalidOperationException">More lights than <see cref="LightCollection.Capacity"/>,
+    /// which is the most every renderer will draw rather than the most any of them will. Past it a room
+    /// would look like one room here and another one in a browser tab, and a film that is not the same
+    /// film everywhere is worse than a film that refuses to start.</exception>
     public void Use(params Light[] lights)
     {
         if (lights.Length > LightCollection.Capacity)
             throw new InvalidOperationException(
-                $"a room asked for {lights.Length} lights and there are {LightCollection.Capacity} slots — " +
-                "spend them or bake them, but do not expect a fifth");
+                $"a room asked for {lights.Length} lights and {LightCollection.Capacity} is what every " +
+                "renderer will draw — spend fewer, or bake them");
 
         Scene.Lights.Clear();
 
@@ -114,7 +118,8 @@ internal sealed class Hall
 
     /// <summary>
     /// How much light there is in the building that is not coming from a lamp — the bounce off the walls
-    /// that a forward renderer with four point lights has no other way to account for.
+    /// that a forward renderer has no other way to account for, because a point light does not bounce
+    /// however many of them there are.
     ///
     /// Kept low. Raised far enough to be comfortable it flattens the rooms into cardboard, and the whole
     /// look of the place is that the light has somewhere it is coming from.

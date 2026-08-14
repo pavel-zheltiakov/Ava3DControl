@@ -172,9 +172,12 @@ sealed class Program
                 }
             });
 
-        // Apple has no Vulkan mode to ask for, so asking leaves the platform on its default rather than
-        // naming a mode that does not exist. BackendCatalog already reports Vulkan as unavailable there,
-        // and this is the same statement made where it has to be acted on.
+        // Apple has no Vulkan mode to ask for, so asking leaves the platform on its default — which is
+        // Metal, and which is exactly right. On a Mac the control does not need the host to have started
+        // on Vulkan: it creates its own device through MoltenVK on the card Metal leased it, so the
+        // renderer is chosen at run time from the picker and this switch has nothing to do. Everywhere
+        // else Vulkan has to be asked for before the application is built, which is why the two lines
+        // above exist at all.
         return wanted == RenderBackendKind.Vulkan
             ? builder
             : builder.With(new AvaloniaNativePlatformOptions

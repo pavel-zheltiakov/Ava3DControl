@@ -217,13 +217,14 @@ internal sealed class Rounds
                     // A room at work with nobody in it, which is what an engine room is most of the time.
                     // Every one of these was left where chapter 7 dropped it — and chapter 7 leaves by
                     // switching the bench off behind him, so what the visitor walked back into was four
-                    // high bays over a black floor and not one lit face anywhere. The drawing on the
-                    // display and the paper on the bench stay off, because those are a job that was
-                    // finished; the machines, the indicators and the fan are the room itself.
+                    // high bays over a black floor and not one lit face anywhere. The paper on the bench
+                    // stays off, because that is a job that was finished; the machines, the indicators and
+                    // the fan are the room itself.
+                    //
+                    // The terminal is left on the screenful chapter 7 finished with rather than put back
+                    // to an earlier one. Nobody has touched it since he walked out.
                     engine.Backlight(1f);
-                    engine.Print(0f);
-                    engine.Grid(0f);
-                    engine.Schematic(true);
+                    engine.Show(EngineRoom.Onscreen.Overview, 1f);
                     engine.Seat(1f, 1f, 1f);
                     engine.Plug(1f);
                     engine.Fan(clock, 1f);

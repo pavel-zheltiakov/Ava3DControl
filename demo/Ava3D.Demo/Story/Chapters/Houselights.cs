@@ -11,9 +11,10 @@ namespace Ava3D.Demo.Story;
 /// and much better television, and it can afford to be because the room it reveals is small enough to be
 /// taken in at once.
 ///
-/// What comes up is three lamps, one at a time, on top of the one that was already lit. Four is the cap,
-/// and the room was laid out around it rather than trimmed to fit: three ceiling lamps light a six-metre
-/// room to the corners with nothing left over, which is why the fourth can stay on the exhibit throughout.
+/// What comes up is three lamps, one at a time, on top of the one that was already lit. Four is what the
+/// film spends — the renderer's cap when this was written, and its own number since — and the room was
+/// laid out around it rather than trimmed to fit: three ceiling lamps light a six-metre room to the
+/// corners with nothing left over, which is why the fourth can stay on the exhibit throughout.
 /// </summary>
 internal sealed class Houselights(Antechamber room, Passage passage) : Chapter
 {
