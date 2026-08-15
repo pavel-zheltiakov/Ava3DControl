@@ -34,6 +34,17 @@
     <PackageReference Include="Ava3DControl" />
   </ItemGroup>
 
+  <!--
+    The same telling-apart the desktop head does, for the same reason and in the same words — see the long
+    comment in Ava3D.Demo.Desktop.csproj. It is here as well because the switches are not all in Program.cs:
+    the film recorder is in this project, next to the frame loop it has to drive, and it needs
+    FrameCapture.Next, which is newer than the published package. Behind !AVA3D_FROM_PACKAGE it costs the
+    public build nothing and comes back by itself at the next release.
+  -->
+  <PropertyGroup Condition="'$(Ava3DFromPackage)' == 'true'">
+    <DefineConstants>$(DefineConstants);AVA3D_FROM_PACKAGE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(Ava3DFromPackage)' != 'true'">
     <ProjectReference Include="..\..\src\Ava3D\Ava3D.csproj" />
   </ItemGroup>

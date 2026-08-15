@@ -24,6 +24,15 @@ public partial class App : Application
             {
                 DataContext = new MainViewModel()
             };
+
+            // A recording wants a window of a known size, because the frames it writes are the view's own
+            // surface and the view is whatever the window leaves it. See Story.Recorder.WantsWindow.
+            if (Story.Recorder.WantsWindow(out var width, out var height))
+            {
+                desktop.MainWindow.Width = width;
+                desktop.MainWindow.Height = height;
+                desktop.MainWindow.CanResize = false;
+            }
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
         {

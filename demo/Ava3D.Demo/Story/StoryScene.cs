@@ -105,6 +105,16 @@ public sealed class StoryScene : DemoScene
     public override TimeSpan TourDuration =>
         TimeSpan.FromSeconds(Math.Max(1f, (_film?.Duration ?? 0f) - _startAt) + 45f);
 
+    /// <summary>
+    /// How long the film runs, in seconds, or zero before it has been built.
+    ///
+    /// The film's own length rather than this scene's: it is a property of the chapter list and does not
+    /// move when somebody opens the story part way through. <see cref="TourDuration"/> is the other
+    /// question — how long a visitor should be left here — and adds the free walk on the end, which is why
+    /// it is not this and cannot be turned into it.
+    /// </summary>
+    public float Length => _film?.Duration ?? 0f;
+
     public override Scene Build()
     {
         _film = new Film();
@@ -401,11 +411,33 @@ public sealed class StoryScene : DemoScene
     /// <param name="from">The first second of film to render.</param>
     /// <param name="to">The last, or zero for the whole film. Past <c>Film.Duration</c> is the free walk.</param>
     /// <param name="sampleRate">Samples a second. The cues are generated at whatever this is.</param>
+    /// <param name="speed">
+    /// Film seconds per real second. One is the film; nine is the film at nine times, and the tape comes out
+    /// nine times shorter.
+    ///
+    /// <b>This is not the same thing as speeding up the finished tape, and the difference is the whole
+    /// reason it is a parameter here rather than a filter afterwards.</b> The score is ten looping beds and
+    /// a bank of one-shots — see <see cref="Soundtrack"/> — so what the clock actually drives is *when*
+    /// things are triggered and where the ten levels are, never the rate anything is played back at. Run the
+    /// clock fast and every sound keeps its own pitch and its own length: a bed is still a bed, a relay
+    /// still takes as long to close as a relay takes. Resampling the finished file transposes the lot up
+    /// three octaves, and time-compressing it — <c>atempo</c>, which is the usual answer — puts nine passes
+    /// of a windowing artefact over a soundtrack that is mostly held tone, which is the material that shows
+    /// it worst.
+    ///
+    /// What does change is density, and it should: the events are the picture's, and the picture is nine
+    /// times faster. A man crossing the gallery still puts a foot down every stride, and at nine times he
+    /// crosses it in four seconds, so the footfalls arrive nine times as often. That is what the film looks
+    /// like at this speed, so it is what it should sound like.
+    /// </param>
     /// <returns>A line describing what was written, or why nothing was.</returns>
-    public static string RecordSoundtrack(string path, float from = 0f, float to = 0f, int sampleRate = 48000)
+    public static string RecordSoundtrack(
+        string path, float from = 0f, float to = 0f, int sampleRate = 48000, float speed = 1f)
     {
         var film = new Film();
         var until = to > from ? to : film.Duration;
+
+        speed = speed > 0f ? speed : 1f;
 
         using var sound = Soundtrack.Recording(film, sampleRate);
 
@@ -435,7 +467,16 @@ public sealed class StoryScene : DemoScene
 
         for (var step = 0; ; step++)
         {
-            var at = (float)(from + step / 60.0);
+            // Still counted rather than accumulated, for the reason above; speed multiplies the count, so a
+            // fast render is sampled on exactly the same grid as a slow one and lands on the same instants.
+            //
+            // The step this puts between one Advance and the next is speed/60 film seconds, and Soundtrack
+            // treats a step over 0.4 s as a seek rather than as the film running — which suppresses one-shots
+            // for that frame, on purpose, so that jumping into the middle of a chapter does not replay every
+            // relay since the top of it. Past twenty-four times, therefore, every frame looks like a jump and
+            // the tape comes back with the beds and nothing else. That is a real ceiling and it is a long way
+            // above anything worth watching.
+            var at = (float)(from + step / 60.0 * speed);
 
             if (at >= until)
                 break;
@@ -490,6 +531,7 @@ public sealed class StoryScene : DemoScene
 
         return $"{path}: {until - from:0.#} s of film from {from:0.#} s"
                + (over > 0f ? $", the last {over:0.#} s of it the free walk retraced" : "")
+               + (speed != 1f ? $", at {speed:0.##}× into {(until - from) / speed:0.#} s of tape" : "")
                + $", {sampleRate} Hz mono, {new FileInfo(path).Length / 1_000_000f:0.#} MB"
                + (crossed.Count > 0 ? $"\n  through {string.Join(", ", crossed)}" : "");
     }

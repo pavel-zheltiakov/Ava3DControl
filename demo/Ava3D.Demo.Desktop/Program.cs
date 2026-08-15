@@ -63,7 +63,38 @@ sealed class Program
             float.TryParse(Environment.GetEnvironmentVariable("AVA3D_SOUND_FROM"), out var soundFrom);
             float.TryParse(Environment.GetEnvironmentVariable("AVA3D_SOUND_TO"), out var soundTo);
 
-            Console.WriteLine(Story.StoryScene.RecordSoundtrack(wav, soundFrom, soundTo));
+            // AVA3D_SOUND_SPEED=<n> runs the film's clock n times faster while the tape rolls at its own
+            // rate, so the whole score arrives n times shorter with nothing transposed or time-stretched.
+            // It is what puts a soundtrack under AVA3D_FILM at the same speed — see StoryScene.RecordFilm.
+            var soundSpeed = float.TryParse(Environment.GetEnvironmentVariable("AVA3D_SOUND_SPEED"), out var s)
+                ? s
+                : 1f;
+
+            Console.WriteLine(Story.StoryScene.RecordSoundtrack(wav, soundFrom, soundTo, 48000, soundSpeed));
+            return;
+        }
+
+        // AVA3D_FILM=<directory> records the film to a numbered run of PNGs and exits.
+        //
+        // A window is opened and drawn into, because the frames are a real renderer's output and there is
+        // no offscreen path to the same pixels — but nothing is on the compositor's clock, so this runs as
+        // fast as the machine can draw rather than in the nine minutes forty-seven the film lasts. See
+        // Story.Recorder for the loop and for why it is not a screen recorder.
+        if (Environment.GetEnvironmentVariable("AVA3D_FILM") is { Length: > 0 })
+        {
+            var filming = new ClassicDesktopStyleApplicationLifetime
+            {
+                ShutdownMode = ShutdownMode.OnExplicitShutdown
+            };
+
+            BuildAvaloniaApp().SetupWithLifetime(filming);
+            Engine.EngineRelauncher.Current = new DesktopRelauncher(filming);
+
+            // The recorder writes the last frame on a render thread and says so on the UI one; this is the
+            // only thing waiting for it, and there is nothing after it to run.
+            Views.MainView.FilmRecorded += () => Dispatcher.UIThread.Post(() => filming.Shutdown());
+
+            filming.Start(args);
             return;
         }
 

@@ -81,6 +81,20 @@ public partial class MainView : UserControl
     private Scene _currentScene = null!;
 
     /// <summary>
+    /// The film recorder, when <c>AVA3D_FILM</c> asked for one, and null every other time the demo runs.
+    ///
+    /// It takes the frame loop over completely — see <see cref="Record"/> — because what it needs from the
+    /// clock is the opposite of what everything else here needs: the ordinary loop reads the compositor's
+    /// time so the picture is smooth on a machine that is busy, and a recording supplies its own so the
+    /// file is right on a machine that is busy. Both are the same rule, that the film is a function of the
+    /// time it is asked for.
+    /// </summary>
+    private readonly Story.Recorder? _recorder = Story.Recorder.Open();
+
+    /// <summary>Raised when a recording has written its last frame, so the head can shut down.</summary>
+    public static event Action? FilmRecorded;
+
+    /// <summary>
     /// An untouched camera, read for its defaults when a scene switch hands the next scene a clean one.
     ///
     /// A camera rather than four literals, so this cannot drift out of step with the control: whatever
@@ -442,6 +456,13 @@ public partial class MainView : UserControl
         if (!_animating)
             return;
 
+        // A recording drives itself, on a clock of its own. Nothing below this line runs during one.
+        if (_recorder is { } film)
+        {
+            Record(film);
+            return;
+        }
+
         if (!_haveStart)
         {
             _sceneStarted = now;
@@ -456,6 +477,74 @@ public partial class MainView : UserControl
         HandOver(_current.WantsControl);
 
         ShowCaption(_current.Caption, now.TotalSeconds);
+        RequestFrame();
+    }
+
+    /// <summary>
+    /// One frame of a recording: put the film where the file wants it, ask for the picture, wait for it.
+    ///
+    /// The three states are a queue of one. While the renderer still owes us the last frame nothing moves —
+    /// that wait is the only thing making the run regular, because the compositor draws when it draws and a
+    /// film advanced on the callback instead would be sampled wherever it happened to have got to. Then the
+    /// warm-up, which draws the opening second over and over and throws it away while the room's textures
+    /// arrive. Then the film itself, one arithmetic step per written frame.
+    ///
+    /// Where the ordinary loop passes the compositor's clock, this passes <c>film.Second</c>. Everything
+    /// downstream is unchanged and cannot tell the difference, which is the whole reason a film built as a
+    /// function of time can be recorded at all.
+    /// </summary>
+    private void Record(Story.Recorder film)
+    {
+        if (film.Waiting)
+        {
+            RequestFrame();
+            return;
+        }
+
+        // The film cannot say how long it is until it has been built, so this is asked once, here, rather
+        // than guessed at when the switch was read.
+        //
+        // Anything other than the film is refused rather than recorded. The recorder turns the story on
+        // itself, so landing here means something overrode it — AVA3D_STORY=0, or a scene with no cue — and
+        // the two ways of being wrong are both silent otherwise: an endless run with no end to measure
+        // against, or a reel of a rotating cube that took twenty minutes to write.
+        if (film.Until <= 0f)
+        {
+            if (_current is not StoryScene story || story.Length <= 0f)
+            {
+                Console.WriteLine(
+                    $"[Ava3D.Demo] AVA3D_FILM records the film, and this run is on '{_current.Title}'. "
+                    + "Leave AVA3D_STORY alone, or pick a scene the film passes through.");
+
+                FilmRecorded?.Invoke();
+                return;
+            }
+
+            film.Measure(story.Length);
+        }
+
+        if (film.AtEnd)
+        {
+            Console.WriteLine(film.Close());
+            FilmRecorded?.Invoke();
+            return;
+        }
+
+        _current.Update(_currentScene, _view.Camera, film.Second);
+
+        if (_current.DrivesCamera)
+            _view.InvalidateCamera();
+
+        if (!film.Warm)
+        {
+            film.Warming();
+            RequestFrame();
+            return;
+        }
+
+        // Armed after the film has been moved and before the frame is asked for, so what the renderer draws
+        // next is the second this is about to be filed under.
+        film.Arm(_current.Caption);
         RequestFrame();
     }
 

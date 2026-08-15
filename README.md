@@ -1,4 +1,4 @@
-# Ava3DControl · 12.1.0-preview.6
+# Ava3DControl · 12.1.0-preview.7
 
 A 3D viewport control for [Avalonia](https://avaloniaui.net/). Metallic-roughness PBR, glTF loading and
 triangle-accurate picking, in one binary that renders through Metal, Vulkan, OpenGL, WebGL 2 or the CPU —

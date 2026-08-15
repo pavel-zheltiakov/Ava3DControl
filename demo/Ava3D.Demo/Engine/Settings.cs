@@ -155,9 +155,16 @@ public static class DemoSettings
     /// on what the last person to open the demo happened to click. So the switches win, and when there are
     /// no switches the answer is the platform's default rather than the settings file's.
     /// </summary>
+    /// <remarks>
+    /// A film recording counts, and for a stronger reason than the other two: it is the one run whose
+    /// output somebody publishes. A reel that came out on the CPU fallback, or with the film's sound
+    /// switched off, because that is where the picker was last left, would be a recording of somebody's
+    /// settings rather than of the control.
+    /// </remarks>
     private static bool Measuring =>
         Environment.GetEnvironmentVariable("AVA3D_PROBE") is { Length: > 0 } ||
-        Environment.GetEnvironmentVariable("AVA3D_CAPTURE") is { Length: > 0 };
+        Environment.GetEnvironmentVariable("AVA3D_CAPTURE") is { Length: > 0 } ||
+        Environment.GetEnvironmentVariable("AVA3D_FILM") is { Length: > 0 };
 
     private static string? Read(string key)
     {
