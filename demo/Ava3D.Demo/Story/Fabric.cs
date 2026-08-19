@@ -1,4 +1,5 @@
 using System.Numerics;
+using Ava3D.Demo.Views;
 
 namespace Ava3D.Demo.Story;
 
@@ -258,6 +259,93 @@ internal static class Fabric
 
         return wall;
     }
+
+    /// <summary>
+    /// A museum label: a small plate with the exhibit's name cut into it.
+    ///
+    /// <b>It is the answer to four separate notes that all said the same thing.</b> "This scene is not
+    /// clear what is shown." "This flashing circle, not clear what is shown." "This ball at left must be
+    /// transparent, or what does this scene show?" Every one of those is a person standing in front of an
+    /// exhibit with no idea what it is exhibiting — which is not a failure of the exhibit, it is a museum
+    /// with nothing written on the walls. A gallery does not solve this by making the objects more
+    /// obvious. It writes a label and screws it to the plinth.
+    ///
+    /// The lettering is <see cref="Glyphs"/>, which is the caption band's own face and is already used to
+    /// draw the title card in three dimensions — so it costs no font, no atlas and no text layout, and it
+    /// is the same five-by-seven stroke alphabet everywhere in the demo. Drawn as lines and additive, so
+    /// the label reads at any lamp level in any room and cannot go dark when its exhibit does.
+    /// </summary>
+    /// <param name="text">What it says. Upper case; the alphabet has no lower case in it.</param>
+    /// <param name="at">Where the middle of the plate goes, in the room's own frame.</param>
+    /// <param name="cap">Cap height in metres. Thirty millimetres reads from two.</param>
+    /// <param name="yaw">Which way it faces, in degrees, if it is not facing the room's +Z.</param>
+    public static Node Label(string text, Vector3 at, float cap = 0.030f, float yaw = 0f)
+    {
+        var wide = (float)Glyphs.Measure(text, cap);
+
+        var node = new Node
+        {
+            Name = "label",
+            Position = at,
+            RotationDegrees = new Vector3(0f, yaw, 0f)
+        };
+
+        node.Children.Add(Slab(
+            new Vector3(wide + cap * 2.4f, cap * 2.8f, 0.010f),
+            Vector3.Zero,
+            Plaque,
+            "label.plate",
+            Finish.Close));
+
+        node.Children.Add(new LineNode
+        {
+            Positions = Lettering(text, cap),
+            Color = new Vector3(0.90f, 0.93f, 1f),
+            Width = 2f,
+            Blend = BlendMode.Additive,
+            DepthWrite = false,
+            RenderOrder = 4,
+            Name = "label.text"
+        });
+
+        return node;
+    }
+
+    /// <summary>
+    /// The word as segment pairs, centred about the origin and standing six millimetres proud of the
+    /// plate.
+    ///
+    /// <see cref="Glyphs.Segments"/> lays a word out left to right from the origin with y running
+    /// <i>down</i> the cell, which is what a canvas wants and is upside down in a scene — so this flips
+    /// it, scales the cell height to the cap height asked for, and slides it half its own width left. The
+    /// same three lines <c>Curtain.Card</c> does, for the same reason.
+    /// </summary>
+    private static Vector3[] Lettering(string text, float cap)
+    {
+        var flat = Glyphs.Segments(text);
+        var wide = (float)Glyphs.Measure(text, Glyphs.CellHeight);
+        var scale = cap / Glyphs.CellHeight;
+
+        var word = new Vector3[flat.Length];
+
+        for (var i = 0; i < flat.Length; i++)
+            word[i] = new Vector3(
+                (flat[i].X - wide / 2f) * scale,
+                (Glyphs.CellHeight / 2f - flat[i].Y) * scale,
+                0.006f);
+
+        return word;
+    }
+
+    /// <summary>Anodised plate, dark enough that white lettering carries and matt enough that it does not
+    /// throw an exhibit's own lamp back at whoever is reading it.</summary>
+    private static Material Plaque => new()
+    {
+        BaseColor = new Vector4(0.09f, 0.095f, 0.105f, 1f),
+        Metallic = 0.35f,
+        Roughness = 0.62f,
+        Name = "plaque"
+    };
 
     /// <summary>A solid wall: the same thing with no opening.</summary>
     public static Node Wall(float length, float height, float thickness, Material material) =>

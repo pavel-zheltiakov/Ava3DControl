@@ -148,6 +148,46 @@ internal sealed class Hall
     }
 
     /// <summary>
+    /// The air between the camera and what it is looking at, and the stop the camera is set to.
+    ///
+    /// <b>One room in the building has any, and that is the point of it being a method.</b> Every
+    /// exhibition room here is six to fourteen metres across, and fog over that distance is a tint on the
+    /// far wall — the argument for it is depth, and there is no depth to argue about. The alarm corridor is
+    /// twenty-one metres of two-metre passage with seven turning beacons down it, which is the one place in
+    /// the film where "how far away is that" is a question the picture has to answer.
+    ///
+    /// <paramref name="colour"/> is the colour distant geometry <i>ends up</i>, not a linear value to be
+    /// tone mapped — see <see cref="Scene.FogColor"/>, which mixes after the tone map for exactly that
+    /// reason. In a dark corridor that is very nearly black, and the amber in it is the beacons.
+    ///
+    /// The exposure comes with it because in that corridor the two are one decision. He walks out of a lit
+    /// lounge into a dark passage, and a camera that did not stop down would be a camera that is not an
+    /// eye.
+    /// </summary>
+    public void Air(float from, float to, Vector3 colour, float exposure = 1f)
+    {
+        Scene.FogStart = from;
+        Scene.FogEnd = to;
+        Scene.FogColor = colour;
+        Scene.Exposure = exposure;
+
+        Scene.Invalidate();
+    }
+
+    /// <summary>
+    /// Clear air and an open stop, which is what every room but one has.
+    ///
+    /// Called by <see cref="StoryScene"/> on every chapter change rather than by each chapter, and that is
+    /// the one place in this building where the film asserts something on a chapter's behalf. The reason is
+    /// the rule the chapters already follow: a chapter's <c>Enter</c> puts the building into a state rather
+    /// than assuming the one before it left it there — and fog is a property of the <i>scene</i> rather
+    /// than of a room, so honouring that rule per chapter would mean eleven chapters each saying they have
+    /// no fog. One of them would be forgotten, and what that looks like is the engine room seen through the
+    /// corridor's air.
+    /// </summary>
+    public void Clear() => Air(0f, 0f, Vector3.Zero);
+
+    /// <summary>
     /// The same thing with an image instead of two colours: a baked probe of the room he is in.
     ///
     /// One room needs it and the rest do not, which is the whole reason this is a second method rather than

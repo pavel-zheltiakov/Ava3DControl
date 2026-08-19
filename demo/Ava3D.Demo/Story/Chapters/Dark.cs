@@ -14,17 +14,30 @@ internal sealed class Dark(Antechamber room) : Chapter
 {
     public override string Title => "Dark";
 
-    public override float Duration => 25f;
+    /// <summary>
+    /// How long it runs. <b>Sixteen, and it was twenty-five.</b>
+    ///
+    /// Nine seconds came out of the front of the film and every one of them was a held frame. The chapter's
+    /// whole job is to be a room with its lights off — it has one cube, one lamp and a camera that takes two
+    /// steps back — and a shot that has made its point goes on making it for as long as it is up. Twenty-five
+    /// seconds of that is the first thing anybody sees of this control, and what it says about the control is
+    /// that it is slow. It says it before a single feature is on screen.
+    ///
+    /// Nothing was cut. All three captions are here, the step back is here, the cube still turns through the
+    /// same faces. What changed is the dwell either side of each of them, which is the part of a shot nobody
+    /// can name and everybody feels.
+    /// </summary>
+    public override float Duration => 16f;
 
     /// <summary>
-    /// Still for eight seconds, then two steps back — far enough to learn the darkness has a floor, not
+    /// Still for five seconds, then two steps back — far enough to learn the darkness has a floor, not
     /// far enough to find a wall.
     /// </summary>
     public override Walk Walk { get; } = new(
         new Step(0f, new Vector3(0f, Deck.Eye, -2.1f), new Vector3(0f, 1.28f, 0f)),
-        new Step(8f, new Vector3(0f, Deck.Eye, -2.1f), new Vector3(0f, 1.28f, 0f)),
-        new Step(13f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 1.20f, 0f)),
-        new Step(25f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 1.20f, 0f)));
+        new Step(5f, new Vector3(0f, Deck.Eye, -2.1f), new Vector3(0f, 1.28f, 0f)),
+        new Step(9f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 1.20f, 0f)),
+        new Step(16f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 1.20f, 0f)));
 
     public override void Enter(Hall hall)
     {
@@ -83,9 +96,9 @@ internal sealed class Dark(Antechamber room) : Chapter
     /// </summary>
     public override string? Caption(float seconds) => seconds switch
     {
-        < 3f => null,
-        < 9f => "Notes for the next person. They asked for four hundred words",
-        < 17f => "This is my night number nine hundred. And my last one",
+        < 2f => null,
+        < 6.5f => "Notes for the next person. They asked for four hundred words",
+        < 11f => "This is my night number nine hundred. And my last one",
         // "4AM" rather than "Four in the morning". The caption band draws its own face and has digits in
         // it, and a numeral is read at a glance where four spelled-out words have to be read — which is
         // what a caption on screen for eight seconds gets. It also takes the line from seventy characters

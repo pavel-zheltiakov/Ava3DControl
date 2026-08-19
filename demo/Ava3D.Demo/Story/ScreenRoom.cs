@@ -61,6 +61,26 @@ internal sealed class ScreenRoom
     private const float ExitX = -3.3f;
 
     /// <summary>
+    /// And the way in, <b>which is in the north wall now and used to be in the east.</b>
+    ///
+    /// The east wall was where the material gallery met this room, back to back, and it was the whole of
+    /// the route between chapters 3 and 4 — which left nowhere between them to put the two rooms that
+    /// needed to go there. The route now goes east out of the gallery, through the studio and the pattern
+    /// shop, and comes back down the link to this wall. See <see cref="Deck.Studio"/>.
+    ///
+    /// It is in the same wall as the way out, seven metres east of it, with the alcove between them. Two
+    /// doors in one wall would normally be a breach of rule 2 and here it is not: what the rule forbids is
+    /// seeing through one into the next room, and these two face the same way. Standing in either, the
+    /// other is a slot in the wall beside you.
+    ///
+    /// Three and a fifth, which is what is left. The alcove owns the middle four metres of a nine-metre
+    /// wall and the exit owns three metres three west of centre; between the alcove's east jamb and the
+    /// corner there are two and a half metres of wall, and a doorway one and a fifth wide goes in the
+    /// middle of them with a little over half a metre of return on each side.
+    /// </summary>
+    private const float EntranceX = 3.2f;
+
+    /// <summary>
     /// Where a seat stands and where its console stands, in front of every set.
     ///
     /// Four stations rather than one seating group, and that is the difference between a room with a
@@ -139,43 +159,26 @@ internal sealed class ScreenRoom
         root.Children.Add(Fabric.Sheet(Width, Depth, 0f, boards, "floor"));
         root.Children.Add(Fabric.Lid(Width, Depth, Deck.Ceiling, plaster, "ceiling"));
 
-        // In through the east wall, out through the north one. Perpendicular on purpose: two doors on one
-        // axis would put the room he is leaving and the room he is entering in the same frame, and the
-        // whole plan is built so that never happens.
+        // <b>Blind, and it carried the way in for four rooms.</b> The gallery met this room here, back to
+        // back, and the two walls overlapped by a hundred and twenty-five millimetres and then cut the same
+        // hole in it — same width, same height, same centre, because both read Deck.DoorWidth and both were
+        // on the same doorway. Inside the overlap the two reveals were one plane and the two soffits were
+        // another, and the depth test answers that per pixel and per frame, which was a band of crawling
+        // diagonal hatching down the jamb of the one doorway in the film that got walked through in both
+        // directions. The fix was to make one of the openings bigger, because interpenetrating solids only
+        // work if they interpenetrate everywhere and a hole is a solid turned inside out.
         //
-        // The opening is asked for at +1.5 to land at −1.5, and that is not a typo. A wall is built along
-        // its own X and this one is turned a quarter, and a yaw of ninety sends X to −Z — so an offset
-        // written in the wall's frame arrives in the room's with its sign flipped. It was −1.5 here until
-        // the material gallery had to meet this door, which is the first time in the film anything walked
-        // through it: for four rooms the opening was three metres north of where Entrance said it was, and
-        // nothing showed, because chapter 4 starts inside the room and never looks back at the wall it came
-        // in by. Rotating a wall is a good way to write a bug that renders perfectly.
-        // <b>The opening is fifty millimetres wider and thirty taller than the standard one, and that is the
-        // fix for the worst shimmer in the building.</b>
-        //
-        // This wall and the gallery's west wall overlap by a hundred and twenty-five millimetres — they are
-        // built outward from two room boundaries a quarter of a metre apart, which is interpenetration and
-        // is exactly what this building does everywhere instead of abutting. What nobody noticed is that
-        // both of them then cut the <i>same</i> hole: same width, same height, same centre, because both
-        // read Deck.DoorWidth and both are on the same doorway. So inside the overlap the two reveals are
-        // one plane and the two soffits are another, and the depth test answers per pixel and per frame —
-        // which is a band of crawling diagonal hatching down the jamb of the one doorway in the film that
-        // gets walked through in both directions.
-        //
-        // Interpenetrating solids only work if they interpenetrate <i>everywhere</i>, and a hole is a solid
-        // turned inside out: the way to make two openings not be coplanar is to make one of them bigger.
-        // This one is, by more than any camera will resolve at the range anybody stands from it, and the
-        // extra is buried inside the gallery's wall where there is nothing to see it.
-        var east = Fabric.PiercedWall(
-            Depth, Deck.Ceiling, Deck.WallThickness,
-            doorCentre: 1.5f, Deck.DoorWidth + 0.05f, Deck.DoorHeight + 0.03f, panel);
+        // The route turned east and took the opening with it, so what is left here is the simple case: two
+        // solid slabs a quarter of a metre apart, overlapping, with nothing cut in either. Both halves of
+        // the old fix are gone with the hole they were fixing.
+        var east = Fabric.Wall(Depth, Deck.Ceiling, Deck.WallThickness, panel);
         east.Position = new Vector3(halfWidth, 0f, 0f);
         east.RotationDegrees = new Vector3(0f, 90f, 0f);
         root.Children.Add(east);
 
-        // The north wall has two holes in it and PiercedWall makes one, so it is written as explicit runs
-        // along X — the same thing the gallery does with its sides, and for the same reason: a wall with
-        // its own arithmetic in it is a wall whose openings are where the numbers say they are.
+        // The north wall has three holes in it now and PiercedWall makes one, so it is written as explicit
+        // runs along X — the same thing the gallery does with its sides, and for the same reason: a wall
+        // with its own arithmetic in it is a wall whose openings are where the numbers say they are.
         //
         // The alcove's mouth runs floor to ceiling with no head over it. That is the lesson the rotunda's
         // niches paid for twice: a downward-facing soffit under lamps that are above it receives nothing
@@ -184,11 +187,15 @@ internal sealed class ScreenRoom
         // alcove comes from below the soffit.
         var doorFrom = ExitX - Deck.DoorWidth / 2f;
         var doorTo = ExitX + Deck.DoorWidth / 2f;
+        var wayFrom = EntranceX - Deck.DoorWidth / 2f;
+        var wayTo = EntranceX + Deck.DoorWidth / 2f;
 
         North(-halfWidth, doorFrom);
         North(doorFrom, doorTo, Deck.DoorHeight);
         North(doorTo, -ApseRadius);
-        North(ApseRadius, halfWidth);
+        North(ApseRadius, wayFrom);
+        North(wayFrom, wayTo, Deck.DoorHeight);
+        North(wayTo, halfWidth);
 
         var south = Fabric.Wall(Width, Deck.Ceiling, Deck.WallThickness, panel);
         south.Position = new Vector3(0f, 0f, -halfDepth);
@@ -332,8 +339,9 @@ internal sealed class ScreenRoom
     /// <summary>Where the doorway out is, in world coordinates.</summary>
     public static Vector3 Exit => Deck.Screens + new Vector3(ExitX, Deck.Eye, Depth / 2f);
 
-    /// <summary>Where the doorway in is.</summary>
-    public static Vector3 Entrance => Deck.Screens + new Vector3(Width / 2f, Deck.Eye, -1.5f);
+    /// <summary>Where the doorway in is — in the north wall, east of the alcove. See
+    /// <see cref="EntranceX"/> for why it is not in the east wall any more.</summary>
+    public static Vector3 Entrance => Deck.Screens + new Vector3(EntranceX, Deck.Eye, Depth / 2f);
 
     /// <summary>The sofa, seen from the door. What the last second of chapter 3 and the first of chapter 4
     /// look at — so the thing the alcove is going to happen in front of is in the very first frame.</summary>

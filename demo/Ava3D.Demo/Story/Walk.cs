@@ -95,7 +95,7 @@ internal sealed class Walk
 
             var eye = Vector3.Lerp(a.Eye, b.Eye, Pace(u, Walking(i - 1), Walking(i + 1)));
 
-            return new Pose(eye, Aim(eye, a.Look, b.Look, Ease(u)));
+            return new Pose(eye, Aim(a.Eye, eye, a.Look, b.Look, Ease(u)));
         }
 
         var last = _steps[^1];
@@ -174,10 +174,35 @@ internal sealed class Walk
     /// The distance is carried along so the subject stays a subject. Nothing in the film reads it —
     /// <see cref="Camera.LookFrom"/> only needs the direction — but a pose whose target is at some arbitrary
     /// range would be a trap for the first thing that does.
+    ///
+    /// <b>The subject being left keeps the bearing it had when he left it; the one he is turning to is
+    /// tracked as he arrives.</b> That asymmetry is the whole of this method's second fix and it is not a
+    /// refinement of the first one — it removes a fault that the yaw decomposition above cannot reach.
+    /// Both bearings used to be measured from wherever the eye had got to this frame, which is right for
+    /// the subject ahead and catastrophic for the one behind: a walk that goes <i>through</i> what it was
+    /// last looking at has a direction-to-it that shrinks to nothing and comes out pointing the other way,
+    /// so halfway along the segment the aim swings a hundred and eighty degrees and comes back.
+    ///
+    /// That is not a hypothetical. Every doorway in this building is a subject — a chapter aims at the way
+    /// out, walks up to it and goes through it — so the fault sat on the joins, which are the frames a
+    /// viewer is least willing to forgive: <c>Ground.Audit</c> measured sixteen hundred degrees a second
+    /// leaving the gallery and twenty-eight hundred leaving the pattern shop, on segments whose authored
+    /// turn is under sixty. A head does not do that, and no arrangement of waypoints could have stopped it,
+    /// because the waypoints were not what was wrong.
+    ///
+    /// Freezing the outgoing eye costs the one thing it sounds like it should: a segment written with the
+    /// <i>same</i> subject at both ends no longer tracks it exactly through the middle, because half the
+    /// answer is now a bearing taken before he moved. The error is zero at both ends by construction, and
+    /// in the middle it is half the segment's own turn — three or four degrees on the passes this film
+    /// makes past a stand, against a hundred and eighty for the fault it replaces.
+    ///
+    /// It is also what keeps the joins seamless. At the end of a segment the answer is the bearing from
+    /// that step's eye to that step's subject; at the start of the next it is the same bearing measured
+    /// from the same two points. The two agree exactly, which is what makes a chapter boundary invisible.
     /// </summary>
-    private static Vector3 Aim(Vector3 eye, Vector3 from, Vector3 to, float u)
+    private static Vector3 Aim(Vector3 was, Vector3 eye, Vector3 from, Vector3 to, float u)
     {
-        var a = from - eye;
+        var a = from - was;
         var b = to - eye;
 
         var ra = a.Length();

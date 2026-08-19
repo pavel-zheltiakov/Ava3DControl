@@ -55,12 +55,25 @@ internal sealed class Gallery
     private const float HalfLength = Length / 2f;
 
     /// <summary>
-    /// Where the doorways are in the room's own coordinates — derived from the rooms they meet rather than
+    /// Where the entrance is in the room's own coordinates — derived from the room it meets rather than
     /// chosen. See <see cref="Deck.Materials"/> for why this room does not get to pick.
     /// </summary>
     private static readonly float EntranceX = Rotunda.Exit.X - Deck.Materials.X;
 
-    private static readonly float ExitZ = ScreenRoom.Entrance.Z - Deck.Materials.Z;
+    /// <summary>
+    /// And where the way out is — <b>in the east wall now, and it used to be in the west.</b>
+    ///
+    /// The west door opened straight into the lounge, which was the whole of the route between chapters 3
+    /// and 4 and left nowhere at all to put a room between them. Two rooms had to go between them, so the
+    /// exit turned round: same distance up the room, same slot seen almost edge-on from the entrance
+    /// thirteen metres away, other wall. What the room gets back is a blind west wall behind the case.
+    ///
+    /// It is a number rather than a derivation now, and that is the honest form. It used to be read off
+    /// <c>ScreenRoom.Entrance</c>, because the two rooms shared the wall it was cut in; the studio's west
+    /// doorway is read off <i>this</i> instead — see <see cref="Deck.Studio"/> — so the dependency runs the
+    /// other way and one of the two has to be the one that chooses.
+    /// </summary>
+    private const float ExitZ = 4.6f;
 
     /// <summary>
     /// Where the chart and the case are set into their walls, facing each other.
@@ -230,13 +243,16 @@ internal sealed class Gallery
         var doorFrom = ExitZ - Deck.DoorWidth / 2f;
         var doorTo = ExitZ + Deck.DoorWidth / 2f;
 
+        // West: the case's bay and then fourteen metres of unbroken wall, which is what the room gained
+        // when the way out moved across to the other side.
         Side(-HalfWidth, -HalfLength, bayFrom);
-        Side(-HalfWidth, bayTo, doorFrom);
-        Side(-HalfWidth, doorTo, HalfLength);
-        Side(-HalfWidth, doorFrom, doorTo, Deck.DoorHeight);
+        Side(-HalfWidth, bayTo, HalfLength);
 
+        // East: the chart's bay, and the doorway into the studio past the far end of it.
         Side(HalfWidth, -HalfLength, bayFrom);
-        Side(HalfWidth, bayTo, HalfLength);
+        Side(HalfWidth, bayTo, doorFrom);
+        Side(HalfWidth, doorTo, HalfLength);
+        Side(HalfWidth, doorFrom, doorTo, Deck.DoorHeight);
 
         // The chart, in a bay in the east wall. The room supplies the box and the scene supplies what is in
         // it, which is the whole of what mounting is — and what is in it is the same forty-nine materials
@@ -298,6 +314,24 @@ internal sealed class Gallery
         metals.Position = new Vector3(0f, StandHeight - metals.Bounds.Min.Y, RowZ);
         root.Children.Add(metals);
 
+        // <b>And a label under each of the four.</b> This is the room where the demo's whole argument about
+        // materials is made, and until now it made it silently — sixty-one spheres and a drum with nothing
+        // anywhere saying which comparison is which. See Fabric.Label.
+        //
+        // The two wall bays read from the middle of the room, so their plates face inward; the drum's goes
+        // on its plinth facing the way the walk comes at it; the metals' goes on the front of the stand.
+        root.Children.Add(Fabric.Label(
+            "PBR CHART", new Vector3(HalfWidth + BayDepth - 0.04f, 1.02f, FacingZ), 0.030f, -90f));
+
+        root.Children.Add(Fabric.Label(
+            "MATERIALS", new Vector3(-(HalfWidth + BayDepth) + 0.04f, 1.02f, FacingZ), 0.030f, 90f));
+
+        root.Children.Add(Fabric.Label(
+            "TEXTURED PBR", DrumAt + new Vector3(0f, PlinthHeight - 0.18f, -0.31f), 0.028f, 180f));
+
+        root.Children.Add(Fabric.Label(
+            "ENVIRONMENT", new Vector3(0f, StandHeight - 0.16f, RowZ - 0.44f), 0.030f, 180f));
+
         // The ceiling, which was the last flat plane left in the room. A moulded plastic band across it at
         // every fixture, sunk into the slab so the two are never level: it gives the lamps something to be
         // mounted <i>on</i> rather than to hang out of nothing, and it puts the fifth material in the room
@@ -329,7 +363,7 @@ internal sealed class Gallery
         OverCase = Hang(new Vector3(-1.55f, LampY, FacingZ), 2.4f, 6.5f);
         OverDrum = Hang(new Vector3(DrumAt.X, LampY, DrumAt.Z), 2.6f, 6.5f);
         OverRow = Hang(new Vector3(0f, LampY, RowZ - 1.4f), 2.6f, 7f);
-        ByDoor = Hang(new Vector3(-2.2f, LampY, ExitZ), 2f, 6f);
+        ByDoor = Hang(new Vector3(2.2f, LampY, ExitZ), 2f, 6f);
 
         // Dark until chapter 3 asks for them. The gallery is standing and visible through the rotunda's
         // north doorway for the last stretch of chapter 2 — that is what stops the way out of the rotunda
@@ -355,7 +389,7 @@ internal sealed class Gallery
                     OverRow.Fixture.Position,
                     ByDoor.Fixture.Position
                 ],
-                new Vector3(-HalfWidth, 1.2f, ExitZ)),
+                new Vector3(HalfWidth, 1.2f, ExitZ)),
             0.72f);
 
         return;
@@ -447,7 +481,7 @@ internal sealed class Gallery
     public static Vector3 Row => Deck.Materials + new Vector3(0f, StandHeight + 0.28f, RowZ);
 
     /// <summary>The doorway out, in world coordinates.</summary>
-    public static Vector3 Exit => Deck.Materials + new Vector3(-HalfWidth, Deck.Eye, ExitZ);
+    public static Vector3 Exit => Deck.Materials + new Vector3(HalfWidth, Deck.Eye, ExitZ);
 
     /// <summary>The powered door at the entrance, in world coordinates. The soundtrack takes the level of its
     /// motor from how far away this is, rather than from a number somebody chose — the walk is still several

@@ -91,6 +91,43 @@ internal static class Grain
         Fill(size, name, (u, v) => new Vector3(value(u, v)), encode: false);
 
     /// <summary>
+    /// A base-colour map that carries an alpha channel, for anything drawn with
+    /// <see cref="BlendMode.Alpha"/>.
+    ///
+    /// Every other map here is opaque, and that is not an oversight — a wall has no holes in it and a
+    /// roughness map has no use for a fourth channel. What needs this is the one thing in the building
+    /// that has to <i>subtract</i>: interstellar dust is not dark gas, it is gas that is not there and
+    /// something opaque in front of it, and there is no subtractive blend in the control to draw it with.
+    /// A near-black sprite blended over the additive cloud behind it does exactly the same arithmetic and
+    /// needs an alpha to do it with. See <c>Sky.Soot</c>.
+    /// </summary>
+    public static Texture Alpha(int size, string name, Func<float, float, Vector4> shade)
+    {
+        var pixels = new byte[size * size * 4];
+
+        for (var y = 0; y < size; y++)
+        {
+            var v = (y + 0.5f) / size;
+
+            for (var x = 0; x < size; x++)
+            {
+                var c = shade((x + 0.5f) / size, v);
+                var o = (y * size + x) * 4;
+
+                pixels[o] = Byte(c.X, encode: true);
+                pixels[o + 1] = Byte(c.Y, encode: true);
+                pixels[o + 2] = Byte(c.Z, encode: true);
+
+                // Linear, and it is the one channel that must not be encoded: alpha is coverage rather
+                // than a colour, and a gamma curve applied to coverage is a soft edge that has moved.
+                pixels[o + 3] = Byte(c.W, encode: false);
+            }
+        }
+
+        return Texture.FromPixels(pixels, size, size, name, TextureWrap.ClampToEdge);
+    }
+
+    /// <summary>
     /// A tangent-space normal map, derived from a height field by central differences.
     ///
     /// Written rather than authored because a height field is the thing a person can reason about — "the

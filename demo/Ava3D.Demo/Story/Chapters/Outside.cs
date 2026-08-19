@@ -3,7 +3,7 @@ using System.Numerics;
 namespace Ava3D.Demo.Story;
 
 /// <summary>
-/// Chapter 7. He leaves the bench, walks the length of a window, and finds out where he has been.
+/// Chapter 10. He leaves the bench, walks the length of a window, and finds out where he has been.
 ///
 /// Nothing is asked of him in it. Six chapters have been a museum and one was a repair; this one is a man
 /// looking out of a window for forty seconds, and the only thing that happens is that three objects out
@@ -59,9 +59,21 @@ internal sealed class Outside(EngineRoom room, Illuminator gallery, Traffic lane
     /// </summary>
     public const float Handover = 16f;
 
-    /// <summary>When the escort's approach begins and when it has stopped. It comes in from the west
-    /// quarter and settles on the beam, which puts it in front of the planet at the last port.</summary>
-    private const float Approach = 34f;
+    /// <summary>
+    /// When the escort's approach begins and when it has stopped. It comes in from the west quarter and
+    /// settles on the beam, which puts it in front of the planet at the last port.
+    ///
+    /// <b>Eight, and it was thirty-four.</b> The approach is a ramp and a ramp is flat before it opens, so
+    /// thirty-four meant that for the first half of the chapter there was a fourteen-metre ship at full
+    /// burn sitting motionless in the window — visible from the moment he comes through the doorway at
+    /// sixteen, and doing nothing for eighteen seconds. It was reported as a frozen object and it was one.
+    ///
+    /// Starting at eight puts it in motion before he can see it and keeps it moving for the whole of the
+    /// time he can, at nine tenths of a degree of bearing a second, which is slow enough to be a ship a long
+    /// way off and fast enough that it is somewhere different every time he looks back. It still stops at
+    /// fifty-six, two seconds after the caption that says it is going to.
+    /// </summary>
+    private const float Approach = 8f;
 
     private const float Settled = 56f;
 
@@ -212,7 +224,7 @@ internal sealed class Outside(EngineRoom room, Illuminator gallery, Traffic lane
         gallery.Trim(Ramp(seconds, 12f, 4f));
         gallery.Readouts(Preceding + seconds, Ramp(seconds, 12f, 4f));
         gallery.Hologram(Preceding + seconds);
-        gallery.Escort(Ramp(seconds, Approach, Settled - Approach));
+        gallery.Escort(Ramp(seconds, Approach, Settled - Approach), Preceding + seconds);
 
         // Relay Nine on the run in, the star at full, and an empty lane. All three are asserted rather
         // than assumed, and all three are asserted because of the chapter after next: that one moves the

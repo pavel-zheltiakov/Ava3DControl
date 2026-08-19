@@ -74,7 +74,7 @@ internal abstract class Chapter
     /// precision everywhere — which is what the chapter in open space needs and what a chapter with a
     /// doorframe half a metre from the lens must never be given.
     /// </summary>
-    public virtual float Near => 0.05f;
+    public virtual float Near => 0.12f;
 
     /// <summary>
     /// How far this chapter can see, in metres.
@@ -88,7 +88,17 @@ internal abstract class Chapter
     /// that distance squared over the near plane, and the far plane barely enters into it, so moving this
     /// alone does not put the walls of the building into a depth fight.
     /// </summary>
-    public virtual float Far => 220f;
+    public virtual float Far => Indoors;
+
+    /// <summary>
+    /// How far anything indoors ever needs to see, in metres.
+    ///
+    /// Two hundred and twenty for the whole building, which is generous for rooms fourteen metres across
+    /// and is there so a doorway never clips the room behind it. It is named rather than typed because the
+    /// free walk needs the same number — see <c>StoryScene</c>, which puts it back when the visitor is in
+    /// a room with no window in it.
+    /// </summary>
+    public const float Indoors = 220f;
 
     /// <summary>
     /// Puts the building into the state this chapter starts in: which rooms exist, which lights are on.

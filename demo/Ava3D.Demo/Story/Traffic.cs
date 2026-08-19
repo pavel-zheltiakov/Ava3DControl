@@ -157,7 +157,48 @@ internal sealed class Traffic
         // front of a ship you were already looking at — see Ship.Marked. The battle keeps them, because
         // in the battle half the fleet really is a pixel.
         foreach (var ship in _hulls.Concat(_duel))
+        {
             ship.Marked = false;
+
+            // <b>And every glowing surface on them comes back inside range.</b>
+            //
+            // The models are authored for the battle, and in the battle they are right: three kilometres
+            // out a bridge window and a nav lamp are one pixel each, and the only way a pixel reads as a
+            // light is if it clips — an emissive at three times over range is a point of pure colour,
+            // which is exactly what a light at that distance is.
+            //
+            // Out of this window the same ship is two hundred metres away and forty of them across the
+            // frame. A surface you can resolve does not read as bright when it clips, it reads as
+            // <i>flat</i>: the kestrel's bridge glass is at two point eight and came out as a white
+            // rectangle stuck to the hull with no glass in it at all, and the starboard nav lamp did the
+            // same in cyan. That is the note about the window on the ship, and it is a scale problem
+            // rather than a modelling one — so it is fixed here, where the scale is, and not in the file.
+            //
+            // <b>Down to under a third, and not merely to under one.</b> Stopping the clipping was not
+            // enough and the measurement says why: out here the hull beside a lit window comes back at
+            // twenty-four out of two hundred and fifty-five, because the only thing lighting it is a star
+            // four kilometres away. An emissive at nine tenths against that is two hundred and twenty —
+            // ten times its surroundings — and ten times its surroundings is a flat card whether or not it
+            // technically clips. What a lit bridge looks like from two hundred metres is brighter than the
+            // hull and still a surface.
+            //
+            // Only the lamps and the glass. An engine bell is a hole with a fire in it, it is meant to
+            // blow out, and it is driven by Burn.
+            foreach (var skin in ship.Skin)
+            {
+                if (skin.Name is not { } name || !(name.Contains(".lamp") || name.Contains(".glass")))
+                    continue;
+
+                var peak = MathF.Max(
+                    skin.EmissiveColor.X, MathF.Max(skin.EmissiveColor.Y, skin.EmissiveColor.Z));
+
+                if (peak > 0.28f)
+                    skin.EmissiveColor *= 0.28f / peak;
+            }
+
+            // Remember, after, so the rest state the ship goes back to between manoeuvres is this one.
+            ship.Remember();
+        }
 
         // The gunfire, as a light.
         //

@@ -135,12 +135,38 @@ internal sealed class Recorder
     /// derived (620 gave 1064) and it is not trusted afterwards: a toolbar that rewrapped on some other
     /// machine would move it, so the encode crops to shape from whatever actually arrived.
     /// </summary>
+    /// <remarks>
+    /// <c>AVA3D_WINDOW=1200x800</c> asks for a size directly, for the same reason at one remove: any
+    /// before-and-after comparison needs the two pictures to be the same shape, and a window left to the
+    /// platform is not. Measured over a long session of captures on one unchanged machine, the height
+    /// came back 1308, 1310, 1312 and 1314 device pixels on different launches of the same binary — so
+    /// two runs of identical code produce images that cannot even be subtracted, and waiting longer before
+    /// capturing does not help because the variance is in what the window manager hands out rather than in
+    /// the window settling.
+    ///
+    /// A film run keeps its own measured size and ignores this, because that size is chosen to land an
+    /// exact 1920×1080 on disk and is not a preference.
+    /// </remarks>
     public static bool WantsWindow(out double width, out double height)
     {
         width = 960;
         height = 628;
 
-        return Environment.GetEnvironmentVariable("AVA3D_FILM") is { Length: > 0 };
+        if (Environment.GetEnvironmentVariable("AVA3D_FILM") is { Length: > 0 })
+            return true;
+
+        if (Environment.GetEnvironmentVariable("AVA3D_WINDOW") is not { Length: > 0 } asked)
+            return false;
+
+        var parts = asked.Split('x', 'X');
+        if (parts.Length != 2 ||
+            !double.TryParse(parts[0], out var w) || !double.TryParse(parts[1], out var h) ||
+            w <= 0 || h <= 0)
+            return false;
+
+        width = w;
+        height = h;
+        return true;
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ using System.Numerics;
 namespace Ava3D.Demo.Story;
 
 /// <summary>
-/// Chapter 6. Through the bulkhead into the engine room, and a repair: read the manual, then do the job.
+/// Chapter 9. Through the bulkhead into the engine room, and a repair: read the manual, then do the job.
 ///
 /// It is the only chapter in the film in which anything is <i>done</i>. Five rooms and a corridor have been
 /// looked at; this one is worked in. The alarm that has been running since the middle of chapter 4 is what

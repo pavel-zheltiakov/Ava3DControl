@@ -3,7 +3,7 @@ using System.Numerics;
 namespace Ava3D.Demo.Story;
 
 /// <summary>
-/// Chapter 5. Out of the lounge and up twenty-one metres of corridor with seven turning alarms in it, to a
+/// Chapter 8. Out of the lounge and up twenty-one metres of corridor with seven turning alarms in it, to a
 /// door that stays shut.
 ///
 /// It is the first chapter with a reason in it. Everything before this happened because it was the next
@@ -62,6 +62,11 @@ internal sealed class Alarm(ScreenRoom lounge, Corridor corridor) : Chapter
     /// as he goes up — which is what a person does in a corridor that is flashing at them and is not
     /// something a camera aimed down the centre line could ever show.
     ///
+    /// It leans toward each one rather than arriving at it — see <see cref="Corridor.Toward"/>, which is
+    /// where the number is and why. Aimed at the lens itself this walk swung seventy degrees a beacon and
+    /// looked at the ceiling doing it; a glance is a fraction of the way there, and the fraction is what
+    /// turns five head turns into five glances without moving a single waypoint.
+    ///
     /// <b>The five middle waypoints are two point eight metres apart and one point six seconds apart, and
     /// that is not decoration.</b> This walk used to stop at every one of them — see <see cref="Walk.At"/>,
     /// which smoothstepped each segment and therefore brought him to a halt at both ends of all nine.
@@ -76,16 +81,16 @@ internal sealed class Alarm(ScreenRoom lounge, Corridor corridor) : Chapter
 
         // Out of the lounge and through the opening, getting up to speed. The one segment that eases, and it
         // eases at this end only — it hands over to the next at the speed the next is travelling.
-        new Step(1.8f, Corridor.Ahead(1.2f), Corridor.Lens(0)),
+        new Step(1.8f, Corridor.Ahead(1.2f), Corridor.Toward(0)),
 
         // Up the corridor. Each waypoint puts the beacon he is looking at a metre and a fifth in front of
         // him, on the opposite side from the last one, so the flash he is walking into keeps changing
         // shoulder. He never looks at one as an object; there is no time and that is the point of the
         // chapter.
-        new Step(3.4f, Corridor.Ahead(4.0f), Corridor.Lens(1)),
-        new Step(5.0f, Corridor.Ahead(6.8f), Corridor.Lens(2)),
-        new Step(6.6f, Corridor.Ahead(9.6f), Corridor.Lens(3)),
-        new Step(8.2f, Corridor.Ahead(12.4f), Corridor.Lens(4)),
+        new Step(3.4f, Corridor.Ahead(4.0f), Corridor.Toward(1)),
+        new Step(5.0f, Corridor.Ahead(6.8f), Corridor.Toward(2)),
+        new Step(6.6f, Corridor.Ahead(9.6f), Corridor.Toward(3)),
+        new Step(8.2f, Corridor.Ahead(12.4f), Corridor.Toward(4)),
 
         // And the door, from the last third of the run. It has been in shot since the first frame of the
         // chapter — a corridor shows you its own end, which is the one thing no other room in this building
@@ -132,6 +137,59 @@ internal sealed class Alarm(ScreenRoom lounge, Corridor corridor) : Chapter
         corridor.Gate.Open(0f);
     }
 
+    /// <summary>
+    /// How far down the corridor the air goes, and what it goes to.
+    ///
+    /// Named <c>Haze</c> and <c>Gone</c> rather than near and far, because <see cref="Chapter.Near"/> and
+    /// <see cref="Chapter.Far"/> are this chapter's clip planes and mean something else entirely — one
+    /// pair is what the camera can see and the other is what it can see <i>through</i>.
+    ///
+    /// <b>This is the one room in the building with fog in it, and it is the only one where fog is not
+    /// decoration.</b> Everything before it is six to fourteen metres across, and over that distance fog is
+    /// a tint on the far wall; this is twenty-one metres of two-metre passage with seven turning beacons
+    /// down it, and the question the whole chapter asks is how far away the next one is. Air is how a
+    /// picture answers that.
+    ///
+    /// <b>Two metres to twenty, and the first pass said five to forty-five.</b> Those are reasonable
+    /// numbers for a room and wrong for this one, and the reason is worth writing down: fog is a function
+    /// of how far away a thing <i>is</i>, and by the middle of this chapter he has walked most of the
+    /// corridor — the door he is looking at is seven metres off, not twenty-one. At five to forty-five that
+    /// is a fog factor of eight hundredths and the measured difference over a whole frame was fifteen
+    /// levels, which is nothing three times over. At two to twenty the far end of the corridor is fully
+    /// hazed when he steps into it and clear by the time he reaches it, which is what air does and is the
+    /// whole of the effect.
+    /// The colour is a dark warm red — the beacons' own, taken right down — and it is <i>brighter</i> than
+    /// the far end of this corridor was, which is the whole of why it can be seen at all. Fog against a
+    /// black room is arithmetic nobody can look at: it darkens what is already dark and nothing happens.
+    /// What air does in a passage like this is lift the far end off black, and the amount it lifts it by is
+    /// the distance.
+    ///
+    /// It is also why <see cref="Hall.Air"/> takes the colour that comes out rather than the one that goes
+    /// in — see <see cref="Scene.FogColor"/>, which mixes after the tone map for exactly that reason. That
+    /// is worth knowing before choosing the number: a fog colour of a tenth is a tenth <i>of what you see</i>
+    /// and not a tenth of a linear value, so the first pass here was five hundredths, arrived at by
+    /// reasoning about light, and it came out as fifteen levels of difference across a whole frame. A
+    /// quarter is what a haze looks like.
+    ///
+    /// It also does something no lamp in this film can: the beams now have a medium. Seven shafts of
+    /// nested cones going round a corridor with clear air in them are seven pieces of coloured glass; the
+    /// same shafts with a third of a fog between him and the far one are light going through something.
+    /// </summary>
+    private const float Haze = 2f;
+
+    private const float Gone = 20f;
+
+    /// <summary>
+    /// What the camera stops down to, and how long it takes.
+    ///
+    /// He comes out of a lit lounge into an unlit corridor, and an eye does that in about two seconds. It
+    /// is <see cref="Scene.Exposure"/> rather than a lamp because it is not a lamp: nothing in either room
+    /// changes brightness, and what changes is the camera. Eighty-two hundredths is a stop and a third —
+    /// enough that the first second of the corridor is darker than the last second of the lounge, which is
+    /// what walking into a dark room is, and not so much that the beacons stop reading.
+    /// </summary>
+    private const float Stop = 0.82f;
+
     public override void Update(Hall hall, float seconds)
     {
         // The visitor's own position, taken from the walk rather than tracked. The chapter owns the walk
@@ -148,6 +206,12 @@ internal sealed class Alarm(ScreenRoom lounge, Corridor corridor) : Chapter
         // walks up to and does not go through, and the last caption is a man noticing that. Chapter 6
         // ramps it open a second and a half in; see Repair.Update.
         corridor.Gate.Open(0f);
+
+        // The air, and the stop closing over the first two seconds of it. Both are asserted every frame
+        // rather than once in Enter, because both have to be right at any second the contents can jump
+        // into — and because Hall.Clear runs on the way in, so a chapter that set its air once would be a
+        // chapter whose air was cleared and never asked for again.
+        hall.Air(Haze, Gone, new Vector3(0.26f, 0.115f, 0.085f), 1f - (1f - Stop) * Ramp(seconds, 0f, 2f));
 
         hall.Scene.Invalidate();
     }

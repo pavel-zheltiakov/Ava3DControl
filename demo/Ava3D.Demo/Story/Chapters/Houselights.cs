@@ -19,13 +19,26 @@ namespace Ava3D.Demo.Story;
 internal sealed class Houselights(Antechamber room, Passage passage) : Chapter
 {
     /// <summary>When the lamp over the plinth hands its slot to the one in the passage.</summary>
-    public const float Reveal = 26f;
+    public const float Reveal = 21f;
 
     private int _bank = -1;
 
     public override string Title => "Houselights";
 
-    public override float Duration => 35f;
+    /// <summary>
+    /// How long it runs. <b>Twenty-eight, and it was thirty-five.</b>
+    ///
+    /// The reveal is not what was long — the three banks arrive in the first six seconds and that is the
+    /// shot. What was long is everything after it: a turn on the spot spread over nineteen seconds and then
+    /// four and a half metres to the door at between a fifth and two fifths of a metre a second, which is
+    /// not a man walking across a room, it is a man being winched across one. Nothing in the picture said
+    /// so, because there is nothing in an empty room to measure a crawl against.
+    ///
+    /// The whole chapter is scaled by four fifths. Every ramp, every hand-over and every caption keeps the
+    /// share of the chapter it had; what changes is that the chapter is shorter. Together with
+    /// <see cref="Dark"/> that takes the first room from a minute to forty-four seconds.
+    /// </summary>
+    public override float Duration => 28f;
 
     /// <summary>
     /// A slow turn on the spot while the light arrives — the lamps are behind and above him, so what he
@@ -49,19 +62,19 @@ internal sealed class Houselights(Antechamber room, Passage passage) : Chapter
     /// </summary>
     public override Walk Walk { get; } = new(
         new Step(0f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 1.20f, 0f)),
-        new Step(6f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(-2.6f, 1.5f, 1.2f)),
-        new Step(13f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(2.6f, 1.6f, 1.4f)),
-        new Step(19f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 2.6f, 2.2f)),
+        new Step(5f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(-2.6f, 1.5f, 1.2f)),
+        new Step(11f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(2.6f, 1.6f, 1.4f)),
+        new Step(16f, new Vector3(0f, Deck.Eye, -2.8f), new Vector3(0f, 2.6f, 2.2f)),
 
         // He is looking at the door from here on and his feet do the avoiding, which is what a person
         // does — the head goes where it is going and the body steps round what is in the way.
-        new Step(24f, new Vector3(0.30f, Deck.Eye, -1.75f), new Vector3(0f, 1.5f, 3f)),
-        new Step(29f, new Vector3(1.00f, Deck.Eye, -0.50f), new Vector3(0f, 1.5f, 3.4f)),
-        new Step(32f, new Vector3(1.00f, Deck.Eye, 0.55f), new Vector3(0f, 1.5f, 3.9f)),
+        new Step(19.5f, new Vector3(0.30f, Deck.Eye, -1.75f), new Vector3(0f, 1.5f, 3f)),
+        new Step(23f, new Vector3(1.00f, Deck.Eye, -0.50f), new Vector3(0f, 1.5f, 3.4f)),
+        new Step(25.5f, new Vector3(1.00f, Deck.Eye, 0.55f), new Vector3(0f, 1.5f, 3.9f)),
 
         // And back onto the centre line, because chapter 2 starts exactly here and the two are consecutive
         // seconds of one shot.
-        new Step(35f, new Vector3(0f, Deck.Eye, 1.4f), new Vector3(0f, 1.5f, 4.5f)));
+        new Step(28f, new Vector3(0f, Deck.Eye, 1.4f), new Vector3(0f, 1.5f, 4.5f)));
 
     public override void Enter(Hall hall)
     {
@@ -126,8 +139,8 @@ internal sealed class Houselights(Antechamber room, Passage passage) : Chapter
         < 1f => null,
         // Rule one of six, and the whole chapter is about lights so that the one light that disobeys it
         // has somewhere to be noticed. See Dark.Caption for what the six are doing.
-        < 12f => "Rule one. The main lights come on in the order someone wired them",
-        < 24f => "All except that one over the crate. That one is always on",
+        < 10f => "Rule one. The main lights come on in the order someone wired them",
+        < 19f => "All except that one over the crate. That one is always on",
         _ => "The man before me left it on. I wrote a report. Nobody closed the report"
     };
 }

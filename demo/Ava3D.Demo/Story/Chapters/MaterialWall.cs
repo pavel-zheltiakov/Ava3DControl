@@ -19,7 +19,7 @@ namespace Ava3D.Demo.Story;
 /// what it is standing in. See <see cref="Probe"/> for what that costs, which is one traced image and no
 /// library feature at all.
 /// </summary>
-internal sealed class MaterialWall(Rotunda rotunda, Gallery gallery, ScreenRoom lounge) : Chapter
+internal sealed class MaterialWall(Rotunda rotunda, Gallery gallery, Studio studio) : Chapter
 {
     /// <summary>When the powered door starts to part. Public because the soundtrack puts the motor on it —
     /// it is the first powered door in the film and it opened in silence for a long time.</summary>
@@ -81,8 +81,15 @@ internal sealed class MaterialWall(Rotunda rotunda, Gallery gallery, ScreenRoom 
         // entrance it is a doorway seen almost edge-on from thirteen metres, which is a slot four
         // centimetres wide behind a reveal — invisible without being hidden by anything. From here it is
         // the only thing in front of him.
-        new Step(52f, Gallery.At(3.9f, -1f), Gallery.Exit),
-        new Step(55f, ScreenRoom.Entrance + new Vector3(-0.9f, 0f, 0f), ScreenRoom.Sitting));
+        // It is in the east wall, and it used to be in the west. See Gallery.ExitZ: the two rooms between
+        // this one and the lounge had to go somewhere, and the only empty deck in the building is on the
+        // other side of the chart.
+        new Step(52f, Gallery.At(3.9f, 1f), Gallery.Exit),
+
+        // Through it, and aimed east-south-east rather than straight down the studio. That is where the
+        // cel-shaded row is, and it is the only thing in the next room this frame is allowed to have in
+        // it: the palette is on the wall behind him and stays there until chapter 4 turns round.
+        new Step(55f, Studio.At(0f, -2.7f), Studio.At(-1.2f, 3f)));
 
     public override void Enter(Hall hall)
     {
@@ -104,10 +111,14 @@ internal sealed class MaterialWall(Rotunda rotunda, Gallery gallery, ScreenRoom 
         rotunda.Lanterns[0].Dim(0f);
         rotunda.Lanterns[1].Dim(0f);
 
-        // And the lounge's alcove off. This chapter holds that room open through its doorway for the whole
-        // of its fifty-five seconds without driving anything in it, and the alcove's dots are the one thing
-        // in the building that stays lit on its own — see ScreenRoom.Blackout for what that looked like.
-        lounge.Blackout();
+        // And the studio, standing dark on the far side of the exit for the whole of this chapter. A room
+        // that is not lit has to have its bulbs told as well as its lights, and this one has a lamp that
+        // moves: put back where it starts, because this chapter seeked into out of chapter 4 would
+        // otherwise open on a fitting halfway down its rail.
+        foreach (var lamp in studio.All)
+            lamp.Dim(0f);
+
+        studio.Slide(-Studio.Travel);
     }
 
     public override void Update(Hall hall, float seconds)
@@ -177,7 +188,7 @@ internal sealed class MaterialWall(Rotunda rotunda, Gallery gallery, ScreenRoom 
     /// rotunda used to be dropped at the doorstep, which was right when that door was a hole and became
     /// wrong the moment it became a powered door somebody might want to look back at.
     ///
-    /// The screen room is up for the same reason and one better one besides. A doorway with nothing behind
+    /// The studio is up for the same reason and one better one besides. A doorway with nothing behind
     /// it renders as the background, and from the entrance this one is a hard black slot forty centimetres
     /// wide at the far end of a lit corridor, which is the first thing the eye goes to in a frame that is
     /// meant to be about a wall of materials.
@@ -198,21 +209,21 @@ internal sealed class MaterialWall(Rotunda rotunda, Gallery gallery, ScreenRoom 
         switch (bank)
         {
             case 0:
-                hall.Occupy(Deck.RotundaRoom, Deck.MaterialsRoom, Deck.ScreensRoom);
+                hall.Occupy(Deck.RotundaRoom, Deck.MaterialsRoom, Deck.StudioRoom);
                 hall.Use(
                     rotunda.Centre.Light, rotunda.Lanterns[2].Light,
                     gallery.Entry.Light, gallery.OverChart.Light);
                 break;
 
             case 1:
-                hall.Occupy(Deck.RotundaRoom, Deck.MaterialsRoom, Deck.ScreensRoom);
+                hall.Occupy(Deck.RotundaRoom, Deck.MaterialsRoom, Deck.StudioRoom);
                 hall.Use(
                     gallery.Entry.Light, gallery.OverChart.Light,
                     gallery.OverCase.Light, gallery.OverDrum.Light);
                 break;
 
             default:
-                hall.Occupy(Deck.RotundaRoom, Deck.MaterialsRoom, Deck.ScreensRoom);
+                hall.Occupy(Deck.RotundaRoom, Deck.MaterialsRoom, Deck.StudioRoom);
                 hall.Use(
                     gallery.OverCase.Light, gallery.OverDrum.Light,
                     gallery.OverRow.Light, gallery.ByDoor.Light);

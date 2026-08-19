@@ -237,6 +237,9 @@ internal sealed class Soundtrack : IDisposable
             case Houselights: Lamps(into, from, jumped); break;
             case Forms: Rotating(into); break;
             case MaterialWall: Plates(into, from, jumped); break;
+            case Ink: Painted(into); break;
+            case Patterns: Workshop(into); break;
+            case Stars: Dome(into); break;
             case Screens lounge: Lounge(lounge, into, from, jumped); break;
             case Alarm: Amber(into, jumped); break;
             case Repair: Machines(into, from, jumped); break;
@@ -363,7 +366,65 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 4. Four cabinets talking to an empty room, a light show with a tempo, and — under both of
+    /// Chapter 4. The quietest room since the antechamber, and it gets quieter.
+    ///
+    /// A studio has nothing in it that runs. The gallery had a powered door and a turning drum; this has
+    /// two stone stands, a rail with a lamp on it and four fittings, and none of those is a sound. So the
+    /// bed comes down as the room does — the ballast goes with the lamps at the douse, which is the one
+    /// place in the film where a room's own hum can be taken away without anybody wondering what happened
+    /// to it, because they just watched somebody take the light away too.
+    ///
+    /// The air stays. The building keeps breathing whether or not there is a light on in this part of it,
+    /// which is the same thing the lounge's blackout says and is most of why the last ten seconds of this
+    /// chapter read as a dark room rather than as a stopped film.
+    /// </summary>
+    private void Painted(float into) =>
+        Beds(air: 0.15f, ballast: 0.13f * (1f - 0.8f * Ramp(into, 33f, 4f)));
+
+    /// <summary>
+    /// Chapter 5. A workshop, which is the first room since the rotunda with more than one thing turning
+    /// in it — and none of them audible either.
+    ///
+    /// Level with the gallery and no lower, because the room is twice as wide and a wide room with a low
+    /// bed reads as an outdoor one. It comes down over the last ten seconds with the walk into the link,
+    /// which is the corridor's own level arriving early: the two rooms are one continuous shot and the
+    /// bed has to be at the corridor's number by the frame the corridor is what you are looking at.
+    /// </summary>
+    private void Workshop(float into) =>
+        Beds(air: 0.16f - 0.03f * Ramp(into, 58f, 10f), ballast: 0.15f - 0.04f * Ramp(into, 58f, 10f));
+
+    /// <summary>
+    /// Chapter 6. A room getting quieter, which is the only chapter in the film where that is the event.
+    ///
+    /// Everything else here is a bed being added to. This one takes two away and puts a third in their
+    /// place: the air comes down by two fifths as the house lights go, the ballast goes with the fittings
+    /// that make it, and what is left is a fan and a coil — <see cref="Cues.Projector"/>, which is the
+    /// gallery's plot table two rooms further on and is the same machine. A planetarium projector is a
+    /// small motor turning something heavy in a dark room, and so is a chart table; there was no argument
+    /// for building a second one.
+    ///
+    /// <b>The ramp is <c>Stars</c>'s own.</b> It reads the same two constants the chapter's lights read, so
+    /// the hum stops on the frame the coves stop rather than a second either side — and a ballast still
+    /// buzzing over a dark dome is the one sound that would say "a room with the lights off" at exactly the
+    /// moment the picture has stopped being a room at all.
+    /// </summary>
+    private void Dome(float into)
+    {
+        var down = Ramp(into, Stars.Curtain - 3f, 5.5f)
+                   * (1f - Ramp(into, Stars.Curtain + Sky.Watched, 2.5f));
+
+        // The ballast goes all the way out with the coves, which is the picture's own change and is the
+        // whole of what this method is doing: a room with no light in it has no hum in it either, because
+        // the hum was the lamps. What is left underneath is the air, and then the projector, which is the
+        // only thing running.
+        Beds(
+            air: 0.15f - 0.07f * down,
+            ballast: 0.14f * (1f - down),
+            plot: 0.062f * down);
+    }
+
+    /// <summary>
+    /// Chapter 7. Four cabinets talking to an empty room, a light show with a tempo, and — under both of
     /// them, from the moment the lamps go down — something turning at the end of a corridor.
     ///
     /// The alarm arrives here rather than in the chapter named after it, and thirty seconds before the
@@ -396,7 +457,7 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 5. Twenty-one metres of corridor with the thing he has been half hearing at the end of it.
+    /// Chapter 8. Twenty-one metres of corridor with the thing he has been half hearing at the end of it.
     ///
     /// Same clock as the chapter before — <c>Screens.Length</c> ahead — so the alarm does not restart, skip
     /// or change phase at the join. It is the one number in the film that has to be kept in step by hand,
@@ -413,7 +474,7 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 6. The biggest room there is, and it is full of machines nobody is looking after.
+    /// Chapter 9. The biggest room there is, and it is full of machines nobody is looking after.
     ///
     /// Two rates beating against each other, and no third one, because the middle machine is out — see
     /// <c>Cues.BuildMachines</c>. The bed comes up as the door opens rather than at the top of the chapter,
@@ -455,7 +516,7 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 7. The walk to the window, and the sound going with it.
+    /// Chapter 10. The walk to the window, and the sound going with it.
     ///
     /// This is the reveal, and the reveal is a subtraction. Everything in the bank so far has been chosen
     /// so that a large building at night would make it — air in a duct, a contactor, a motor, a plant room
@@ -578,7 +639,7 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 8. He has stopped being the camera, so the sound stops being his ears.
+    /// Chapter 11. He has stopped being the camera, so the sound stops being his ears.
     ///
     /// Every other chapter is what a man standing in a room can hear. This one is a film about the thing he
     /// is standing in, and giving it room tone would be claiming somebody is out there listening. What it
@@ -590,7 +651,7 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 9. Inside somebody else's building, and then not.
+    /// Chapter 12. Inside somebody else's building, and then not.
     ///
     /// <b>It is chapter 7's trick run backwards.</b> That chapter revealed a ship by taking a building away;
     /// this one opens with a building the ship is <i>parked in</i> — seventy metres of docking bay with a
@@ -748,7 +809,11 @@ internal sealed class Soundtrack : IDisposable
             // the same two expressions and is the only reward that room offers for crossing it.
             pad: 0.028f * Falloff(Illuminator.OffGlass(eye), 3f) * Through(Deck.IlluminatorRoom),
             draught: 0.024f * Falloff(Illuminator.OffGlass(eye), 2.4f) * Through(Deck.IlluminatorRoom),
-            plot: 0.026f * Near(eye, Illuminator.Table, 2.2f) * Through(Deck.IlluminatorRoom),
+            // Two projectors, one cue. The gallery's chart table is a fan and a coil measured by how close
+            // he is standing to it; the dome's is the same machine at a fixed level, because a planetarium
+            // projector is in the middle of the room and there is nowhere in that room to get away from it.
+            plot: 0.026f * Near(eye, Illuminator.Table, 2.2f) * Through(Deck.IlluminatorRoom)
+                  + 0.050f * Through(Deck.PlanetariumRoom),
             console: 0.034f * Near(eye, Illuminator.Table, 6f) * Through(Deck.IlluminatorRoom),
 
             // And the ship, which is the one voice here that is not a distance to anything. A shaft the size
@@ -893,6 +958,24 @@ internal sealed class Soundtrack : IDisposable
         Deck.ThresholdRoom => (0.19f, 0.10f),
         Deck.RotundaRoom => (0.17f, 0.15f),
         Deck.MaterialsRoom => (0.16f, 0.15f),
+
+        // The studio, the pattern shop and the link between them. They descend with everything else — see
+        // the remarks above — and the studio is the one number in this table that is not the room's size.
+        // It is a room whose whole beat is somebody taking the light out of it, and the free walk hands it
+        // over lit; a hair under the gallery is what says "this is the quiet end of the floor" without
+        // saying it twice.
+        Deck.StudioRoom => (0.15f, 0.13f),
+        Deck.PatternRoom => (0.16f, 0.15f),
+
+        // The planetarium, and the one number in this table that breaks the descent on purpose. Every other
+        // room here is as quiet as its size and its machinery make it; an auditorium is as quiet as it was
+        // built to be, because that is what an auditorium is. A carpeted floor, a domed ceiling and no hard
+        // parallel surfaces anywhere is a room with the reverberation taken out of it, and the number has
+        // to say so or the sound will be describing a different room from the picture.
+        Deck.PlanetariumRoom => (0.085f, 0.05f),
+
+        Deck.LinkRoom => (0.13f, 0.10f),
+
         Deck.ScreensRoom => (0.14f, 0.14f),
         Deck.CorridorRoom => (0.10f, 0.09f),
 

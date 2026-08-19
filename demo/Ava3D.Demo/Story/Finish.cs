@@ -16,6 +16,14 @@ namespace Ava3D.Demo.Story;
 /// One axis, five stops, and every room states its own at the top of its constructor. That is the whole
 /// point of it being a parameter: the ladder is legible in five lines spread across five files, and no
 /// room can drift up or down it by accident.
+///
+/// <b>The ladder is climbed by the first four rooms and then it stops.</b> The studio, the pattern shop
+/// and the link between them all stand on the gallery's rung, and none of them is a mistake: a ladder with
+/// five stops on it has nowhere to put a sixth room, and a room that climbed past the lounge would take
+/// the top off the one place in the film that is furnished rather than lit. What those three do instead is
+/// spend the rung differently — the studio paints its plaster out because both its exhibits are read as
+/// silhouettes, and the pattern shop lays boards wall to wall because it is a workshop. Same maps, other
+/// decisions.
 /// </summary>
 internal enum Grade
 {
@@ -1116,6 +1124,135 @@ internal static class Finish
         Name = "rug"
     };
 
+    // ---- the planetarium ----------------------------------------------------------------------------
+    //
+    // Three surfaces that exist nowhere else in the building, and they are here rather than in the room
+    // because they are the room. A planetarium is a dark box with one bright thing in it, and the whole of
+    // what makes that work is that every surface which is not the dome gives light back grudgingly and the
+    // dome gives it back evenly. That is a materials problem before it is a lighting one.
+
+    /// <summary>
+    /// The dome: perforated white sheet on a frame, in gores.
+    ///
+    /// <b>It is the only surface in the building whose job is to have no character at all.</b> Everything
+    /// else here is trying to say what it is made of; this is trying to be a screen, and a screen with a
+    /// story in its own surface is a screen competing with what is on it. So the colour map is flat to
+    /// within a per cent, all the relief is a millimetre and a half, and the only thing that varies at any
+    /// scale a person can see is where two panels meet.
+    ///
+    /// The perforations are not decoration and they are not for show either. A dome nine and a half metres
+    /// across is a whispering gallery — it focuses every sound in the room back at the middle of it, which
+    /// is where the seats are — and the answer every real one uses is to punch a million two-millimetre
+    /// holes in it and hang absorbent behind. They read here as the faintest possible tooth, which is
+    /// exactly what they look like from four metres, and they are the reason the light off this surface is
+    /// soft rather than sheeny.
+    ///
+    /// <b>It carries occlusion, which is the map plaster never gets.</b> A hole is a place no light in the
+    /// room reaches into, and there is no shadowing here to work that out — see <see cref="Panelling"/>,
+    /// which makes the same argument about a gutter between two plates.
+    /// </summary>
+    public static Material Screen() => new()
+    {
+        BaseColor = new Vector4(0.90f, 0.90f, 0.89f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = ScreenColour.Value,
+        MetallicRoughnessTexture = ScreenRough.Value,
+        NormalTexture = ScreenBumps.Value,
+        OcclusionTexture = ScreenMask.Value,
+        OcclusionStrength = 0.75f,
+
+        // Half strength, and the dome is the surface in this building that most needs it. A cap seen from
+        // underneath is read at every angle at once — square on overhead and edge on at the rim — and a
+        // relief of a millimetre and a half read at eighty degrees is a millimetre and a half of shimmer
+        // all the way round the springing.
+        NormalScale = 0.45f,
+        Name = "screen"
+    };
+
+    /// <summary>
+    /// The walls: fabric over fluted absorbent, which is what the inside of every dark room that people
+    /// listen in is lined with.
+    ///
+    /// Dark on purpose and dark by a lot — a tenth, where the building's plaster is a third. A wall that
+    /// gives back a third of what falls on it is a wall that fills a dome with its own bounce, and the one
+    /// thing this room cannot afford is light arriving at the screen from the room. It is also the only
+    /// reason the four photographs work: a print at a third of a metre from a black wall under one cove is
+    /// the brightest thing in its own quarter of the room.
+    ///
+    /// The flutes are a hundred millimetres apart and twelve deep, which is a real acoustic profile and,
+    /// incidentally, the one relief in the building deep enough to read as shape rather than as tooth. On a
+    /// twelve-sided room lit by five coves in the cornice, what that buys is a wall that shows you which
+    /// way it is facing.
+    /// </summary>
+    public static Material Acoustic() => new()
+    {
+        BaseColor = new Vector4(0.105f, 0.108f, 0.128f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = AcousticColour.Value,
+        MetallicRoughnessTexture = AcousticRough.Value,
+        NormalTexture = AcousticBumps.Value,
+        OcclusionTexture = AcousticMask.Value,
+        OcclusionStrength = 0.8f,
+
+        // <b>Turned down, and this is the surface in the building that most needed it.</b> A round room is
+        // read at every angle at once — square on across the floor and edge on where the wall curves away —
+        // and the flutes are the deepest relief anywhere here. At full strength the far arc came out as a
+        // band of crawling stripes above the doorway, which is a normal map beating against the pixel grid
+        // and is the same fault reported twice already about other rooms. Wider flutes and a gentler tilt
+        // both help and neither is a compromise: a hundred and sixty millimetres is as real an acoustic
+        // profile as a hundred, and the relief that reads from three metres is not the relief that reads
+        // from thirty centimetres.
+        NormalScale = 0.6f,
+        Name = "acoustic"
+    };
+
+    /// <summary>
+    /// Seat cloth: a wool twill with a nap, for the five chairs under the dome.
+    ///
+    /// <see cref="Cloth"/> is a colour map and nothing else, and its own note explains why — a weave a
+    /// centimetre across seen from three metres is below a pixel, and what sells cloth at that distance is
+    /// only that it is not one flat colour. That argument is exactly right for a bean bag across a lounge
+    /// and exactly wrong here: the film sits <i>in</i> one of these chairs and the free walk stands over
+    /// them, so the nearest seat back is six hundred millimetres from the camera and every one of these is
+    /// looked at from arm's length. At that distance a flat colour is moulded plastic, and the note about
+    /// the chairs looking bad is that reading, correctly made.
+    ///
+    /// So this is the one soft surface in the building with relief on it: a twill at four millimetres and
+    /// a nap under it, drawn at <see cref="Close"/> because it is furniture.
+    /// </summary>
+    public static Material Seating(float r, float g, float b) => new()
+    {
+        BaseColor = new Vector4(r, g, b, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = TwillColour.Value,
+        MetallicRoughnessTexture = TwillRough.Value,
+        NormalTexture = TwillBumps.Value,
+        Name = "seating"
+    };
+
+    /// <summary>
+    /// The floor: contract carpet, deep, dark and laid wall to wall.
+    ///
+    /// It is <see cref="Pile"/>'s job done for a room rather than for a rug, and the difference is the
+    /// relief. The lounge's rug is two metres of soft thing seen from a chair and a colour map is enough
+    /// of it; this is forty square metres walked across at eye height in a room whose lamps are all at
+    /// head height and aimed sideways, which is the exact arrangement that makes a floor either read as
+    /// carpet or read as paper. Three millimetres of pile is what does it.
+    /// </summary>
+    public static Material Carpet() => new()
+    {
+        BaseColor = new Vector4(0.108f, 0.101f, 0.118f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = CarpetColour.Value,
+        MetallicRoughnessTexture = CarpetRough.Value,
+        NormalTexture = CarpetBumps.Value,
+        Name = "carpet"
+    };
+
     // ---- the fields the maps above are drawn from ----------------------------------------------------
 
     /// <summary>Plaster: a coarse undulation with a fine stipple over it, both tileable.</summary>
@@ -1243,4 +1380,165 @@ internal static class Finish
 
         return (0.5f + 0.5f * warp * weft) * 0.82f + Grain.Fbm(u, v, 34, 97, 2) * 0.18f;
     }
+
+    // ---- the planetarium's fields -------------------------------------------------------------------
+
+    /// <summary>
+    /// One tile of the dome: how much of a perforation is under this point, and how near it is to a joint
+    /// between two panels.
+    ///
+    /// The tile is one panel, and the room scales the image so that one panel is about two metres of real
+    /// dome — see <c>Planetarium</c>, which sets <see cref="Material.UvScale"/> on a cap whose own
+    /// coordinates are polar and therefore useless as they stand.
+    /// </summary>
+    private static (float Hole, float Joint) Punched(float u, float v)
+    {
+        const float pitch = 1f / 22f;
+
+        var cu = Grain.Cell(u, pitch) - 0.5f;
+        var cv = Grain.Cell(v, pitch) - 0.5f;
+
+        var r = MathF.Sqrt(cu * cu + cv * cv);
+        var hole = 1f - Grain.Step(0.13f, 0.21f, r);
+
+        // The panel edge, on both axes, and it is the image's own edge — so the seam is where two copies of
+        // this tile meet and there is exactly one of them per panel however the room scales it.
+        var joint = 1f - Grain.Band(u, 0.010f, 0.990f, 0.006f) * Grain.Band(v, 0.010f, 0.990f, 0.006f);
+
+        return (hole, joint);
+    }
+
+    /// <summary>The height field the dome's relief comes off: holes a millimetre and a half, joints four.</summary>
+    private static float Punch(float u, float v)
+    {
+        var (hole, joint) = Punched(u, v);
+
+        return -(hole * 0.38f + joint);
+    }
+
+    private static readonly Lazy<Texture> ScreenColour = new(() =>
+        Grain.Colour(Detailed, "screen.colour", (u, v) =>
+        {
+            var (hole, joint) = Punched(u, v);
+
+            // Within a per cent of flat, and the per cent is the point. A screen that is visibly mottled is
+            // a screen somebody will read as a wall.
+            var tone = 0.985f + 0.015f * Grain.Fbm(u, v, 7, 61, 3);
+
+            return new Vector3(tone - 0.30f * hole - 0.22f * joint);
+        }));
+
+    private static readonly Lazy<Texture> ScreenRough = new(() =>
+        Grain.Rough(Detailed, "screen.rough", (u, v) =>
+        {
+            var (hole, _) = Punched(u, v);
+
+            return new Vector2(0.90f + 0.08f * Grain.Fbm(u, v, 15, 67, 2) + 0.05f * hole, 0f);
+        }));
+
+    private static readonly Lazy<Texture> ScreenBumps = new(() =>
+        Grain.Bumps(Detailed, "screen.bumps", Punch, 0.004f, 2f));
+
+    private static readonly Lazy<Texture> ScreenMask = new(() =>
+        Grain.Mask(Detailed, "screen.mask", (u, v) =>
+        {
+            var (hole, joint) = Punched(u, v);
+
+            return 1f - 0.75f * hole - 0.45f * joint;
+        }));
+
+    /// <summary>One flute of the wall lining, plus the weave of the cloth stretched over it.</summary>
+    private static float Fluted(float u, float v)
+    {
+        // Ten to the tile, which is a hundred and sixty millimetres at Pitch, and it was sixteen. A flute
+        // is a half-round, so the profile is a cosine and not a triangle — and the cloth over it does not
+        // reach the bottom of the gap, which is what the fractional power is doing: the crests are broad
+        // and the valleys are narrow.
+        var flute = 0.5f + 0.5f * MathF.Cos(u * MathF.Tau * 10f);
+
+        return MathF.Pow(flute, 0.55f) * 0.9f + Weave(u, v) * 0.1f;
+    }
+
+    private static readonly Lazy<Texture> AcousticColour = new(() =>
+        Grain.Colour(Detailed, "acoustic.colour", (u, v) =>
+        {
+            var lit = 0.72f + 0.36f * Fluted(u, v);
+            var tone = 0.92f + 0.16f * Grain.Fbm(u, v, 4, 83, 3);
+
+            return new Vector3(lit * tone, lit * tone * 1.02f, lit * tone * 1.16f);
+        }));
+
+    private static readonly Lazy<Texture> AcousticRough = new(() =>
+        Grain.Rough(Detailed, "acoustic.rough", (u, v) =>
+            new Vector2(0.90f + 0.08f * Weave(u, v), 0f)));
+
+    private static readonly Lazy<Texture> AcousticBumps = new(() =>
+        Grain.Bumps(Detailed, "acoustic.bumps", Fluted, 0.010f, Pitch));
+
+    private static readonly Lazy<Texture> AcousticMask = new(() =>
+        Grain.Mask(Detailed, "acoustic.mask", (u, v) => 0.45f + 0.55f * Fluted(u, v)));
+
+    /// <summary>
+    /// One tile of seat cloth: a twill, which is a weave whose floats step sideways one thread a row and
+    /// is therefore a diagonal rather than a grid.
+    ///
+    /// A plain weave is a checkerboard and reads as gingham at any scale you can see it. Every piece of
+    /// contract seating fabric ever specified is a twill or a boucle for that reason, and a twill is one
+    /// line: the row's offset is a function of the column.
+    /// </summary>
+    private static float Twill(float u, float v)
+    {
+        const float pitch = 1f / 46f;
+
+        var row = MathF.Floor(v / pitch);
+        var thread = Grain.Cell(u + row * pitch * 0.5f, pitch);
+        var course = Grain.Cell(v, pitch);
+
+        // Each thread is a half-round, so the profile across it is a cosine; the course is a shallower one,
+        // because a woven face shows the warp much more than the weft.
+        var weave = MathF.Pow(MathF.Sin(thread * MathF.PI), 0.7f) * 0.72f
+                    + MathF.Pow(MathF.Sin(course * MathF.PI), 0.7f) * 0.28f;
+
+        // And the nap, which is what makes wool wool: loose fibre standing off the weave, finer than it
+        // and not aligned with it at all.
+        return weave * 0.82f + Grain.Fbm(u, v, 96, 401, 3) * 0.18f;
+    }
+
+    private static readonly Lazy<Texture> TwillColour = new(() =>
+        Grain.Colour(Detailed, "twill.colour", (u, v) =>
+        {
+            var face = 0.76f + 0.42f * Twill(u, v);
+
+            // Two tones in the yarn, a shade apart, which is what a woven cloth is made of and is most of
+            // what stops a close-up reading as painted card.
+            var dye = 0.94f + 0.12f * Grain.Fbm(u, v, 23, 409, 2);
+
+            return new Vector3(face * dye, face * dye * 0.99f, face * dye * 1.02f);
+        }));
+
+    private static readonly Lazy<Texture> TwillRough = new(() =>
+        Grain.Rough(Detailed, "twill.rough", (u, v) =>
+            new Vector2(0.90f + 0.10f * (1f - Twill(u, v)), 0f)));
+
+    private static readonly Lazy<Texture> TwillBumps = new(() =>
+        Grain.Bumps(Detailed, "twill.bumps", Twill, 0.004f, Close));
+
+    /// <summary>Carpet: two frequencies of fibre, one for the tuft and one for the pile inside it.</summary>
+    private static float Tufted(float u, float v) =>
+        Grain.Fbm(u, v, 26, 137, 3) * 0.55f + Grain.Fbm(u, v, 74, 149, 2) * 0.45f;
+
+    private static readonly Lazy<Texture> CarpetColour = new(() =>
+        Grain.Colour(Detailed, "carpet.colour", (u, v) =>
+        {
+            var fibre = 0.74f + 0.44f * Tufted(u, v);
+
+            return new Vector3(fibre, fibre * 0.97f, fibre * 1.04f);
+        }));
+
+    private static readonly Lazy<Texture> CarpetRough = new(() =>
+        Grain.Rough(Detailed, "carpet.rough", (u, v) =>
+            new Vector2(0.94f + 0.06f * Tufted(u, v), 0f)));
+
+    private static readonly Lazy<Texture> CarpetBumps = new(() =>
+        Grain.Bumps(Detailed, "carpet.bumps", Tufted, 0.003f, Pitch));
 }

@@ -223,6 +223,48 @@ internal sealed class EngineRoom
 
     private readonly Material[] _rack = new Material[6];
     private readonly Material[] _coolant = new Material[4];
+
+    /// <summary>
+    /// The steam off the housings: ten billboards low against the deck, drifting north and in toward the
+    /// middle of the room.
+    ///
+    /// <b>They are the reason this room reads as a plant room rather than as a hall with cylinders in
+    /// it.</b> Everything else in here that says "running" is a light somebody could switch off — the
+    /// racks ticking, the channels pulsing, the strip under the gantry — and none of it is <i>in the
+    /// air</i>. A machine hall has weather in it.
+    ///
+    /// Each is a <see cref="SpriteNode"/> with <see cref="SpriteNode.SoftDistance"/> set, which is what
+    /// stops a flat card showing its own edge where it crosses the deck plate and the foot of a housing.
+    ///
+    /// <b>They are west of the housings and they used to be beside them.</b> Between the barrels and the
+    /// east wall is a metre and a half of floor that nothing in the film ever looks at: the walk comes up
+    /// the middle at x nought and turns east at the bench, so from every frame in this chapter a puff over
+    /// there is a puff behind a two-and-a-half-metre cylinder. What it looked like was nothing at all,
+    /// twice, at two different brightnesses, and what said so was a red one — see Ground.Audit's habit and
+    /// its opposite: some faults are only findable by painting the thing in a colour that cannot be
+    /// mistaken for shading.
+    /// It is the one thing in this building that a renderer can decline to do — see the renderer panel,
+    /// which says which — and the picture where it is declined is the picture this room had before, so
+    /// nothing is lost by asking.
+    /// </summary>
+    private readonly SpriteNode[] _steam = new SpriteNode[10];
+
+    /// <summary>Where each puff starts, how far it goes, how big it is and how fast it goes round again.
+    /// Written out rather than randomised: a film has to be the same film twice.</summary>
+    private static readonly (Vector3 Home, Vector3 Travel, float Size, float Rate, float Phase, float Peak)[]
+        Drift =
+        [
+            (new Vector3(6.60f, 0.50f, 1.2f), new Vector3(-1.5f, 2.2f, 3.1f), 2.6f, 0.055f, 0.00f, 0.60f),
+            (new Vector3(4.80f, 0.38f, 2.8f), new Vector3(-0.9f, 2.5f, 2.6f), 3.1f, 0.041f, 0.31f, 0.50f),
+            (new Vector3(6.90f, 0.56f, 4.4f), new Vector3(-2.1f, 2.0f, 3.4f), 2.2f, 0.063f, 0.62f, 0.64f),
+            (new Vector3(3.40f, 0.44f, 3.6f), new Vector3(-0.6f, 2.3f, 2.2f), 2.8f, 0.047f, 0.13f, 0.53f),
+            (new Vector3(5.90f, 0.48f, 6.0f), new Vector3(-1.8f, 2.1f, 2.9f), 2.4f, 0.058f, 0.77f, 0.56f),
+            (new Vector3(3.90f, 0.34f, 7.4f), new Vector3(-0.8f, 2.6f, 3.3f), 3.4f, 0.037f, 0.45f, 0.46f),
+            (new Vector3(6.40f, 0.46f, 8.6f), new Vector3(-1.6f, 2.2f, 2.4f), 2.7f, 0.052f, 0.90f, 0.55f),
+            (new Vector3(5.10f, 0.58f, 9.8f), new Vector3(-1.1f, 1.9f, 2.8f), 2.1f, 0.067f, 0.22f, 0.62f),
+            (new Vector3(7.20f, 0.40f, 5.2f), new Vector3(-2.4f, 2.4f, 2.0f), 3.0f, 0.044f, 0.55f, 0.48f),
+            (new Vector3(4.30f, 0.52f, 10.6f), new Vector3(-0.7f, 2.1f, 2.7f), 2.5f, 0.060f, 0.68f, 0.58f)
+        ];
     private readonly Material _strip;
     private readonly Material _glass;
     private readonly Material _chrome;
@@ -294,6 +336,7 @@ internal sealed class EngineRoom
         Roof(root);
         Gantry(root);
         Housings(root);
+        Steam(root);
         Cabinets(root);
         Furniture(root);
 
@@ -593,6 +636,26 @@ internal sealed class EngineRoom
         }
 
         Paint(_strip, new Vector3(0.55f, 0.72f, 0.95f), 0.20f + 0.22f * standby);
+
+        // And the air. Each puff walks its own path once and starts again, and a sine over the trip fades
+        // it in and out — so the moment it wraps is the moment it is invisible, and there is no frame in
+        // the film where a cloud of steam appears. A closed form in the clock, like everything else in
+        // this room, which is what lets the contents jump into the middle of the chapter.
+        //
+        // Half of it is there on standby and the other half arrives with the engines. That is not
+        // decoration: a machine hall on standby has a plant running in it, and the difference between
+        // standby and running is a difference of degree.
+        var thickness = 0.55f * standby + 0.45f * running;
+
+        for (var i = 0; i < _steam.Length; i++)
+        {
+            var (home, travel, size, rate, phase, peak) = Drift[i];
+            var t = Fraction(clock * rate + phase);
+
+            _steam[i].Position = home + travel * t;
+            _steam[i].Size = new Vector2(size * (0.55f + 0.75f * t));
+            _steam[i].Opacity = thickness * peak * MathF.Sin(t * MathF.PI);
+        }
     }
 
     /// <summary>
@@ -1099,6 +1162,95 @@ internal sealed class EngineRoom
                     "coolant"));
             }
         }
+    }
+
+    /// <summary>
+    /// The steam, built once and driven by <see cref="Machines"/>.
+    ///
+    /// <b>Additive, and it took being wrong once to see why.</b> The obvious blend for steam is alpha —
+    /// something in front of something else, veiling it — and in a lit room that is right. This room is not
+    /// lit: four slots, all four inside a metre of a bench seventeen metres away, and everything else in
+    /// here that can be seen at all is emission. A grey veil at ten per cent over a black deck is nothing,
+    /// and at forty per cent it is fog in a room with no fog in it.
+    ///
+    /// What is actually happening is that a cloud of vapour a hand's breadth from nine metres of glowing
+    /// coolant channel <i>scatters that light towards you</i>, which is a thing that adds. So the puffs
+    /// are additive and cool, they brighten where they cross a channel and disappear where they do not,
+    /// and the room gains weather without gaining a light slot — which is the argument this room has been
+    /// making since the door.
+    ///
+    /// No depth write, for the reason every blended thing in here has none: ten cards that wrote depth
+    /// would each punch a hole in the nine behind them.
+    /// </summary>
+    private void Steam(Node root)
+    {
+        var puff = Puff(128, seed: 11);
+
+        for (var i = 0; i < _steam.Length; i++)
+        {
+            _steam[i] = new SpriteNode
+            {
+                Texture = puff,
+                Position = Drift[i].Home,
+                Size = new Vector2(Drift[i].Size),
+
+                // The channels' own blue, taken down and desaturated. Vapour scatters what is shining
+                // through it, and what is shining through this is nine metres of coolant line — so a warm
+                // puff here would be a fire, which is a different thing happening in this room and one
+                // nobody should have to wonder about.
+                Color = new Vector3(0.30f, 0.44f, 0.60f),
+                Opacity = 0f,
+                Blend = BlendMode.Additive,
+                DepthWrite = false,
+
+                // A metre and a half. The puffs are two to three metres across and sit within a metre of
+                // the deck, so the gap between a card and what is behind it is of that order everywhere —
+                // fade over much less and the edge is still there; over much more and the whole puff is
+                // faint rather than the part of it that is touching something.
+                SoftDistance = 1.5f,
+                Name = "steam"
+            };
+
+            root.Children.Add(_steam[i]);
+        }
+    }
+
+    /// <summary>
+    /// A puff: the texture kit's tileable field with a radial falloff multiplied into its alpha.
+    ///
+    /// <see cref="Texture.Noise"/> gives the cloud and nothing else does — a plain radial falloff is a
+    /// disc, and ten discs drifting up a room is a bubble machine. The falloff is squared so the rim
+    /// arrives at nothing rather than at a visible circle, and the colour is left white so the sprite's
+    /// own <see cref="SpriteNode.Color"/> is the only place the steam is tinted.
+    ///
+    /// It is also the one place in the building that reads a generated texture's pixels back out. That is
+    /// what <see cref="Texture.Pixels"/> is for, and it is cheaper and more honest than a second noise
+    /// implementation in the demo that would have to agree with the library's.
+    /// </summary>
+    private static Texture Puff(int size, int seed)
+    {
+        var field = Texture.Noise(size, octaves: 4, seed: seed).Pixels!;
+        var pixels = new byte[size * size * 4];
+        var centre = (size - 1) * 0.5f;
+
+        for (var y = 0; y < size; y++)
+        for (var x = 0; x < size; x++)
+        {
+            var o = (y * size + x) * 4;
+
+            var dx = (x - centre) / centre;
+            var dy = (y - centre) / centre;
+            var fall = MathF.Max(0f, 1f - MathF.Sqrt(dx * dx + dy * dy));
+
+            var cloud = field[o] / 255f;
+
+            pixels[o + 0] = 255;
+            pixels[o + 1] = 255;
+            pixels[o + 2] = 255;
+            pixels[o + 3] = (byte)(Math.Clamp(fall * fall * (0.30f + 0.70f * cloud), 0f, 1f) * 255f + 0.5f);
+        }
+
+        return Texture.FromPixels(pixels, size, size, "steam", TextureWrap.ClampToEdge);
     }
 
     /// <summary>

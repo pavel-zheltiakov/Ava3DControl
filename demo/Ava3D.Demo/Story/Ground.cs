@@ -305,6 +305,22 @@ internal sealed class Ground
             var steepest = 0f;
             var steepestAt = 0f;
 
+            // <b>And how fast the head turns</b>, which is the one way a walk goes wrong that neither the
+            // building nor the pitch reading can see. A shot can clear every solid, stay level, and still be
+            // unwatchable because the aim swings faster than a neck moves — a person turns their head at
+            // something under a hundred degrees a second and a shot reads as a whip somewhere above forty.
+            //
+            // Two numbers, because they are two different faults. The peak rate catches a single swing: a
+            // segment that crosses a doorway and changes subject at the same time, which is what a chapter
+            // join is and is where they all are. The total swept catches the other one — a walk whose aim
+            // goes left, right, left, right down a corridor and covers four hundred degrees to end up facing
+            // the way it started. Neither is a fault on its own and both are worth reading: the rotunda
+            // sweeps a lot because it is a circular room and that is the room.
+            var turned = 0f;
+            var turnedAt = 0f;
+            var swept = 0f;
+            float? bearing = null;
+
             // <b>And how much of this is walking at all</b>, which is here because it turned out to be
             // audible. The score puts a foot down every stride of ground covered, so a chapter that crosses
             // a metre in seven seconds gets one footstep in the middle of it and reads as a sample being
@@ -374,6 +390,28 @@ internal sealed class Ground
                             steepest = degrees;
                             steepestAt = t;
                         }
+
+                        // Yaw the same way Walk.Aim measures it, and differenced the short way round so a
+                        // pass across the seam is a small turn rather than a full circle.
+                        var heading = MathF.Atan2(toward.X, toward.Z);
+
+                        if (bearing is { } was)
+                        {
+                            var step = float.RadiansToDegrees(
+                                MathF.Abs((float)MathF.IEEERemainder(heading - was, MathF.Tau)));
+
+                            swept += step;
+
+                            var rate = step / Sample;
+
+                            if (rate > turned)
+                            {
+                                turned = rate;
+                                turnedAt = t;
+                            }
+                        }
+
+                        bearing = heading;
                     }
 
                     if (ground.Pierces(eye) is { } what)
@@ -450,7 +488,8 @@ internal sealed class Ground
             report.AppendLine(
                 $"  {i}. {chapter.Title,-22}{start}  " +
                 $"{(notes.Count == 0 ? "clear" : string.Join("; ", notes))} — {solids} solids, " +
-                $"aim {steepest,5:F0}° at {steepestAt:F0}s, {room}, walks {pacing}");
+                $"aim {steepest,5:F0}° at {steepestAt:F0}s, {room}, walks {pacing}, " +
+                $"turns {turned,3:F0}°/s at {turnedAt:F0}s over {swept:F0}°");
         }
 
         report.AppendLine(faults == 0

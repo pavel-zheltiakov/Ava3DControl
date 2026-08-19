@@ -50,6 +50,20 @@ public partial class MainView : UserControl
     /// halves so a key released while a button is held does not stop him.</summary>
     private Vector2 _keys, _taps;
 
+    /// <summary>
+    /// Which walk keys are down, as a set.
+    ///
+    /// <b>It was two axis values and that is the bug.</b> Writing <c>_keys.Y = 0</c> on any key-up means
+    /// the last key released speaks for both of the keys on that axis, so holding W, tapping S and letting
+    /// go of S stops a walk that is still being asked for — and, far worse, a key-down whose key-up never
+    /// arrives leaves the axis at one for ever. A browser tab loses its keyboard the moment anything else
+    /// takes it: a system shortcut, a click on the browser's own furniture, the tab going to the
+    /// background. Every one of those swallows the up and none of them swallows the down. A set cannot get
+    /// into that state from a lost up alone, and <see cref="Release"/> empties it whenever the window stops
+    /// listening — which is the other half of the same fix.
+    /// </summary>
+    private readonly HashSet<Key> _walking = [];
+
     /// <summary>Whether the shell has already given the current scene the controls, so the handover is done
     /// once rather than on every frame.</summary>
     private bool _handedOver;
@@ -374,6 +388,16 @@ public partial class MainView : UserControl
             {
                 top.AddHandler(KeyDownEvent, OnWalkKey, RoutingStrategies.Tunnel);
                 top.AddHandler(KeyUpEvent, OnWalkKey, RoutingStrategies.Tunnel);
+
+                // And let go of everything the moment this window stops being the one the keyboard is
+                // talking to. A key-up is only ever delivered to whoever had the focus when it happened,
+                // so a window that loses the focus mid-stride never hears the release — and what that
+                // looks like is a visitor walking into a wall and unable to stop. See Release.
+                top.LostFocus += (_, _) => Release();
+                top.PointerExited += (_, _) => Release();
+
+                if (top is Window window)
+                    window.Deactivated += (_, _) => Release();
             }
         };
 
@@ -404,6 +428,24 @@ public partial class MainView : UserControl
     /// </summary>
     private static float? StoryAt =>
         float.TryParse(Environment.GetEnvironmentVariable("AVA3D_STORY_AT"), out var at) && at >= 0f
+            ? at
+            : null;
+
+    /// <summary>
+    /// Freezes every scene at a fixed number of seconds, so a captured frame is the same picture twice.
+    ///
+    /// <c>AVA3D_STORY_AT</c> for the ordinary scenes, and it exists for the same reason a capture does:
+    /// the only way to say a renderer change moved no pixel is to photograph the same thing before and
+    /// after. Scene time is normally the compositor's clock, so <c>AVA3D_CAPTURE_FRAME=30</c> lands on
+    /// frame thirty at whatever moment frame thirty happened to arrive — which is a different moment on
+    /// every run, and therefore a different picture of any scene that moves. Measured: of six scenes
+    /// captured twice on three backends, only the two that hold still came back byte-identical.
+    ///
+    /// Zero is a legal value and means the first instant, which is why this is a nullable rather than a
+    /// default of zero.
+    /// </summary>
+    private static double? SceneAt =>
+        double.TryParse(Environment.GetEnvironmentVariable("AVA3D_SCENE_AT"), out var at) && at >= 0d
             ? at
             : null;
 
@@ -469,7 +511,7 @@ public partial class MainView : UserControl
             _haveStart = true;
         }
 
-        _current.Update(_currentScene, _view.Camera, (now - _sceneStarted).TotalSeconds);
+        _current.Update(_currentScene, _view.Camera, SceneAt ?? (now - _sceneStarted).TotalSeconds);
 
         if (_current.DrivesCamera)
             _view.InvalidateCamera();
@@ -1179,6 +1221,7 @@ public partial class MainView : UserControl
         // width plus its margin, taken back only while the pad is up.
         _captionBand.Margin = wanted ? new Thickness(0, 0, 150, 14) : new Thickness(0, 0, 0, 14);
 
+        _walking.Clear();
         _keys = Vector2.Zero;
         _taps = Vector2.Zero;
         _current.Steer(Vector2.Zero);
@@ -1197,18 +1240,51 @@ public partial class MainView : UserControl
         if (!_handedOver)
             return;
 
-        var down = e.RoutedEvent == KeyDownEvent;
-
         switch (e.Key)
         {
-            case Key.W or Key.Up: _keys.Y = down ? 1f : 0f; break;
-            case Key.S or Key.Down: _keys.Y = down ? -1f : 0f; break;
-            case Key.A or Key.Left: _keys.X = down ? -1f : 0f; break;
-            case Key.D or Key.Right: _keys.X = down ? 1f : 0f; break;
-            default: return;
+            case Key.W or Key.Up or Key.S or Key.Down or Key.A or Key.Left or Key.D or Key.Right:
+                break;
+
+            default:
+                return;
         }
 
+        if (e.RoutedEvent == KeyDownEvent)
+            _walking.Add(e.Key);
+        else
+            _walking.Remove(e.Key);
+
+        // Recomputed from the whole set rather than written a component at a time, so that holding two
+        // keys on one axis cancels and releasing one of them leaves the other still walking — which is
+        // what every pair of opposed keys anybody has ever held down does.
+        _keys = new Vector2(
+            Axis(Key.D, Key.Right) - Axis(Key.A, Key.Left),
+            Axis(Key.W, Key.Up) - Axis(Key.S, Key.Down));
+
         e.Handled = true;
+        Steer();
+
+        return;
+
+        float Axis(Key one, Key other) => _walking.Contains(one) || _walking.Contains(other) ? 1f : 0f;
+    }
+
+    /// <summary>
+    /// Let go of every key, because the window is no longer the one hearing them.
+    ///
+    /// It is called on lost focus, on the pointer leaving the window and on the window being deactivated,
+    /// and all three are the same event as far as the keyboard is concerned: something else is about to
+    /// receive the key-up that this control is waiting for. Missing it is the difference between a walk
+    /// that stops and a walk that does not.
+    /// </summary>
+    private void Release()
+    {
+        if (_walking.Count == 0 && _keys == Vector2.Zero)
+            return;
+
+        _walking.Clear();
+        _keys = Vector2.Zero;
+
         Steer();
     }
 

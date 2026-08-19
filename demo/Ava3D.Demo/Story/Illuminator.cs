@@ -288,6 +288,10 @@ internal sealed class Illuminator
     /// <summary>How deep the bay is, from the mouth back to its blind end.</summary>
     private const float Deep = 0.44f * Fleet.StationScale * BerthSize;
 
+    /// <summary>How far into the bay's own surfaces the structure fixed to them is sunk, so that nothing in
+    /// here is ever exactly flush with anything. See the ribs in <c>Berthing</c>.</summary>
+    private const float Bite = 0.35f;
+
     /// <summary>How long the escort is. Fourteen metres, and it is the only object out there whose size the
     /// visitor can check against something: it is one bay of the window he is standing at.</summary>
     private const float EscortLength = 14f;
@@ -1159,7 +1163,20 @@ internal sealed class Illuminator
     /// <see cref="Ship.Place"/> exists — a ship can be told where it is instead of asked to fly there.
     /// </summary>
     /// <param name="u">Nought at the start of the approach, one when it is holding station.</param>
-    public void Escort(float u)
+    /// <param name="u">How far through the approach it is, nought to one.</param>
+    /// <param name="clock">
+    /// Seconds, for the station-keeping box. <b>A ship is never perfectly still and this one was, twice.</b>
+    /// The approach is a ramp, so before it opens and after it closes <paramref name="u"/> is pinned at an
+    /// end and every number below it is a constant — which put a fourteen-metre hull under power in the
+    /// middle of the window, motionless to the pixel, for the first half of the chapter and again for the
+    /// last four seconds of it. It was reported as a frozen object, and that is exactly what it is: nothing
+    /// out there is on rails, and the eye knows it long before it can say why.
+    ///
+    /// So the box from <see cref="Lead"/> is laid over the traverse, weighted by how much of the traverse is
+    /// done. Nought while it is crossing, because a ship moving at fourteen metres a second does not also
+    /// need to be seen trimming; full once it is holding, which is when a ship does nothing else.
+    /// </param>
+    public void Escort(float u, float clock = 0f)
     {
         u = Math.Clamp(u, 0f, 1f);
 
@@ -1181,11 +1198,19 @@ internal sealed class Illuminator
 
         var forward = Vector3.Transform(-Vector3.UnitZ, heading);
 
-        _escort.Place(at, heading, forward, forward * (14f * (1f - closed)));
+        // The box it holds while it is holding: a metre along its own course and a third of a metre up, on
+        // two periods that do not divide into each other. Weighted by how much of the crossing is behind it,
+        // so it arrives into the trim rather than starting to twitch on the way in.
+        var trim = at
+                   + forward * (closed * 0.85f * MathF.Sin(clock * MathF.Tau / 13f))
+                   + Vector3.UnitY * (closed * 0.30f * MathF.Sin(clock * MathF.Tau / 7f));
+
+        _escort.Place(trim, heading, forward, forward * (14f * (1f - closed)));
 
         // Full power on the way in, idle once it is stopped, and the running lights on the whole time — it
-        // is waiting, and a ship that is waiting is a ship with its lamps on.
-        _escort.Burn(0.16f + 0.84f * (1f - closed));
+        // is waiting, and a ship that is waiting is a ship with its lamps on. The idle breathes, for the
+        // reason above: a constant is the one thing an engine never is.
+        _escort.Burn(0.16f + 0.84f * (1f - closed) + closed * 0.05f * MathF.Cos(clock * MathF.Tau / 11f));
         _escort.Beacon(1f);
     }
 
@@ -1421,11 +1446,24 @@ internal sealed class Illuminator
         // across it, five metres apart, and the same four metres a second is a rhythm going past the
         // glass, which is the whole of what the departure is made of. Everything else in this method is
         // decoration; this is the shot.
+        //
+        // <b>They are let into the wall rather than laid on it, and that is not modelling taste.</b> A rib
+        // written as a box of exactly <see cref="Clear"/> times two, standing at exactly <c>Clear − 0.8</c>,
+        // has three of its six faces in precisely the planes of the bay's wall, floor and ceiling — the
+        // most natural way to write it and the one arrangement a depth buffer cannot resolve. What comes
+        // out is not a rib on a wall, it is two surfaces trading pixels: a speckled band down every frame
+        // and rectangular patches over the wall between them, changing every time the ship moves. It was
+        // reported as the texture flickering, which is what depth fighting looks like to anybody who is not
+        // looking for it.
+        //
+        // <see cref="Bite"/> takes all three planes out of the argument at once. It is thirty-five
+        // centimetres on a bay sixty-nine metres across, seen from forty out: about a thousandth of the
+        // frame, and there is nothing behind those faces to see.
         for (var i = 0; i < Ribs; i++)
-            _berth.Children.Add(new MeshNode(Primitives.Box(1.6f, Clear * 2f, 1.5f), steel)
+            _berth.Children.Add(new MeshNode(Primitives.Box(1.6f, Clear * 2f + Bite * 2f, 1.5f), steel)
             {
                 Position = new Vector3(
-                    Clear - 0.8f, 0f, back + 3.5f + (Deep - 7f) * i / (Ribs - 1f)),
+                    Clear - 0.8f + Bite, 0f, back + 3.5f + (Deep - 7f) * i / (Ribs - 1f)),
                 Name = "berth.rib"
             });
 
@@ -1833,6 +1871,29 @@ internal sealed class Illuminator
     /// segments rather than a smooth twenty, because a faceted strut catches the star along one facet and
     /// a round one catches it along a highlight, and the facet is what reads as moulded composite.
     /// </summary>
+    /// <summary>
+    /// Painted composite, for the window ribs, and it was brushed steel.
+    ///
+    /// <b>The brushed material is anisotropic on purpose and that is exactly what went wrong here.</b> Its
+    /// roughness comes off a map stretched twenty times in one axis, which is what makes a highlight smear
+    /// across the grain and stay tight along it — a good fake for milled metal on a flat rail. On a tapered
+    /// strut two and a half metres tall, lit by one star and nothing else, the same smear becomes a bright
+    /// line running the length of the rib that slides as the camera moves. That is the flickering reported
+    /// in this room, and it is not a fault in the map; it is a map on the wrong object.
+    ///
+    /// A rib in this gallery is moulded and painted, not milled. Roughness at a bit over a half spreads
+    /// the star across a whole facet instead of down a line, which is what the eight segments were chosen
+    /// for in the first place — see <see cref="Vault"/>, which says so and then handed the strut a
+    /// material that could not do it.
+    /// </summary>
+    private static Material Moulded => new()
+    {
+        BaseColor = new Vector4(0.30f, 0.31f, 0.34f, 1f),
+        Metallic = 0.25f,
+        Roughness = 0.55f,
+        Name = "rib"
+    };
+
     private void Vault(Node root, Material steel)
     {
         const int bays = 5;
@@ -1860,7 +1921,7 @@ internal sealed class Illuminator
             };
 
             rib.Children.Add(new MeshNode(
-                Primitives.Cylinder(0.07f, 0.20f, Head - Sill, 8), steel)
+                Primitives.Cylinder(0.07f, 0.20f, Head - Sill, 8), Moulded)
             {
                 Name = "strut"
             });

@@ -4,7 +4,7 @@ using Ava3D.Demo.Scenes.Arcade;
 namespace Ava3D.Demo.Story;
 
 /// <summary>
-/// Chapter 4. A room to sit down in: four televisions waking one at a time along a bench, a case on the
+/// Chapter 7. A room to sit down in: four televisions waking one at a time along a bench, a case on the
 /// west wall with the first game's sprites standing in it, a console on a low table, an armchair, and an
 /// alcove behind the chair with a mirror ball in it.
 ///
@@ -26,7 +26,7 @@ namespace Ava3D.Demo.Story;
 /// </summary>
 internal sealed class Screens(ScreenRoom room, Corridor corridor) : Chapter
 {
-    /// <summary>How long the chapter runs. A constant as well as a property because chapter 5 needs it:
+    /// <summary>How long the chapter runs. A constant as well as a property because chapter 8 needs it:
     /// the beacons in the corridor start turning here and must not jump when the chapter changes, so both
     /// chapters drive them from one clock and the next one has to know how far this one got.</summary>
     public const float Length = 93f;
@@ -108,7 +108,7 @@ internal sealed class Screens(ScreenRoom room, Corridor corridor) : Chapter
     /// be lower than the one before it.
     /// </summary>
     public override Walk Walk { get; } = new(
-        new Step(0f, ScreenRoom.Entrance + new Vector3(-0.9f, 0f, 0f), ScreenRoom.Sitting),
+        new Step(0f, ScreenRoom.Entrance + new Vector3(0.35f, 0f, -1.3f), ScreenRoom.Sitting),
 
         // The first station, from about a metre and three quarters — near enough to see there is a
         // cartridge standing out of the machine and far enough that the seat and the crate it belongs to
@@ -153,9 +153,11 @@ internal sealed class Screens(ScreenRoom room, Corridor corridor) : Chapter
         new Step(86f, Deck.Screens + new Vector3(-1.2f, Deck.Eye, 1.6f), ScreenRoom.Stage),
         new Step(89f, Deck.Screens + new Vector3(-2.9f, Deck.Eye, 2.6f), ScreenRoom.Exit),
 
-        // Stopped short of the opening rather than standing in it. Until chapter 5 lands there is a blind
-        // stub behind that door, and a camera in the doorway fills the whole frame with it; a camera a
-        // metre and a half back has a lit doorway in a dark room, with the alcove still going behind him.
+        // Stopped short of the opening rather than standing in it. It was written that way when there was
+        // a blind stub behind that door and a camera in the doorway filled the frame with it; the corridor
+        // has been there for some time and the waypoint is kept, because what it gives is better than what
+        // it was avoiding — a lit doorway in a dark room, a metre and a half off, with the alcove still
+        // going behind him.
         new Step(93f, ScreenRoom.Exit + new Vector3(0f, 0f, -1.5f), ScreenRoom.Exit + new Vector3(0f, 0f, 3f)));
 
     public override void Enter(Hall hall)
@@ -237,17 +239,30 @@ internal sealed class Screens(ScreenRoom room, Corridor corridor) : Chapter
         // And the corridor beyond the north door, which starts running while he is sitting in front of the
         // mirror ball with his back to it.
         //
-        // It can only happen at all because none of it is lit. Every light slot in the building is spent on
-        // the alcove from here to the end of the chapter, and the corridor is lenses, beams and floor
-        // strips — emission and additive blending, added to the frame rather than lit in it. Chapter 4
-        // spends eighty seconds arguing that an unlit material is free, and this is the film cashing the
-        // argument in the same room it made it.
-        //
         // It comes up two seconds after the room goes properly black and takes seven to arrive, so it is at
         // full while the disco is at full and he has not turned round. The frame that matters is at
         // eighty-two, when he stands up: four coloured lights behind him, a hundred and twenty a minute,
         // and something red turning at the end of a corridor that was not doing that when he sat down.
-        corridor.Glow(seconds, Ramp(seconds, Blackout + 2f, 7f));
+        //
+        // <b>It is the whole corridor, lit, and it used to be the emission only.</b> This chapter ran
+        // Glow — the lenses, the beams and the floor strips, which are added to the frame rather than lit
+        // in it and therefore cost no slot — and left the four red lamps to chapter 8. What that produced
+        // was reported and is worth writing down: from in here the corridor was seven bright lenses hanging
+        // in a black tube, and the moment the next chapter began, every wall in it turned red at once. The
+        // alarm did not arrive, it was switched on, and it was switched on at exactly the frame a viewer is
+        // most likely to notice a seam.
+        //
+        // So the lamps come up here instead, on the same ramp as the glass, and Alarm.Update goes on
+        // driving them from where this leaves them. It is the first time in the film that a room he is not
+        // standing in is given light of its own, and the reason it can be is that the reason it could not
+        // has gone: four was the renderer's cap when this building was laid out, and the cap is sixty-four.
+        // The four-slot arrangement everywhere else is a composition and stays one — what it was never
+        // meant to be is a rule against a corridor at the far end of a room being visibly on fire.
+        //
+        // The eye is the walk's, so the four are assigned to the four beacons nearest him — which, from a
+        // sofa twenty metres up the room, is the near end of the corridor. That is the half of it a doorway
+        // can see, and it is the half a man about to walk in there should be looking at.
+        corridor.Alarm(Walk.At(seconds).Eye, seconds, Ramp(seconds, Blackout + 2f, 7f));
 
         // Unconditionally, unlike the version of this chapter that only had televisions in it. Then the
         // only thing that ever changed was a screen, so a frame on which no game had advanced was a frame
@@ -368,8 +383,14 @@ internal sealed class Screens(ScreenRoom room, Corridor corridor) : Chapter
         }
         else
         {
+            // The alcove's four, and the corridor's four behind the north door. Eight, in a building whose
+            // whole light budget is written as four — see Update, which is where the arithmetic and the
+            // argument for it are. They are at nothing until the sixty-seventh second, so nothing about
+            // this room changes: what it buys is a corridor that catches light before he is in it.
             hall.Occupy(Deck.ScreensRoom, Deck.CorridorRoom);
-            hall.Use(room.Beams[0], room.Beams[1], room.Beams[2], room.Beams[3]);
+            hall.Use(
+                room.Beams[0], room.Beams[1], room.Beams[2], room.Beams[3],
+                corridor.Lights[0], corridor.Lights[1], corridor.Lights[2], corridor.Lights[3]);
         }
     }
 }

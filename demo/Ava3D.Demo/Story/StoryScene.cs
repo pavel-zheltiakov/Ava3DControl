@@ -182,7 +182,15 @@ public sealed class StoryScene : DemoScene
         // anybody reaches the last chapters from the picker.
         camera.FieldOfView = chapter.Lens;
         camera.NearPlane = chapter.Near;
-        camera.FarPlane = chapter.Far;
+
+        // <b>And the far plane comes back in once the film is over.</b> The last chapter can see nineteen
+        // hundred metres because it is looking out of a window at a planet, and the free walk inherits it
+        // — which means the whole building is drawn inside a depth range sized for a solar system. Depth
+        // precision goes as the distance squared over the near plane and the far plane barely enters into
+        // it on a twenty-four-bit buffer; on a sixteen-bit one, which is what a browser hands out when it
+        // cannot do better, it enters into it a great deal. Two hundred and twenty is the whole building
+        // with room to spare, and the two rooms that can actually see out get the long range back.
+        camera.FarPlane = _free && !_film.Rounds.Outward ? Chapter.Indoors : chapter.Far;
 
         // Nothing over the picture unless somebody is actively holding it there. Two chapters put a
         // curtain across the lens and eight do not, and clearing it here rather than asking the other
@@ -488,6 +496,9 @@ public sealed class StoryScene : DemoScene
             if (index != standing)
             {
                 standing = index;
+
+                // Clear air first, then let the chapter ask for whatever it wants. See Hall.Clear.
+                film.Hall.Clear();
                 film.Chapters[index].Enter(film.Hall);
             }
 
@@ -646,6 +657,9 @@ public sealed class StoryScene : DemoScene
         if (chapter != _chapter)
         {
             _chapter = chapter;
+
+            // Clear air first, then let the chapter ask for whatever it wants. See Hall.Clear.
+            _film.Hall.Clear();
             _film.Chapters[chapter].Enter(_film.Hall);
         }
 

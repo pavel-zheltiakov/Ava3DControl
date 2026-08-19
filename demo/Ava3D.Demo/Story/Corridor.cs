@@ -227,6 +227,30 @@ internal sealed class Corridor
     public static Vector3 Lens(int index) =>
         Deck.Corridor + new Vector3(Side(index) * LensX, LensY, Stations[index]);
 
+    /// <summary>
+    /// What a head does about a beacon, which is not the same thing as looking straight at one.
+    ///
+    /// <see cref="Lens"/> is where the fitting is: eighty-six centimetres off the centre line and
+    /// fifty-five above an eye. A waypoint a metre and a fifth short of one and aimed at it is therefore
+    /// thirty-six degrees off axis and twenty-five degrees up — and the beacons alternate sides, so a walk
+    /// written that way swings seventy degrees left, seventy right, five times in eleven seconds while the
+    /// man doing it is meant to be hurrying somewhere. That was reported as the camera moving too much, and
+    /// it was: nobody walking down a corridor turns their head to face each light in it. They notice it,
+    /// which is a glance, and a glance is a fraction of the way there.
+    ///
+    /// So the aim leans toward the beacon rather than arriving at it. <see cref="Lean"/> of the offset and
+    /// <see cref="Lean"/> of the rise, which keeps everything the shot was for — the aim still moves up the
+    /// corridor with the beacons, still changes shoulder at each one, and still puts the flash he is
+    /// walking into off to one side — at sixteen degrees and eleven rather than thirty-six and twenty-five.
+    /// The head goes left, right, left. It does not go round.
+    /// </summary>
+    public static Vector3 Toward(int index) =>
+        Deck.Corridor + new Vector3(
+            Side(index) * LensX * Lean, Deck.Eye + (LensY - Deck.Eye) * Lean, Stations[index]);
+
+    /// <summary>How much of the way to a beacon a glance at it goes. See <see cref="Toward"/>.</summary>
+    private const float Lean = 0.45f;
+
     /// <summary>The middle of the door at the end, for the last third of the walk to aim at.</summary>
     public static Vector3 Gateway =>
         Deck.Corridor + new Vector3(0f, 1.5f, Length + Thickness / 2f);
@@ -467,6 +491,28 @@ internal sealed class Corridor
         var a = (clock * Sweep + index * Lag) * MathF.PI / 180f;
 
         return new Vector3(Along.X * MathF.Cos(a), Along.Y, Along.X * MathF.Sin(a));
+    }
+
+    /// <summary>
+    /// The alarm is over: the mirrors stop and the shafts go away.
+    ///
+    /// <b>It hides them rather than dimming them, and the difference is what this cost to find.</b>
+    /// <see cref="Glow"/> at level nought paints every one of these materials black, and black added to a
+    /// frame is nothing — so a shaft ought to disappear on its own and for a long time it looked as if it
+    /// did. What it actually does is disappear <i>on the next frame the scene is invalidated</i>, and the
+    /// hand-over to the free walk is the one moment in this demo where nothing invalidates: the chapters
+    /// all end their <c>Update</c> with a call and there is no chapter left. A material written but not
+    /// uploaded is a material that still has whatever it was built with in it, which here is full alarm
+    /// red — so somebody with the keys walked into a quiet white corridor with a frozen beam across it.
+    ///
+    /// <see cref="Rounds.Open"/> invalidates now, which is the general fix and the one that matters. This
+    /// is the specific one, and it is worth having anyway: a beacon that is not running has no shaft, and
+    /// hiding the node says so in a way that cannot be undone by a material somebody forgot to repaint.
+    /// </summary>
+    public void Rest()
+    {
+        for (var i = 0; i < _spin.Length; i++)
+            _spin[i].IsVisible = false;
     }
 
     private static void Paint(Material material, Vector3 colour, float value)

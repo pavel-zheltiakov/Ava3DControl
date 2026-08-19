@@ -3,7 +3,7 @@ using Ava3D.Demo.Scenes.Contact;
 namespace Ava3D.Demo.Story;
 
 /// <summary>
-/// Chapter 8. The only cut in the film.
+/// Chapter 11. The only cut in the film.
 ///
 /// For nine and a half minutes the camera has been a man's eye and every change of shot has been him
 /// turning his head. Here it stops being his. He is at the last window watching an escort hold station in

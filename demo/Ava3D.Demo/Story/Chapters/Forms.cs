@@ -19,10 +19,14 @@ namespace Ava3D.Demo.Story;
 /// </summary>
 internal sealed class Forms : Chapter
 {
-    /// <summary>When he is through the antechamber's door, and when he is through the rotunda's.</summary>
-    private const float Doorstep = 6f;
+    /// <summary>When he is through the antechamber's door, and when he is through the rotunda's.
+    ///
+    /// Both moved with the passage — see the walk, whose first three waypoints now cover the same four and
+    /// a third metres in seven seconds rather than ten. They are the same two places on the floor; what
+    /// changed is when he gets to them.</summary>
+    private const float Doorstep = 4.2f;
 
-    private const float Threshold = 16f;
+    private const float Threshold = 13f;
 
     private readonly Antechamber _antechamber;
     private readonly Passage _passage;
@@ -44,39 +48,48 @@ internal sealed class Forms : Chapter
         // ended up, and the room only knows that once it has stood them there. The alternative is a table
         // of heights that reads about right for all six and is right for none of them.
         Walk = new Walk(
+            // <b>The passage, at one and a half times.</b> Four and a third metres in seven seconds rather
+            // than ten, which is six tenths of a metre a second rather than four. Nothing about the shot
+            // changed and nothing about the corner did: the two waypoints are where they were, the head
+            // still starts round before the feet do, and every waypoint after this one moved earlier by
+            // exactly three seconds so the rotunda is walked at the pace it always was.
+            //
+            // A corridor is the one kind of room where dwell buys nothing. There is nothing in this one to
+            // look at — that is what it is for, it is the dark between two lit rooms — so the seconds spent
+            // in it are seconds spent waiting to arrive, and they were reported as exactly that.
             new Step(0f, new Vector3(0f, Deck.Eye, 1.4f), new Vector3(0f, 1.5f, 4.5f)),
-            new Step(5f, new Vector3(0f, Deck.Eye, 3.9f), new Vector3(0f, 1.55f, 6.9f)),
+            new Step(3.5f, new Vector3(0f, Deck.Eye, 3.9f), new Vector3(0f, 1.55f, 6.9f)),
 
             // The turn. He is still walking north when his head starts round to the east, which is how a
             // person takes a corner and is why the corner is the only place in the passage for a lamp.
-            new Step(10f, new Vector3(0f, Deck.Eye, 5.75f), new Vector3(2.6f, 1.55f, 6.15f)),
-            new Step(14f, new Vector3(2.4f, Deck.Eye, 6f), new Vector3(5.4f, 1.5f, 5.7f)),
-            new Step(18f, new Vector3(5.2f, Deck.Eye, 5.85f), new Vector3(7.4f, 1.45f, 4.6f)),
+            new Step(7f, new Vector3(0f, Deck.Eye, 5.75f), new Vector3(2.6f, 1.55f, 6.15f)),
+            new Step(11f, new Vector3(2.4f, Deck.Eye, 6f), new Vector3(5.4f, 1.5f, 5.7f)),
+            new Step(15f, new Vector3(5.2f, Deck.Eye, 5.85f), new Vector3(7.4f, 1.45f, 4.6f)),
 
-            new Step(22f, Rotunda.Standing(0), rotunda.Focus[0]),
-            new Step(26f, Rotunda.FacingArm, rotunda.ArmFocus),
-            new Step(30f, Rotunda.Standing(1), rotunda.Focus[1]),
-            new Step(34f, Rotunda.Standing(2), rotunda.Focus[2]),
-            new Step(38f, Rotunda.Standing(3), rotunda.Focus[3]),
+            new Step(19f, Rotunda.Standing(0), rotunda.Focus[0]),
+            new Step(23f, Rotunda.FacingArm, rotunda.ArmFocus),
+            new Step(27f, Rotunda.Standing(1), rotunda.Focus[1]),
+            new Step(31f, Rotunda.Standing(2), rotunda.Focus[2]),
+            new Step(35f, Rotunda.Standing(3), rotunda.Focus[3]),
 
             // In to the table, which is the only stop in the chapter and the only frame in the room with
             // two exhibits in it — a comparison has to be in one frame or it is not a comparison.
-            new Step(42f, Rotunda.Inside(315f, 2.3f), Rotunda.Table),
-            new Step(46f, Rotunda.Inside(322f, 1.95f), Rotunda.Table),
+            new Step(39f, Rotunda.Inside(315f, 2.3f), Rotunda.Table),
+            new Step(43f, Rotunda.Inside(322f, 1.95f), Rotunda.Table),
 
-            new Step(50f, Rotunda.Standing(4), rotunda.Focus[4]),
-            new Step(54f, Rotunda.Standing(5), rotunda.Focus[5]),
+            new Step(47f, Rotunda.Standing(4), rotunda.Focus[4]),
+            new Step(51f, Rotunda.Standing(5), rotunda.Focus[5]),
 
             // And the way out, which has been behind him for the whole walk. Two steps rather than one:
             // ninety degrees of head turn in a single segment sweeps across four metres of blank wall, and
             // a second of nothing at the end of a chapter reads as the film having lost him.
-            new Step(56f, Rotunda.Inside(20f, 2.4f), Rotunda.Inside(62f, 4.0f)),
-            new Step(58f, Rotunda.Inside(50f, 2.5f), Rotunda.Exit));
+            new Step(53f, Rotunda.Inside(20f, 2.4f), Rotunda.Inside(62f, 4.0f)),
+            new Step(55f, Rotunda.Inside(50f, 2.5f), Rotunda.Exit));
     }
 
     public override string Title => "Forms";
 
-    public override float Duration => 58f;
+    public override float Duration => 55f;
 
     /// <summary>
     /// Out through the north door, right at the corner, and then two hundred and seventy degrees round the
@@ -179,18 +192,18 @@ internal sealed class Forms : Chapter
         // him, and that is worth saying whether the budget is four or sixteen. Solitude is the better
         // reason for it anyway: lights that follow one man are lights nobody else is using.
         < 8f => "Rule two. The lamps follow you. Nobody else is on this floor",
-        < 24f => "You see the shapes one at a time. The floor was built that way",
+        < 21f => "You see the shapes one at a time. The floor was built that way",
 
         // The first of the night's three late things, and the only one nobody but him could see. It is a
         // caption and not a change to ArmTable above, deliberately: half a second on a table turning at
         // nine degrees a second is four and a half degrees, which no viewer can catch and which a man who
         // has watched it nine hundred times can. Animating it would make the claim checkable and turn a
         // character note into a bug report.
-        < 38f => "That turning display is always on time. Tonight it is half a second late",
+        < 35f => "That turning display is always on time. Tonight it is half a second late",
 
         // And the note cracks for the first time, caused by the thing that is wrong rather than by
         // nostalgia — he is telling his replacement about a display that is four degrees out.
-        < 50f => "I used to walk past it. Now I stand and watch",
+        < 47f => "I used to walk past it. Now I stand and watch",
         _ => "That is not part of the four hundred words. I am writing it anyway"
     };
 

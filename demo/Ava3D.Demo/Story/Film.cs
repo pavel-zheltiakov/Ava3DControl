@@ -28,6 +28,10 @@ internal sealed class Film
         var passage = new Passage(Hall);
         var rotunda = new Rotunda(Hall);
         var gallery = new Gallery(Hall);
+        var studio = new Studio(Hall);
+        var shop = new PatternShop(Hall);
+        var dome = new Planetarium(Hall);
+        var link = new Link(Hall);
         var screens = new ScreenRoom(Hall);
         var corridor = new Corridor(Hall);
         var engine = new EngineRoom(Hall);
@@ -69,7 +73,10 @@ internal sealed class Film
             new Dark(antechamber),
             new Houselights(antechamber, passage),
             new Forms(antechamber, passage, rotunda, gallery),
-            new MaterialWall(rotunda, gallery, screens),
+            new MaterialWall(rotunda, gallery, studio),
+            new Ink(gallery, studio, shop),
+            new Patterns(studio, shop, dome),
+            new Stars(shop, dome, link, screens),
             new Screens(screens, corridor),
             new Alarm(screens, corridor),
             new Repair(corridor, engine),
@@ -82,7 +89,8 @@ internal sealed class Film
         // rather than at the hand-over because it needs every room object at once and this is the only place
         // they all exist; it does nothing at all until Open is called.
         Rounds = new Rounds(
-            Hall, antechamber, passage, rotunda, gallery, screens, corridor, engine, illuminator);
+            Hall, antechamber, passage, rotunda, gallery, studio, shop, dome, link, screens, corridor,
+            engine, illuminator);
 
         _starts = new float[Chapters.Count];
 
@@ -101,7 +109,7 @@ internal sealed class Film
     /// <summary>The fade and the title card. One for the whole film, because there is one night in it.</summary>
     public Curtain Curtain { get; }
 
-    /// <summary>The building once the film has finished with it: all eight rooms, the doors open, and the
+    /// <summary>The building once the film has finished with it: every room, the doors open, and the
     /// lights following whoever is walking rather than the clock. See <see cref="Story.Rounds"/>.</summary>
     public Rounds Rounds { get; }
 

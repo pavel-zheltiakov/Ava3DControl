@@ -3,7 +3,7 @@ using System.Numerics;
 namespace Ava3D.Demo.Story;
 
 /// <summary>
-/// Chapter 9. A new day: the ship lets go of Relay Nine, goes out through its door, and he watches all of
+/// Chapter 12. A new day: the ship lets go of Relay Nine, goes out through its door, and he watches all of
 /// it from the forward end of the window.
 ///
 /// It is the same room as chapter 7 and the opposite chapter. That one was a man finding out where he had
