@@ -86,7 +86,22 @@ internal sealed class Link
         // The outer corner: one wall down the west side and along the north, unbroken round the turn. It is
         // the wall he is facing as he comes round it, so it is the one that must not have a seam in it.
         Wall(new Vector3(-edge, 0f, North / 2f), Thickness, North + Thickness);
-        Wall(new Vector3((East - Bury - edge) / 2f, 0f, North + Thickness / 2f), East - Bury + edge, Thickness);
+
+        // The north wall, which is the one that changed when the clock room went in behind it. It was a
+        // slab; it is the same slab with a doorway cut on the north leg's own centre line, so the opening
+        // is square to the corridor he is walking rather than square to the room it leads into — see
+        // <see cref="Deck.ClockTower"/>, which is a metre and six west of this line and is why.
+        //
+        // <b>It is the whole of the tower's doorway and it is not the wall he walks through.</b> The clock
+        // room's south wall is six hundred millimetres of masonry centred on this two hundred, so this
+        // opening sits inside that one and the reveal anybody sees belongs to the tower. Cutting it here as
+        // well is what stops this wall closing across the back of it.
+        var head = Fabric.PiercedWall(
+            East - Bury + edge, Height, Thickness,
+            -(East - Bury - edge) / 2f, Deck.DoorWidth, Deck.DoorHeight, plaster);
+
+        head.Position = new Vector3((East - Bury - edge) / 2f, 0f, North + Thickness / 2f);
+        root.Children.Add(head);
 
         // The inner corner: two short returns that stop where they meet.
         Wall(new Vector3(edge, 0f, (North - Width) / 2f), Thickness, North - Width + Thickness);
@@ -151,6 +166,9 @@ internal sealed class Link
 
     /// <summary>The middle of the turn, in world coordinates. Both chapters aim at it.</summary>
     public static Vector3 Corner => Deck.Link + new Vector3(0f, 0f, North - Width / 2f);
+
+    /// <summary>The doorway into the clock room, in the north wall, at eye height.</summary>
+    public static Vector3 Tower => Deck.Link + new Vector3(0f, Deck.Eye, North + Thickness / 2f);
 
     /// <summary>
     /// Where the east leg meets the planetarium's west opening, in world coordinates.

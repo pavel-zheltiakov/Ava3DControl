@@ -74,10 +74,21 @@
       The CPU renderer survives trimming without any of this, because it never calls a GL entry point —
       which is why the fault looked like "publishing is broken" rather than "the GL path is".
 
-      The set is deliberately generous rather than minimal: it costs two megabytes against a
+      The set is deliberately generous rather than minimal: it costs 1.5 MB brotli against a
       twenty-megabyte saving, and a narrower list would be a thing to rediscover the next time a
       dependency moves. What it buys is the trimmed build, which is the only way to get
       RunAOTCompilation — and that is worth ten times the frame rate on the CPU renderer.
+
+      Four of these five now ship inside the package, as src/Ava3D/ILLink.Descriptors.xml, so a consumer
+      needs none of this — measured at OpenGL ES 3.0 and 119.8 fps with this whole ItemGroup deleted. They
+      stay here because build-demo.sh publishes with Ava3DFromPackage=true against the version on nuget,
+      and no published version carries that file yet. Delete the group once one does.
+
+      Ava3D is in the list and does not need to be. Its own GL entry points survive trimming unrooted,
+      because Bind<GlUniform3f>("glUniform3f") names the delegate type as a concrete generic argument,
+      which is a static reference — the linked assembly still carries all fifteen with this line removed.
+      Kept only so the set stays the one that was actually measured together; the descriptor names the four
+      that matter.
     -->
     <TrimmerRootAssembly Include="Ava3D" />
     <TrimmerRootAssembly Include="Avalonia.OpenGL" />

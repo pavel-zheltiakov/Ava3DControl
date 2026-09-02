@@ -147,6 +147,39 @@ public static class DemoSettings
     }
 
     /// <summary>
+    /// Whether scenes are allowed to draw shadows. On by default, and remembered.
+    ///
+    /// The switch exists because "how much does this feature cost" is a question a demo should be able to
+    /// answer by being watched rather than by being read. Shadows are a second pass over the casting
+    /// geometry every frame, and the stats panel is already showing the frame time — turning them off and
+    /// watching that number is the whole demonstration, and it is not one a screenshot can make.
+    ///
+    /// It is remembered for the case it was really added for: somebody running this on hardware where the
+    /// pass is not free. Having to find the switch again on every launch is what makes people stop opening
+    /// the thing.
+    /// </summary>
+    /// <remarks>
+    /// <c>AVA3D_SHADOWS=0</c> switches them off for a measured run, which is how the two halves of the
+    /// benchmark in <c>tools/bench.sh</c> are the same command twice.
+    /// </remarks>
+    public static bool Shadows
+    {
+        get
+        {
+            if (Environment.GetEnvironmentVariable("AVA3D_SHADOWS") is { Length: > 0 } asked)
+                return asked is not ("0" or "off" or "false");
+
+            // Measuring ignores the settings file and takes the default, which here is on — the other way
+            // round from Story and Sound. Those two default to off under measurement because a probe run
+            // should not be filming or making a noise; this one is part of what the scene is, and a
+            // benchmark whose baseline silently had shadows off would be measuring the wrong thing.
+            return Measuring || Read("shadows") is not "off";
+        }
+
+        set => Write("shadows", value ? "on" : "off");
+    }
+
+    /// <summary>
     /// Whether this process is being measured rather than used.
     ///
     /// A probe or capture run measures the configuration it was handed, and its whole value is that

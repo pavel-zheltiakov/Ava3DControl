@@ -32,6 +32,11 @@ internal sealed class Film
         var shop = new PatternShop(Hall);
         var dome = new Planetarium(Hall);
         var link = new Link(Hall);
+
+        // The tower, which hangs off the link's corner rather than sitting on the route. It is the one
+        // room in the building nothing has to walk through — see Deck.ClockTower — and the only one that
+        // casts a shadow.
+        var tower = new ClockRoom(Hall);
         var screens = new ScreenRoom(Hall);
         var corridor = new Corridor(Hall);
         var engine = new EngineRoom(Hall);
@@ -77,6 +82,7 @@ internal sealed class Film
             new Ink(gallery, studio, shop),
             new Patterns(studio, shop, dome),
             new Stars(shop, dome, link, screens),
+            new Hours(link, tower, screens),
             new Screens(screens, corridor),
             new Alarm(screens, corridor),
             new Repair(corridor, engine),
@@ -89,8 +95,8 @@ internal sealed class Film
         // rather than at the hand-over because it needs every room object at once and this is the only place
         // they all exist; it does nothing at all until Open is called.
         Rounds = new Rounds(
-            Hall, antechamber, passage, rotunda, gallery, studio, shop, dome, link, screens, corridor,
-            engine, illuminator);
+            Hall, antechamber, passage, rotunda, gallery, studio, shop, dome, link, tower, screens,
+            corridor, engine, illuminator);
 
         _starts = new float[Chapters.Count];
 

@@ -144,6 +144,7 @@ internal sealed class Rounds
         PatternShop shop,
         Planetarium dome,
         Link link,
+        ClockRoom tower,
         ScreenRoom lounge,
         Corridor corridor,
         EngineRoom engine,
@@ -247,6 +248,20 @@ internal sealed class Rounds
                 0.050f, 0.026f),
 
             new Quarter(Deck.LinkRoom, [link.Turn.Light, link.Run.Light], 0.030f, 0.017f),
+
+            // The clock room, and the only quarter in the building whose slots include a sun.
+            //
+            // It is the one room here that casts a shadow, and this is where it casts it for as long as
+            // anybody cares to stand in it. The film gives the tower fifty-four seconds and takes the light
+            // away again at the end of them; a visitor who walks back in gets the same beam with no clock
+            // on it, which is the one thing the free walk does better than the film.
+            //
+            // Live rather than woken, because the clock is the exhibit: a tower movement stopped on its
+            // first frame is a still life, and the whole claim of the room is that the shadow keeps time.
+            new Quarter(Deck.ClockRoom,
+                [tower.Sun, tower.Lantern, tower.Door.Light],
+                0.160f, 0.056f,
+                Live: clock => tower.Running(hall.Scene, clock)),
 
             new Quarter(Deck.ScreensRoom,
                 [
@@ -377,6 +392,12 @@ internal sealed class Rounds
 
             dome.Show.Off();
             dome.Running(0f);
+
+            // The clock room, which the film leaves dark twice over — its lamp dimmed and its sun faded
+            // out. The sun is why this is here rather than in the quarter's own Live: a directional light
+            // is not a Lamp, and nothing else in this method would go looking for one.
+            tower.Door.Dim(1f);
+            tower.Daylight(1f);
 
             foreach (var lamp in link.All)
                 lamp.Dim(1f);

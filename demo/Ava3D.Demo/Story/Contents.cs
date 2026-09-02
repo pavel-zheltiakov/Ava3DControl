@@ -82,7 +82,8 @@ public static class Contents
         [typeof(TextureKitScene)] = 246f,
         [typeof(RenderToTextureScene)] = 258f,
 
-        // Chapter 6 — the planetarium, which begins at two hundred and sixty-nine and runs seventy-two and a half.
+        // Chapter 6 — the planetarium, which begins at two hundred and sixty-nine and runs sixty-four and a
+        // half. It ran seventy-two and a half until the clock room took the walk to the lounge off it.
         //
         // One entry, and it points at the middle of the show rather than at anything standing in the room.
         // Seventy-eight additive billboards for the gas, twenty-two more blended the ordinary way for the
@@ -92,7 +93,18 @@ public static class Contents
         // down, with the house lights all the way off, the gas at full and Jupiter crossing.
         [typeof(BlendingScene)] = 316f,
 
-        // Chapter 7 — Screens, which begins at three hundred and forty-one and a half. Each set a few seconds after it
+        // Chapter 7 — the clock room, which begins at three hundred and thirty-three and a half and runs
+        // fifty-four.
+        //
+        // Twenty-six seconds in, which is the middle of the one shot the room was staged around: he has
+        // come in with the window behind his shoulder, walked the length of three metres of clock drawn on
+        // the flagstones, and turned round at the far wall to find the ring that is drawing it. It is the
+        // only place in the room with both halves in frame — see Hours.Walk — and it is held for three and
+        // a half seconds, which is what makes it the frame to point a picker at rather than a moment to
+        // pass through.
+        [typeof(ClockTowerScene)] = 359.5f,
+
+        // Chapter 8 — Screens, which begins at three hundred and eighty-seven and a half. Each set a few seconds after it
         // wakes, while he is still standing in front of it. They are later inside the chapter than they
         // used to be, because the chapter now spends its first thirteen seconds on a room rather than on a
         // bench: he comes in, looks at the furniture and the console, and only then starts down the line.
@@ -105,10 +117,10 @@ public static class Contents
         // cue that is a few seconds out is a picker entry that lands slightly early, which is worth a table
         // that can go stale — the alternative is building the whole film to ask it where something is, at
         // startup, before anything has been selected.
-        [typeof(GrassBricksScene)] = 360.5f,
-        [typeof(CoinMazeScene)] = 366.5f,
-        [typeof(RunnerScene)] = 372.5f,
-        [typeof(BlocksScene)] = 378.5f,
+        [typeof(GrassBricksScene)] = 406.5f,
+        [typeof(CoinMazeScene)] = 412.5f,
+        [typeof(RunnerScene)] = 418.5f,
+        [typeof(BlocksScene)] = 424.5f,
 
         // And the case on the west wall, one second into the pass along it. It is the one cue in this table
         // that points at a camera move rather than at a thing: a billboard standing still is a picture, and
@@ -120,9 +132,9 @@ public static class Contents
         // south end looking down the length of it: the bars are raked, the far bay is foreshortened to a
         // slot, and the row inside is standing dead square to him anyway. That is the whole argument in one
         // frame, and it is what the picker should land on.
-        [typeof(SpritesScene)] = 386.5f,
+        [typeof(SpritesScene)] = 432.5f,
 
-        // Chapter 8 — the alarm, which begins at four hundred and forty-five and runs sixteen.
+        // Chapter 9 — the alarm, which begins at four hundred and eighty and runs sixteen.
         //
         // Both of these used to sit later and one of them used to be a stop: Unlit landed nine seconds in
         // while he stood under the first beacon looking up at the lens. He does not stand anywhere in this
@@ -139,16 +151,16 @@ public static class Contents
         // one behind and are being reassigned every frame as he walks. Later than Unlit by five seconds
         // rather than by eleven, because the chapter is less than half as long; both still land in the
         // stretch this corridor exists to show.
-        [typeof(UnlitScene)] = 438.5f,
-        [typeof(FourLightsScene)] = 443.5f,
+        [typeof(UnlitScene)] = 484.5f,
+        [typeof(FourLightsScene)] = 489.5f,
 
         // And the air, six seconds in, with most of the corridor still ahead of him — which is the only
         // place it can be. This is the one entry in the table that points at a property of the room rather
         // than at a thing standing in it: fog is the difference between two distances, so a frame of it is
         // always also a camera standing somewhere, and the somewhere is the whole of what it shows.
-        [typeof(FogScene)] = 440.5f,
+        [typeof(FogScene)] = 486.5f,
 
-        // Chapter 9 — the engine room, which begins at four hundred and sixty-one and runs a hundred and
+        // Chapter 10 — the engine room, which begins at four hundred and ninety-six and runs a hundred and
         // one. Four of these five are the scene the film mounts at that second, running its own code on the
         // same model the picker would build. The first three are on the bench's display, at a third of full
         // size; the last is the board itself, at fifteen hundredths, lying on the mat.
@@ -158,21 +170,21 @@ public static class Contents
         // through the surface they are drawn on. The two entries are eighteen seconds apart because the
         // drawing is what you are looking at for both of them and there is no other way to point at a
         // property.
-        [typeof(DraftsmanScene)] = 468.5f,
-        [typeof(DepthBiasScene)] = 470.5f,
-        [typeof(WireframeScene)] = 474.5f,
-        [typeof(InspectorScene)] = 488.5f,
-        [typeof(IndicatorsScene)] = 542.5f,
+        [typeof(DraftsmanScene)] = 514.5f,
+        [typeof(DepthBiasScene)] = 516.5f,
+        [typeof(WireframeScene)] = 520.5f,
+        [typeof(InspectorScene)] = 534.5f,
+        [typeof(IndicatorsScene)] = 588.5f,
 
         // And the steam, eleven seconds in, on the long look up the room at the housings — which is the
         // one moment in the chapter with any depth in front of him. The rest of it is a bench.
-        [typeof(SoftParticlesScene)] = 461.5f,
+        [typeof(SoftParticlesScene)] = 507.5f,
 
-        // Chapter 11 — the cut, which begins at six hundred and twenty-two and runs sixty. It is the one
+        // Chapter 12 — the cut, which begins at six hundred and fifty-eight and runs sixty. It is the one
         // entry in this table that points at the start of its chapter rather than into the middle of one,
         // because the film it cuts to has a first frame that is meant to be seen: the whole of Contact is
         // the feature, and arriving eleven seconds into it would be arriving after the establishing shot.
-        [typeof(Scenes.Contact.ContactScene)] = 611.5f
+        [typeof(Scenes.Contact.ContactScene)] = 657.5f
     };
 
     /// <summary>Every feature, in the order the film reaches them, which is also the order they build on

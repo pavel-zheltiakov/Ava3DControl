@@ -174,6 +174,14 @@ internal sealed partial class Program
                         // the tab to hold it back from.
                         Environment.SetEnvironmentVariable("AVA3D_THREADS", value);
                         break;
+                    case "shadows":
+                        // ?shadows=0 is the only way to ask a browser run for the scene without its
+                        // shadow pass. Every other head has an environment variable for it and a tab has
+                        // none, so without this the switch in the toolbar is the only route — which is
+                        // fine for looking and useless for a measurement somebody else has to reproduce,
+                        // since a probe run ignores the remembered setting by design.
+                        Environment.SetEnvironmentVariable("AVA3D_SHADOWS", value);
+                        break;
                     case "probe":
                         // ?probe=<seconds> is the desktop head's AVA3D_PROBE, which prints what the
                         // renderer did and exits. Here it only prints: a tab cannot exit without taking

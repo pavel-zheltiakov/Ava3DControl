@@ -1171,8 +1171,8 @@ internal static class Finish
     };
 
     /// <summary>
-    /// The walls: fabric over fluted absorbent, which is what the inside of every dark room that people
-    /// listen in is lined with.
+    /// The walls: stretched fabric over absorbent board, in panels with a reveal between them, which is
+    /// what the inside of every dark room that people listen in is lined with.
     ///
     /// Dark on purpose and dark by a lot — a tenth, where the building's plaster is a third. A wall that
     /// gives back a third of what falls on it is a wall that fills a dome with its own bounce, and the one
@@ -1180,10 +1180,14 @@ internal static class Finish
     /// reason the four photographs work: a print at a third of a metre from a black wall under one cove is
     /// the brightest thing in its own quarter of the room.
     ///
-    /// The flutes are a hundred millimetres apart and twelve deep, which is a real acoustic profile and,
-    /// incidentally, the one relief in the building deep enough to read as shape rather than as tooth. On a
-    /// twelve-sided room lit by five coves in the cornice, what that buys is a wall that shows you which
-    /// way it is facing.
+    /// <b>It was fluted, and the flutes are why it is not.</b> A hundred and sixty millimetres of
+    /// half-round profile at twelve deep is a real acoustic section and it rendered as what it is — a
+    /// wall of vertical stripes, lit one flank at a time by five coves, which from the door read as
+    /// corrugated sheet and from a metre as a roller blind. A stripe is the one thing a wall must never
+    /// be. What a lined auditorium actually shows is panels: eight hundred by sixteen hundred, a shadow
+    /// line between each, the cloth bowed a few millimetres over the board — and nothing else varying at
+    /// any scale a person can see, because the nap of a cloth is below the texel and drawing it anyway is
+    /// drawing moiré. The reveals carry the occlusion, which is the map that makes a joint a joint.
     /// </summary>
     public static Material Acoustic() => new()
     {
@@ -1196,15 +1200,10 @@ internal static class Finish
         OcclusionTexture = AcousticMask.Value,
         OcclusionStrength = 0.8f,
 
-        // <b>Turned down, and this is the surface in the building that most needed it.</b> A round room is
-        // read at every angle at once — square on across the floor and edge on where the wall curves away —
-        // and the flutes are the deepest relief anywhere here. At full strength the far arc came out as a
-        // band of crawling stripes above the doorway, which is a normal map beating against the pixel grid
-        // and is the same fault reported twice already about other rooms. Wider flutes and a gentler tilt
-        // both help and neither is a compromise: a hundred and sixty millimetres is as real an acoustic
-        // profile as a hundred, and the relief that reads from three metres is not the relief that reads
-        // from thirty centimetres.
-        NormalScale = 0.6f,
+        // A round room is read at every angle at once — square on across the floor and edge on where
+        // the wall curves away — and relief read edge on is shimmer. Most of this map is the reveal,
+        // which is a line and survives; the bow over a panel is gentle enough not to.
+        NormalScale = 0.7f,
         Name = "acoustic"
     };
 
@@ -1244,13 +1243,213 @@ internal static class Finish
     /// </summary>
     public static Material Carpet() => new()
     {
-        BaseColor = new Vector4(0.108f, 0.101f, 0.118f, 1f),
+        // Three times the tenth it used to be, against a map drawn at a third — see CarpetColour.
+        BaseColor = new Vector4(0.30f, 0.28f, 0.33f, 1f),
         Metallic = 0f,
         Roughness = 1f,
         BaseColorTexture = CarpetColour.Value,
         MetallicRoughnessTexture = CarpetRough.Value,
         NormalTexture = CarpetBumps.Value,
         Name = "carpet"
+    };
+
+    // ---- the clock tower ---------------------------------------------------------------------------
+    //
+    // Seven surfaces, and they are the first in the building that are not something a gallery is lined
+    // with. The tower is the one room the story mounts whole rather than builds — see ClockRoom — so the
+    // scene dresses itself from this kit and the wall the story adds is cut from the same stone. Every
+    // other room here is plaster over a frame; this one is masonry, flags, oak and cast iron, which is
+    // what the back of a tower clock is made of, and it is also the one place in the film with a light
+    // strong enough to show a surface at four metres. A sun raking across a wall is the whole reason a
+    // normal map exists, and until this room nothing in the building had one to rake.
+
+    /// <summary>
+    /// Ashlar: coursed dressed stone with the joints raked and the arrises worn.
+    ///
+    /// Four courses of unequal height add up to one image, so the wall tiles without a course repeating
+    /// on a rhythm the eye can count; two or three blocks to a course, each course shifted so the
+    /// perpends never stack — running bond, which every wall of cut stone is laid to because a joint over
+    /// a joint is a crack. The face of a block is pillowed by a few millimetres and has a tooth to it, and
+    /// both are below what a person sees from the middle of the room. What reads from there is the tone
+    /// changing block by block and the joints going dark under a raking sun, and those are the two things
+    /// the colour map and the occlusion map are for.
+    ///
+    /// The pitch is the building's, so the courses are three hundred and seventy to four hundred and
+    /// thirty millimetres and the blocks half a metre to eight tenths — a tower, not a cottage.
+    /// </summary>
+    public static Material Masonry() => new()
+    {
+        BaseColor = new Vector4(0.50f, 0.46f, 0.40f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = MasonryColour.Value,
+        MetallicRoughnessTexture = MasonryRough.Value,
+        NormalTexture = MasonryBumps.Value,
+        OcclusionTexture = MasonryMask.Value,
+        OcclusionStrength = 0.7f,
+        NormalScale = 0.85f,
+        Name = "masonry"
+    };
+
+    /// <summary>
+    /// Flagstones: big slabs of unequal size, laid in rows, worn where feet go.
+    ///
+    /// It is the receiver of the only shadow in the building, and that decides everything about it. The
+    /// drawing on the floor is a hard-edged silhouette and it has to stay one, so nothing here is allowed
+    /// to compete with an edge: the slabs differ from each other by a fifth in tone and no more, the
+    /// joints are dark but narrow, and the relief is a dish a few millimetres deep across each slab with
+    /// the joint dropped below it. What that gives the sun is a floor it can rake — every slab catches
+    /// the beam a shade differently and each joint throws a hair of shadow — without the clock's outline
+    /// ever having to fight a pattern. Worn slabs are smoother than fresh ones, which is a roughness map
+    /// doing what a hundred years of boots do.
+    /// </summary>
+    public static Material Flagstones() => new()
+    {
+        BaseColor = new Vector4(0.37f, 0.34f, 0.30f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = FlagColour.Value,
+        MetallicRoughnessTexture = FlagRough.Value,
+        NormalTexture = FlagBumps.Value,
+        OcclusionTexture = FlagMask.Value,
+        OcclusionStrength = 0.6f,
+
+        // Seen across the room at a grazing angle for most of the chapter, which is where a normal map
+        // turns to shimmer — the same reason the lounge's boards are at half.
+        NormalScale = 0.65f,
+        Name = "flags"
+    };
+
+    /// <summary>
+    /// Cast iron: a pitted skin with rust breaking through in patches, drawn at <see cref="Close"/>
+    /// because it is the ironwork a visitor stands next to.
+    ///
+    /// A casting is not a machined surface. It comes out of the sand with the sand's texture on it, and a
+    /// century in a tower puts oxide in every pit, so the finish is a matte grey with a fine tooth and
+    /// the odd bloom of orange where the water got in. The metallic map is what makes the rust rust: the
+    /// skin is a metal and reflects, the oxide is a dielectric and does not, and one metallic number for
+    /// the whole surface would have to be wrong about one of them.
+    /// </summary>
+    public static Material CastIron() => new()
+    {
+        BaseColor = new Vector4(0.38f, 0.38f, 0.40f, 1f),
+        Metallic = 1f,
+        Roughness = 1f,
+        BaseColorTexture = IronColour.Value,
+        MetallicRoughnessTexture = IronRough.Value,
+        NormalTexture = IronBumps.Value,
+        NormalScale = 0.7f,
+        Name = "cast iron"
+    };
+
+    /// <summary>
+    /// Brass, turned and polished: the hands, the bob and the rating nut.
+    ///
+    /// It shares every map with <see cref="Brushed"/> and <see cref="Gold"/> — the comparison the gallery
+    /// makes on purpose, made a third time by thrift — and differs from them in the two numbers a metal
+    /// has. <c>Fabric.Brass</c> is the flat version and stays where it is: this one is for parts that are
+    /// looked at from a metre, under a sun, and a flat metal under a sun is a cut-out.
+    /// </summary>
+    public static Material Brass() => new()
+    {
+        BaseColor = new Vector4(0.82f, 0.62f, 0.28f, 1f),
+        Metallic = 1f,
+        Roughness = 0.62f,
+        BaseColorTexture = BrushedColour.Value,
+        MetallicRoughnessTexture = BrushedRough.Value,
+        NormalTexture = BrushedBumps.Value,
+        NormalScale = 0.5f,
+        Name = "brass"
+    };
+
+    /// <summary>
+    /// Old oak: the beams, the lintel and the door frame. Dark, dry and open-grained, with the grain
+    /// running along <c>u</c>, which is along a beam when the beam is mapped by the room.
+    ///
+    /// <see cref="Timber"/> is a varnished door and its grain runs up; this is a field turned through a
+    /// right angle, at twice the roughness and half the brightness, with a growth-ring banding under it
+    /// that the door does not need. A beam reads as a beam because of the rings — the long waver of dark
+    /// and light down its length is the one thing that separates timber seen from four metres from a
+    /// brown box.
+    /// </summary>
+    public static Material Oak() => new()
+    {
+        BaseColor = new Vector4(0.27f, 0.19f, 0.12f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = OakColour.Value,
+        MetallicRoughnessTexture = OakRough.Value,
+        NormalTexture = OakBumps.Value,
+        NormalScale = 0.6f,
+        Name = "oak"
+    };
+
+    /// <summary>
+    /// Galvanised steel: the bucket. A spangle of zinc crystals, each a few centimetres across and each a
+    /// shade different, which is the only finish in the building anybody could name from the pattern
+    /// alone.
+    ///
+    /// It is a nearest-point cell field — every pixel takes the tone and the gloss of whichever hashed
+    /// point it is closest to — and that is the whole of what a spangle is: zinc freezing on a sheet from
+    /// a few thousand seeds at once, each crystal a flat facet at its own angle. The roughness map does
+    /// most of the work, because what a person sees of a galvanised pail is that the facets catch the
+    /// light one at a time.
+    /// </summary>
+    public static Material Galvanised() => new()
+    {
+        BaseColor = new Vector4(0.66f, 0.67f, 0.69f, 1f),
+        Metallic = 1f,
+        Roughness = 1f,
+        BaseColorTexture = ZincColour.Value,
+        MetallicRoughnessTexture = ZincRough.Value,
+        NormalTexture = ZincBumps.Value,
+        NormalScale = 0.5f,
+        Name = "galvanised"
+    };
+
+    /// <summary>
+    /// Hemp rope, three strands laid right-handed: the line the drive weight hangs from.
+    ///
+    /// Mapped to a cylinder's own coordinates rather than the room's — <c>u</c> round the rope and <c>v</c>
+    /// along it — because a rope is the one surface here whose pattern is a helix, and a helix has no
+    /// planar projection. One image is one lay; the scene sets <see cref="Material.UvScale"/> to however
+    /// many lays there are in the length. See <see cref="Laid"/>.
+    /// </summary>
+    public static Material Rope() => new()
+    {
+        BaseColor = new Vector4(0.58f, 0.48f, 0.32f, 1f),
+        Metallic = 0f,
+        Roughness = 1f,
+        BaseColorTexture = RopeColour.Value,
+        MetallicRoughnessTexture = RopeRough.Value,
+        NormalTexture = RopeBumps.Value,
+        Name = "rope"
+    };
+
+    /// <summary>
+    /// Black-stained timber, satin: the planetarium's picture frames and its skirting.
+    ///
+    /// <see cref="Timber"/>'s grain under a stain dark enough that the grain is a texture in the highlight
+    /// and nothing in the colour, which is what a stained frame is. It replaced moulded plastic on the
+    /// frames, and the reason is in the picture: orange peel at four tenths of a millimetre under a cove
+    /// light is a crumpled surface, and a frame round a photograph has to be the calmest thing on the wall.
+    /// </summary>
+    public static Material Stained() => new()
+    {
+        // Three hundredths. The film exposes a planetarium so that a tenth reads as mid-grey — see
+        // Acoustic — and a frame at eight hundredths came out walnut. Ebonised is a number, and it is
+        // this one.
+        BaseColor = new Vector4(0.035f, 0.028f, 0.024f, 1f),
+        Metallic = 0f,
+
+        // Satin, not gloss, and the number is the cove's doing rather than the wood's. A picture light a
+        // metre and a quarter off the wall puts a broad highlight on anything glossier than this, and on a
+        // black frame a warm highlight is the whole of what shows — at a half it came out walnut.
+        Roughness = 0.68f,
+        BaseColorTexture = WoodColour.Value,
+        NormalTexture = WoodBumps.Value,
+        NormalScale = 0.35f,
+        Name = "stained"
     };
 
     // ---- the fields the maps above are drawn from ----------------------------------------------------
@@ -1447,36 +1646,62 @@ internal static class Finish
             return 1f - 0.75f * hole - 0.45f * joint;
         }));
 
-    /// <summary>One flute of the wall lining, plus the weave of the cloth stretched over it.</summary>
-    private static float Fluted(float u, float v)
+    /// <summary>
+    /// One panel of the wall lining: the face inside its reveal, where on the panel the sample is, and
+    /// the panel's own tone.
+    ///
+    /// Eight hundred wide and sixteen hundred tall, which is a sheet of fabric-wrapped board a fitter
+    /// carries, stood on end; and the reveal between two is ten millimetres of shadow, which is how every
+    /// acoustic wall ever fitted is jointed, because cloth cannot be butted.
+    /// </summary>
+    private static (float Face, float Across, float Down, float Tone) Stretched(float u, float v)
     {
-        // Ten to the tile, which is a hundred and sixty millimetres at Pitch, and it was sixteen. A flute
-        // is a half-round, so the profile is a cosine and not a triangle — and the cloth over it does not
-        // reach the bottom of the gap, which is what the fractional power is doing: the crests are broad
-        // and the valleys are narrow.
-        var flute = 0.5f + 0.5f * MathF.Cos(u * MathF.Tau * 10f);
+        const float wide = 0.5f;
+        const float tall = 1f;
+        const float reveal = 0.010f / Pitch;
 
-        return MathF.Pow(flute, 0.55f) * 0.9f + Weave(u, v) * 0.1f;
+        var cu = Grain.Cell(u, wide);
+        var cv = Grain.Cell(v, tall);
+
+        var face = Grain.Band(cu, reveal / wide, 1f - reveal / wide, 0.012f)
+                   * Grain.Band(cv, reveal / tall, 1f - reveal / tall, 0.006f);
+
+        return (face, cu, cv, Grain.Pick(Grain.Index(u, wide), Grain.Index(v, tall), 231));
+    }
+
+    /// <summary>The cloth's nap: fine fibre at two scales and no weave — a weave a millimetre across is
+    /// below the texel at the building's pitch.</summary>
+    private static float Nap(float u, float v) =>
+        Grain.Fbm(u, v, 30, 233, 3) * 0.6f + Grain.Fbm(u, v, 90, 235, 2) * 0.4f;
+
+    /// <summary>The height field: a panel bows out where the cloth is stretched over the board, and the
+    /// reveal drops behind it. Twelve millimetres, most of it the reveal.</summary>
+    private static float Padded(float u, float v)
+    {
+        var (face, across, down, _) = Stretched(u, v);
+
+        return face * (0.70f + 0.24f * (1f - 0.5f * Bow(across, down)) + 0.06f * Nap(u, v));
     }
 
     private static readonly Lazy<Texture> AcousticColour = new(() =>
         Grain.Colour(Detailed, "acoustic.colour", (u, v) =>
         {
-            var lit = 0.72f + 0.36f * Fluted(u, v);
-            var tone = 0.92f + 0.16f * Grain.Fbm(u, v, 4, 83, 3);
+            var (face, _, _, tone) = Stretched(u, v);
 
-            return new Vector3(lit * tone, lit * tone * 1.02f, lit * tone * 1.16f);
+            var lit = (0.74f + 0.26f * Nap(u, v)) * (0.94f + 0.12f * tone);
+            var panel = new Vector3(lit, lit * 1.02f, lit * 1.16f);
+
+            return Vector3.Lerp(new Vector3(0.28f, 0.28f, 0.30f), panel, face);
         }));
 
     private static readonly Lazy<Texture> AcousticRough = new(() =>
-        Grain.Rough(Detailed, "acoustic.rough", (u, v) =>
-            new Vector2(0.90f + 0.08f * Weave(u, v), 0f)));
+        Grain.Rough(Detailed, "acoustic.rough", (u, v) => new Vector2(0.94f + 0.06f * Nap(u, v), 0f)));
 
     private static readonly Lazy<Texture> AcousticBumps = new(() =>
-        Grain.Bumps(Detailed, "acoustic.bumps", Fluted, 0.010f, Pitch));
+        Grain.Bumps(Detailed, "acoustic.bumps", Padded, 0.012f, Pitch));
 
     private static readonly Lazy<Texture> AcousticMask = new(() =>
-        Grain.Mask(Detailed, "acoustic.mask", (u, v) => 0.45f + 0.55f * Fluted(u, v)));
+        Grain.Mask(Detailed, "acoustic.mask", (u, v) => 0.40f + 0.60f * Stretched(u, v).Face));
 
     /// <summary>
     /// One tile of seat cloth: a twill, which is a weave whose floats step sideways one thread a row and
@@ -1527,12 +1752,37 @@ internal static class Finish
     private static float Tufted(float u, float v) =>
         Grain.Fbm(u, v, 26, 137, 3) * 0.55f + Grain.Fbm(u, v, 74, 149, 2) * 0.45f;
 
+    /// <summary>
+    /// The pile, and a scatter of pale flecks through it.
+    ///
+    /// The field is drawn at a third and the base colour is three times what it was, and the arithmetic
+    /// comes out where it started — a tenth — with one difference: a fleck can now be brighter than the
+    /// carpet, which no map can do when the base colour is the ceiling. Every planetarium and cinema
+    /// carpet ever laid has a scatter in it, for the same reason this one does — a plain dark floor forty
+    /// square metres across is a floor a person cannot see the edge of.
+    /// </summary>
     private static readonly Lazy<Texture> CarpetColour = new(() =>
         Grain.Colour(Detailed, "carpet.colour", (u, v) =>
         {
-            var fibre = 0.74f + 0.44f * Tufted(u, v);
+            var fibre = 0.30f + 0.16f * Tufted(u, v);
+            var field = new Vector3(fibre, fibre * 0.97f, fibre * 1.04f);
 
-            return new Vector3(fibre, fibre * 0.97f, fibre * 1.04f);
+            // One cell in seven carries a tuft of the pale yarn, at a hashed spot inside its cell so the
+            // scatter has no grid in it, and never near enough the cell's edge to be cut by the tile.
+            const int cells = 40;
+
+            var cx = (int)MathF.Floor(u * cells);
+            var cy = (int)MathF.Floor(v * cells);
+            var pick = Grain.Pick(cx, cy, 241);
+
+            if (pick < 0.86f)
+                return field;
+
+            var dx = u * cells - (cx + 0.25f + 0.5f * Grain.Pick(cx, cy, 243));
+            var dy = v * cells - (cy + 0.25f + 0.5f * Grain.Pick(cx, cy, 245));
+            var fleck = MathF.Exp(-(dx * dx + dy * dy) * 60f);
+
+            return Vector3.Lerp(field, new Vector3(0.80f, 0.82f, 0.95f), fleck * (0.6f + 0.4f * pick));
         }));
 
     private static readonly Lazy<Texture> CarpetRough = new(() =>
@@ -1541,4 +1791,390 @@ internal static class Finish
 
     private static readonly Lazy<Texture> CarpetBumps = new(() =>
         Grain.Bumps(Detailed, "carpet.bumps", Tufted, 0.003f, Pitch));
+
+    // ---- the tower's fields -------------------------------------------------------------------------
+
+    /// <summary>Drawn at two hundred and fifty-six rather than one ninety-two: a joint in stone is ten
+    /// millimetres, and at the building's pitch that is a texel and a half at the smaller size, which is
+    /// a joint that blurs into the block on one side of it.</summary>
+    private const int Coarse = 256;
+
+    /// <summary>The five courses of one image of ashlar, as fractions of its height, top down: two hundred
+    /// and ninety to three hundred and fifty millimetres at the building's pitch, which is a tower.</summary>
+    private static readonly float[] Courses = [0f, 0.22f, 0.40f, 0.62f, 0.81f, 1f];
+
+    /// <summary>And the three rows of one image of flags: three hundred and fifty to six hundred and
+    /// seventy.</summary>
+    private static readonly float[] FlagRows = [0f, 0.22f, 0.58f, 1f];
+
+    /// <summary>
+    /// One block of a coursed surface — ashlar or flags — given the row boundaries: the face between
+    /// joints, where on the block the sample is, and two hashed numbers that are the block's own.
+    ///
+    /// <b>The hashes are taken on the block's index wrapped to the row</b>, and the wrap is what keeps the
+    /// image tileable. A row is shifted by a hashed fraction so its joints do not stack on the row below,
+    /// which means one block always straddles the image's edge — and a block whose two halves are hashed
+    /// differently is a block with a step in it at every repeat.
+    /// </summary>
+    private static (float Face, float Across, float Down, float Tone, float Hue, float Halo) Coursed(
+        float u, float v, float[] rows, float joint, float wear, int most, int seed)
+    {
+        // <b>The joints wander, and it is the wander that makes this stone rather than tile.</b> A tile is
+        // cut by a machine and a block is cut by a man, and the difference at four metres is that no joint
+        // in a stone wall is a ruler line: it drifts by a few millimetres along its length, and the eye
+        // reads the drift before it reads anything else. A tileable field, so the drift meets itself at
+        // the image's edge — and the same field is used below to find the block, so a block's index is
+        // decided in the same wandering coordinates its edges are drawn in.
+        var drift = 0.012f;
+        var su = u + drift * (Grain.Fbm(u, v, 7, seed + 6, 2) - 0.5f);
+        var sv = v + drift * (Grain.Fbm(u, v, 7, seed + 8, 2) - 0.5f);
+
+        var cv = Grain.Cell(sv, 1f);
+        var row = 0;
+
+        while (row < rows.Length - 2 && cv >= rows[row + 1])
+            row++;
+
+        var top = rows[row];
+        var height = rows[row + 1] - top;
+
+        var pick = Grain.Pick(row, 0, seed);
+        var blocks = 2 + (int)MathF.Min(most - 2, MathF.Floor(pick * (most - 1)));
+        var pitch = 1f / blocks;
+        var along = su + Grain.Pick(row, 1, seed);
+
+        var cu = Grain.Cell(along, pitch);
+        var down = (cv - top) / height;
+
+        var face = Grain.Band(cu, joint / pitch, 1f - joint / pitch, wear / pitch)
+                   * Grain.Band(down, joint / height, 1f - joint / height, wear / height);
+
+        // And a soft band inside every edge, for the grime that collects along a joint: nought at the
+        // joint, one a hand's breadth in.
+        const float reach = 0.09f;
+
+        var halo = Grain.Band(cu, joint / pitch, 1f - joint / pitch, reach / pitch)
+                   * Grain.Band(down, joint / height, 1f - joint / height, reach / height);
+
+        var index = ((Grain.Index(along, pitch) % blocks) + blocks) % blocks;
+
+        return (face, cu, down,
+            Grain.Pick(index * 7 + row, row, seed + 2),
+            Grain.Pick(index * 7 + row, row + 1, seed + 4),
+            halo);
+    }
+
+    /// <summary>Ashlar: twelve millimetres of joint at the building's pitch, an arris worn back over
+    /// twenty, and two or three blocks to a course.</summary>
+    private static (float Face, float Across, float Down, float Tone, float Hue, float Halo) Ashlar(float u, float v) =>
+        Coursed(u, v, Courses, 0.012f / Pitch, 0.020f / Pitch, 3, 91);
+
+    /// <summary>Flags: sixteen millimetres of joint, the edges rounded over thirty, and two to four
+    /// slabs to a row.</summary>
+    private static (float Face, float Across, float Down, float Tone, float Hue, float Halo) Flag(float u, float v) =>
+        Coursed(u, v, FlagRows, 0.016f / Pitch, 0.030f / Pitch, 4, 111);
+
+    /// <summary>How far a sample is from the middle of its block, nought at the centre and one at the
+    /// corners: the pillow on a block of stone and the dish in a flag are both this.</summary>
+    private static float Bow(float across, float down)
+    {
+        var dx = across * 2f - 1f;
+        var dy = down * 2f - 1f;
+
+        return Math.Clamp((dx * dx + dy * dy) * 0.5f, 0f, 1f);
+    }
+
+    private static readonly Lazy<Texture> MasonryColour = new(() =>
+        Grain.Colour(Coarse, "masonry.colour", (u, v) =>
+        {
+            var (face, _, _, tone, hue, halo) = Ashlar(u, v);
+
+            // Sandstone: buff, with a run of warmer and cooler blocks through it, because a quarry is not
+            // one colour and a mason lays what he is sent. The run is a sixth from block to block and no
+            // more — the first cut of this was a third, and a third is a chequerboard, which is what glazed
+            // tile does and stone does not. Then the bed's own mottle at two scales, the grime that gathers
+            // along every joint, and a sand-grain tooth over the lot.
+            var warm = new Vector3(1f, 0.95f, 0.87f);
+            var cool = new Vector3(0.93f, 0.94f, 0.96f);
+
+            var stone = Vector3.Lerp(cool, warm, Grain.Step(0.25f, 0.75f, hue))
+                        * (0.86f + 0.16f * tone)
+                        * (0.90f + 0.14f * Grain.Fbm(u, v, 2, 95, 3))
+                        * (0.92f + 0.12f * Grain.Fbm(u, v, 6, 97, 3))
+                        * (0.92f + 0.14f * Grain.Fbm(u, v, 48, 99, 2))
+                        * (0.84f + 0.16f * halo);
+
+            // The joint: raked mortar in shadow, which is dark whatever the mortar was. Pale joints are the
+            // other half of what made the first cut read as tile — a tile's grout is flush and catches the
+            // light; a raked joint is a groove and does not.
+            var mortar = new Vector3(0.42f, 0.40f, 0.37f) * (0.85f + 0.30f * Grain.Fbm(u, v, 40, 101, 2));
+
+            return Vector3.Lerp(mortar, stone, face);
+        }));
+
+    private static readonly Lazy<Texture> MasonryRough = new(() =>
+        Grain.Rough(Coarse, "masonry.rough", (u, v) =>
+        {
+            var (face, _, _, _, _, _) = Ashlar(u, v);
+
+            // Dead matt. A dressed stone has no sheen at any distance a person stands from a wall, and the
+            // three hundredths this varies by is the tooth catching a raking light unevenly.
+            return new Vector2(1f - face * 0.05f - 0.03f * Grain.Fbm(u, v, 30, 103, 2), 0f);
+        }));
+
+    /// <summary>The height field: a block stands nine millimetres proud of its raked joint, pillowed
+    /// towards its middle, with a millimetre of tooth over it.</summary>
+    private static float Dressed(float u, float v)
+    {
+        var (face, across, down, _, _, _) = Ashlar(u, v);
+
+        return face * (0.55f + 0.35f * (1f - 0.35f * Bow(across, down)) + 0.10f * Grain.Fbm(u, v, 44, 105, 3));
+    }
+
+    private static readonly Lazy<Texture> MasonryBumps = new(() =>
+        Grain.Bumps(Coarse, "masonry.bumps", Dressed, 0.009f, Pitch));
+
+    private static readonly Lazy<Texture> MasonryMask = new(() =>
+        Grain.Mask(Coarse, "masonry.mask", (u, v) =>
+        {
+            var (face, _, _, _, _, halo) = Ashlar(u, v);
+
+            return 0.50f + 0.50f * face * (0.85f + 0.15f * halo);
+        }));
+
+    private static readonly Lazy<Texture> FlagColour = new(() =>
+        Grain.Colour(Coarse, "flags.colour", (u, v) =>
+        {
+            var (face, across, down, tone, hue, halo) = Flag(u, v);
+
+            var warm = new Vector3(1f, 0.95f, 0.88f);
+            var cool = new Vector3(0.88f, 0.90f, 0.95f);
+
+            var slab = Vector3.Lerp(cool, warm, Grain.Step(0.3f, 0.7f, hue))
+                       * (0.84f + 0.20f * tone)
+                       * (0.88f + 0.16f * Grain.Fbm(u, v, 2, 119, 3))
+                       * (0.90f + 0.14f * Grain.Fbm(u, v, 7, 121, 3))
+                       * (0.93f + 0.12f * Grain.Fbm(u, v, 52, 123, 2))
+                       * (0.80f + 0.20f * halo);
+
+            // A worn slab is paler in the middle, where the grit has come off it: the same hash that
+            // lowers its roughness lifts its colour, because both are one thing — boots.
+            slab *= 1f + 0.06f * Worn(hue, across, down);
+
+            // The joints are dirt, not mortar. A floor's pointing is whatever has been trodden into it.
+            var dirt = new Vector3(0.30f, 0.28f, 0.26f) * (0.80f + 0.30f * Grain.Fbm(u, v, 36, 125, 2));
+
+            return Vector3.Lerp(dirt, slab, face);
+        }));
+
+    /// <summary>How worn a point on a flag is: the slab's own hash, strongest in its middle.</summary>
+    private static float Worn(float hue, float across, float down) =>
+        Grain.Step(0.35f, 0.8f, hue) * (1f - Bow(across, down));
+
+    private static readonly Lazy<Texture> FlagRough = new(() =>
+        Grain.Rough(Coarse, "flags.rough", (u, v) =>
+        {
+            var (face, across, down, _, hue, _) = Flag(u, v);
+
+            return new Vector2(
+                1f - face * (0.10f + 0.30f * Worn(hue, across, down)) - 0.04f * Grain.Fbm(u, v, 30, 127, 2),
+                0f);
+        }));
+
+    /// <summary>The height field: a flag dished by a few millimetres and its joint ten below the rim.</summary>
+    private static float Bedded(float u, float v)
+    {
+        var (face, across, down, _, _, _) = Flag(u, v);
+
+        return face * (0.62f + 0.28f * (1f - 0.6f * Bow(across, down)) + 0.10f * Grain.Fbm(u, v, 40, 129, 3));
+    }
+
+    private static readonly Lazy<Texture> FlagBumps = new(() =>
+        Grain.Bumps(Coarse, "flags.bumps", Bedded, 0.010f, Pitch));
+
+    private static readonly Lazy<Texture> FlagMask = new(() =>
+        Grain.Mask(Coarse, "flags.mask", (u, v) =>
+        {
+            var (face, _, _, _, _, halo) = Flag(u, v);
+
+            return 0.55f + 0.45f * face * (0.85f + 0.15f * halo);
+        }));
+
+    /// <summary>Casting sand: fine noise pushed hard towards its low end, so the field is a scatter of
+    /// pits in a skin rather than an even fuzz.</summary>
+    private static float Pitted(float u, float v) => MathF.Pow(Grain.Fbm(u, v, 56, 201, 3), 2.6f);
+
+    /// <summary>
+    /// Where the rust is: a few patches, a few centimetres across, mottled inside.
+    ///
+    /// A tenth of the surface and not a third. The first cut of this covered a third and rendered as a
+    /// leopard — a top plate blotched orange from end to end, which is scrap and not a clock. Iron in a
+    /// dry tower blooms where water has stood on it, which is a corner here and a foot there.
+    /// </summary>
+    private static float Rusted(float u, float v) =>
+        Grain.Step(0.66f, 0.82f, Grain.Fbm(u, v, 5, 203, 3)) * (0.5f + 0.5f * Grain.Fbm(u, v, 38, 205, 2));
+
+    private static readonly Lazy<Texture> IronColour = new(() =>
+        Grain.Colour(Detailed, "iron.colour", (u, v) =>
+        {
+            var pits = Pitted(u, v);
+            var rust = Rusted(u, v);
+
+            var skin = new Vector3(0.50f, 0.50f, 0.53f) * (1f - 0.55f * pits)
+                       * (0.88f + 0.20f * Grain.Fbm(u, v, 24, 207, 2));
+
+            var oxide = new Vector3(0.46f, 0.25f, 0.11f) * (0.70f + 0.50f * Grain.Fbm(u, v, 60, 209, 2));
+
+            return Vector3.Lerp(skin, oxide, rust * 0.7f);
+        }));
+
+    private static readonly Lazy<Texture> IronRough = new(() =>
+        Grain.Rough(Detailed, "iron.rough", (u, v) =>
+        {
+            var pits = Pitted(u, v);
+            var rust = Rusted(u, v);
+
+            return new Vector2(
+                MathF.Min(1f, 0.58f + 0.32f * pits + 0.30f * rust),
+                0.80f * (1f - rust) + 0.20f * rust);
+        }));
+
+    private static readonly Lazy<Texture> IronBumps = new(() =>
+        Grain.Bumps(Detailed, "iron.bumps", (u, v) => 1f - Pitted(u, v), 0.0006f, Close));
+
+    /// <summary>
+    /// Oak, sawn along the trunk: growth rings cut lengthways, which is a set of long uneven stripes
+    /// down the length, with the fibre under them.
+    /// </summary>
+    private static float Heart(float u, float v)
+    {
+        var waver = Grain.Fbm(u, v * 2f, 2, 211, 3);
+        var rings = 0.5f + 0.5f * MathF.Sin((v * 11f + waver * 1.4f) * MathF.Tau);
+        var fibre = Grain.Fbm(u, v * 6f, 4, 213, 4);
+
+        return MathF.Pow(rings, 1.6f) * 0.55f + fibre * 0.45f;
+    }
+
+    private static readonly Lazy<Texture> OakColour = new(() =>
+        Grain.Colour(Detailed, "oak.colour", (u, v) =>
+        {
+            var g = 0.60f + 0.40f * Heart(u, v);
+            var tone = 0.90f + 0.15f * Grain.Fbm(u, v, 3, 215, 2);
+
+            return new Vector3(g * tone, g * tone * 0.86f, g * tone * 0.68f);
+        }));
+
+    private static readonly Lazy<Texture> OakRough = new(() =>
+        Grain.Rough(Detailed, "oak.rough", (u, v) => new Vector2(0.72f + 0.20f * (1f - Heart(u, v)), 0f)));
+
+    private static readonly Lazy<Texture> OakBumps = new(() =>
+        Grain.Bumps(Detailed, "oak.bumps", Heart, 0.0012f, Pitch));
+
+    /// <summary>
+    /// The spangle: which crystal a point is in, as that crystal's tone and gloss, and how near the point
+    /// is to the boundary with the next one. A jittered grid of seeds, nearest of nine, wrapped so it
+    /// tiles.
+    /// </summary>
+    private static (float Tone, float Gloss, float Edge) Spangle(float u, float v)
+    {
+        // Twenty-six to the image, which is fifteen millimetres a crystal at Close. Twelve was a mosaic.
+        const int cells = 26;
+
+        var x = u * cells;
+        var y = v * cells;
+
+        var cx = (int)MathF.Floor(x);
+        var cy = (int)MathF.Floor(y);
+
+        var best = float.MaxValue;
+        var second = float.MaxValue;
+        var tone = 0f;
+        var gloss = 0f;
+
+        for (var j = -1; j <= 1; j++)
+        for (var i = -1; i <= 1; i++)
+        {
+            var ix = cx + i;
+            var iy = cy + j;
+
+            var wx = ((ix % cells) + cells) % cells;
+            var wy = ((iy % cells) + cells) % cells;
+
+            var dx = x - (ix + Grain.Pick(wx, wy, 301));
+            var dy = y - (iy + Grain.Pick(wx, wy, 303));
+            var d = dx * dx + dy * dy;
+
+            if (d < best)
+            {
+                second = best;
+                best = d;
+                tone = Grain.Pick(wx, wy, 305);
+                gloss = Grain.Pick(wx, wy, 307);
+            }
+            else if (d < second)
+            {
+                second = d;
+            }
+        }
+
+        var edge = 1f - Grain.Step(0.02f, 0.10f, MathF.Sqrt(second) - MathF.Sqrt(best));
+
+        return (tone, gloss, edge);
+    }
+
+    private static readonly Lazy<Texture> ZincColour = new(() =>
+        Grain.Colour(Detailed, "zinc.colour", (u, v) =>
+        {
+            // A tenth between the brightest crystal and the dullest, and a shade at the boundary. A
+            // spangle is a thing you notice in the highlight, not in the colour: the first cut had a
+            // quarter in the colour and read as a disco ball.
+            var (tone, _, edge) = Spangle(u, v);
+            var c = (0.90f + 0.10f * tone) * (0.96f + 0.06f * Grain.Fbm(u, v, 40, 309, 2)) - 0.04f * edge;
+
+            return new Vector3(c, c * 1.005f, c * 1.02f);
+        }));
+
+    private static readonly Lazy<Texture> ZincRough = new(() =>
+        Grain.Rough(Detailed, "zinc.rough", (u, v) =>
+        {
+            var (_, gloss, edge) = Spangle(u, v);
+
+            return new Vector2(0.32f + 0.24f * gloss + 0.08f * edge, 1f);
+        }));
+
+    private static readonly Lazy<Texture> ZincBumps = new(() =>
+        Grain.Bumps(Detailed, "zinc.bumps", (u, v) =>
+        {
+            var (tone, _, _) = Spangle(u, v);
+
+            return tone * 0.8f + 0.2f * Grain.Fbm(u, v, 30, 311, 2);
+        }, 0.0002f, Close));
+
+    /// <summary>
+    /// Three strands, right-handed: a crest wherever <c>3u − v</c> is whole, which is three helices each
+    /// going once round the rope in three lays. The fibre runs with the strand.
+    /// </summary>
+    private static float Laid(float u, float v)
+    {
+        var strand = 0.5f + 0.5f * MathF.Cos((u * 3f - v) * MathF.Tau);
+        var fibre = Grain.Fbm(u * 3f - v, v * 4f, 6, 313, 2);
+
+        return MathF.Pow(strand, 0.8f) * 0.8f + fibre * 0.2f;
+    }
+
+    private static readonly Lazy<Texture> RopeColour = new(() =>
+        Grain.Colour(Fine, "rope.colour", (u, v) =>
+        {
+            var c = (0.72f + 0.30f * Laid(u, v)) * (0.90f + 0.20f * Grain.Fbm(u * 3f - v, v * 4f, 6, 315, 2));
+
+            return new Vector3(c, c * 0.97f, c * 0.92f);
+        }));
+
+    private static readonly Lazy<Texture> RopeRough = new(() =>
+        Grain.Rough(Fine, "rope.rough", (u, v) => new Vector2(0.86f + 0.14f * (1f - Laid(u, v)), 0f)));
+
+    /// <summary>Sixty millimetres across, which is about a rope's circumference: the tile is one lay
+    /// along and once round, and it is the round that sets the slope.</summary>
+    private static readonly Lazy<Texture> RopeBumps = new(() =>
+        Grain.Bumps(Fine, "rope.bumps", Laid, 0.004f, 0.06f));
 }

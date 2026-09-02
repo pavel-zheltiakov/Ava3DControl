@@ -240,6 +240,7 @@ internal sealed class Soundtrack : IDisposable
             case Ink: Painted(into); break;
             case Patterns: Workshop(into); break;
             case Stars: Dome(into); break;
+            case Hours: Tower(into); break;
             case Screens lounge: Lounge(lounge, into, from, jumped); break;
             case Alarm: Amber(into, jumped); break;
             case Repair: Machines(into, from, jumped); break;
@@ -424,7 +425,30 @@ internal sealed class Soundtrack : IDisposable
     }
 
     /// <summary>
-    /// Chapter 7. Four cabinets talking to an empty room, a light show with a tempo, and — under both of
+    /// Chapter 7. A stone room with a hole in one wall, and the only bed in this film that is weather.
+    ///
+    /// Everything else here is a machine or a room full of them. This one is a draught: the tower has an
+    /// unglazed opening three metres up and the air moving through it is most of what a room like that
+    /// sounds like. Under it is the movement, which is the gallery's plot table and the planetarium's
+    /// projector for the third time — a small motor turning something heavy is a small motor turning
+    /// something heavy, and there was no argument for building a third one.
+    ///
+    /// All three come up on his way in and go down before the end, because he walks out of this room and
+    /// down a corridor and the corridor is not a tower. The fade out starts twelve seconds before the
+    /// chapter does end, which is the moment he turns back towards the door.
+    /// </summary>
+    private void Tower(float into)
+    {
+        var out_ = Ramp(into, Hours.Length - 12f, 8f);
+
+        Beds(
+            air: 0.11f + 0.05f * Ramp(into, 2f, 7f) - 0.05f * out_,
+            draught: 0.075f * Ramp(into, 4f, 8f) * (1f - out_),
+            motor: 0.045f * Ramp(into, 6f, 6f) * (1f - out_));
+    }
+
+    /// <summary>
+    /// Chapter 8. Four cabinets talking to an empty room, a light show with a tempo, and — under both of
     /// them, from the moment the lamps go down — something turning at the end of a corridor.
     ///
     /// The alarm arrives here rather than in the chapter named after it, and thirty seconds before the

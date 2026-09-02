@@ -47,8 +47,9 @@ internal static class Fabric
     /// <param name="metres">How much surface one image covers. <see cref="Finish.Close"/> for furniture —
     /// see there for why one number does not do.</param>
     public static MeshNode Slab(
-        Vector3 size, Vector3 centre, Material material, string? name = null, float metres = Finish.Pitch) =>
-        new(Map(Primitives.Box(size.X, size.Y, size.Z), material, centre, metres), material)
+        Vector3 size, Vector3 centre, Material material, string? name = null, float metres = Finish.Pitch,
+        bool turned = false) =>
+        new(Map(Primitives.Box(size.X, size.Y, size.Z), material, centre, metres, turned), material)
         {
             Position = centre,
             Name = name
@@ -149,7 +150,16 @@ internal static class Fabric
     /// Nothing happens at all to a mesh whose material carries no maps, which is most of the building: the
     /// antechamber keeps the texture coordinates <see cref="Primitives"/> gave it and pays for none of this.
     /// </summary>
-    public static Mesh Map(Mesh mesh, Material material, Vector3 offset, float metres = Finish.Pitch)
+    /// <param name="turned">
+    /// Swap the two axes, so that whatever the image runs along runs the other way on the surface.
+    ///
+    /// Every image in <see cref="Finish"/> with a direction in it — boards, oak, brushing — runs along
+    /// <c>u</c>, and <c>u</c> lands on the world's X on a floor and along the wall on a wall. That is
+    /// right for a runner down a room and wrong for the boards of a ceiling laid across its beams, or a
+    /// door whose planks stand on end; a quarter turn is the whole difference and it is one swap.
+    /// </param>
+    public static Mesh Map(
+        Mesh mesh, Material material, Vector3 offset, float metres = Finish.Pitch, bool turned = false)
     {
         if (material.BaseColorTexture is null && material.NormalTexture is null)
             return mesh;
@@ -174,6 +184,9 @@ internal static class Fabric
                 : ax >= az
                     ? new Vector2(p.Z, -p.Y)
                     : new Vector2(p.X, -p.Y);
+
+            if (turned)
+                uv = new Vector2(uv.Y, uv.X);
 
             uvs[i] = uv / metres;
         }
@@ -279,7 +292,7 @@ internal static class Fabric
     /// <param name="at">Where the middle of the plate goes, in the room's own frame.</param>
     /// <param name="cap">Cap height in metres. Thirty millimetres reads from two.</param>
     /// <param name="yaw">Which way it faces, in degrees, if it is not facing the room's +Z.</param>
-    public static Node Label(string text, Vector3 at, float cap = 0.030f, float yaw = 0f)
+    public static Node Label(string text, Vector3 at, float cap = 0.030f, float yaw = 0f, Vector3? colour = null)
     {
         var wide = (float)Glyphs.Measure(text, cap);
 
@@ -300,7 +313,7 @@ internal static class Fabric
         node.Children.Add(new LineNode
         {
             Positions = Lettering(text, cap),
-            Color = new Vector3(0.90f, 0.93f, 1f),
+            Color = colour ?? new Vector3(0.90f, 0.93f, 1f),
             Width = 2f,
             Blend = BlendMode.Additive,
             DepthWrite = false,

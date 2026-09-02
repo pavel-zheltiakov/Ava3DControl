@@ -226,18 +226,79 @@ internal sealed class Planetarium
             root.Children.Add(Tangential(
                 Chord(Radius) + Overlap, Height, Radius + t / 2f, Height / 2f, angle, lining));
 
+        // <b>The skirting, and the architraves.</b> Both are what a lined wall has where it stops, and
+        // both were missing: the fabric ran to the carpet and was cut off square at each doorway, which is
+        // a wall of cloth with its edges showing, and nobody who has fitted one leaves that. A hundred and
+        // forty millimetres of black-stained timber round the foot, twelve lengths mitred at the corners
+        // — see the cornice above for why twelve slabs of brushed metal were wrong there and why twelve
+        // of stained timber are right here: a stain has no grain to step at a joint, and a skirting is cut
+        // in lengths anyway. The doorways get posts and a head in the cornice's metal, standing proud of
+        // the lining on the room side, because every change of material in this building happens at a
+        // piece of metal and a doorway is where the lining changes to a corridor.
+        var stained = Finish.Stained();
+        const float skirt = 0.14f;
+        const float proud = 0.024f;
+
+        foreach (var angle in Blanks.Concat(Pictures))
+            root.Children.Add(Tangential(
+                Chord(Radius - proud / 2f) + 0.06f, skirt, Radius - proud / 2f, skirt / 2f, angle, stained, proud));
+
+        // A guide light let into the skirting of every sector that has one: the low blue ring a dark
+        // auditorium keeps on so that a row can be found in it, and the one thing in this room that stays
+        // lit whatever the chapter has switched off. Unlit, so it is exactly as bright in a blackout as
+        // it is with the coves up, which is what a fitting on its own circuit is.
+        var guide = Fabric.Emissive(0.22f, 0.40f, 0.88f);
+
+        foreach (var angle in Blanks.Concat(Pictures))
+            root.Children.Add(Tangential(0.14f, 0.020f, Radius - proud - 0.004f, 0.095f, angle, guide, 0.008f));
+
         foreach (var angle in new[] { EntranceAngle, ExitAngle })
         {
             // Fifty millimetres wider and thirty taller than the standard opening, which is the fix every
             // wall in this building that meets another wall's doorway takes: two rooms cutting the same
             // hole put two reveals at two depths, and what that looks like is hatching that crawls. The
             // wider hole loses, so the reveal anybody sees belongs to the neighbour.
+            var opening = Deck.DoorWidth + 0.05f;
+            var head = Deck.DoorHeight + 0.03f;
+
             var door = Fabric.PiercedWall(
                 Chord(Radius) + Overlap, Height, t,
-                doorCentre: 0f, Deck.DoorWidth + 0.05f, Deck.DoorHeight + 0.03f, lining);
+                doorCentre: 0f, opening, head, lining);
 
             door.Position = Ring(angle, Radius + t / 2f);
             door.RotationDegrees = new Vector3(0f, Yaw(angle), 0f);
+
+            // The architrave, on the room side: local +Z is inward here, as it is on every mount on this
+            // ring — see Hang. Twenty millimetres of it buried in the wall so no face is level with one.
+            const float leg = 0.09f;
+
+            foreach (var side in new[] { -1f, 1f })
+                door.Children.Add(Fabric.Slab(
+                    new Vector3(leg, head, 0.05f),
+                    new Vector3(side * (opening + leg) / 2f, head / 2f, t / 2f + 0.005f),
+                    brushed, "architrave", Finish.Close));
+
+            door.Children.Add(Fabric.Slab(
+                new Vector3(opening + 2f * leg, leg, 0.05f),
+                new Vector3(0f, head + leg / 2f, t / 2f + 0.005f),
+                brushed, "architrave.head", Finish.Close));
+
+            // And the skirting either side of the opening, stopping at the architrave.
+            var run = (Chord(Radius - proud / 2f) - opening - 2f * leg) / 2f;
+
+            foreach (var side in new[] { -1f, 1f })
+                door.Children.Add(Fabric.Slab(
+                    new Vector3(run + 0.03f, skirt, proud),
+                    new Vector3(side * (opening / 2f + leg + run / 2f), skirt / 2f, t / 2f - proud / 2f),
+                    stained, "skirting"));
+
+            // And the sign, beside the opening rather than over it, because over it is where the cornice
+            // is. Green on black rather than a lit box: it has to be legible in a blackout and not be a
+            // lamp during a show, and additive lettering on a plaque is both.
+            door.Children.Add(Fabric.Label(
+                "EXIT", new Vector3(opening / 2f + leg + 0.24f, 2.18f, t / 2f + 0.02f), 0.05f,
+                colour: new Vector3(0.40f, 1f, 0.50f)));
+
             root.Children.Add(door);
         }
 
@@ -338,7 +399,7 @@ internal sealed class Planetarium
 
         // The photographs, and the cove that lights them.
         for (var i = 0; i < Pictures.Length; i++)
-            Hang(root, Pictures[i], i, brushed, moulded);
+            Hang(root, Pictures[i], i, brushed, stained);
 
         Cove = new Lamp[Coves.Length];
 
@@ -350,6 +411,8 @@ internal sealed class Planetarium
 
         // And the counter, in the one sector nothing else wants.
         root.Children.Add(Kiosk(brushed, moulded));
+        root.Children.Add(Skyline());
+        root.Children.Add(Lectern(brushed, moulded, stained));
 
         // Five chairs in one row, and the row is straight rather than curved. A curved row aims every seat
         // at one point, which is right for a screen and wrong for a dome: the thing being watched is the
@@ -529,10 +592,11 @@ internal sealed class Planetarium
     private static float Yaw(float degrees) => -(degrees + 90f);
 
     private static MeshNode Tangential(
-        float width, float height, float radius, float y, float degrees, Material material)
+        float width, float height, float radius, float y, float degrees, Material material,
+        float thickness = Deck.WallThickness)
     {
         var slab = Fabric.Slab(
-            new Vector3(width, height, Deck.WallThickness), Ring(degrees, radius, y), material);
+            new Vector3(width, height, thickness), Ring(degrees, radius, y), material);
 
         slab.RotationDegrees = new Vector3(0f, Yaw(degrees), 0f);
 
@@ -558,7 +622,7 @@ internal sealed class Planetarium
     /// lit and completely invisible, in a room whose other half is a nebula bright enough that nobody
     /// would have gone looking for them.
     /// </summary>
-    private static void Hang(Node root, float angle, int index, Material brushed, Material moulded)
+    private static void Hang(Node root, float angle, int index, Material brushed, Material stained)
     {
         var mount = new Node
         {
@@ -567,18 +631,25 @@ internal sealed class Planetarium
             RotationDegrees = new Vector3(0f, Yaw(angle), 0f)
         };
 
-        // Dark, and it was brushed metal. A bright frame round a bright mount is not a frame, it is a
-        // white border with a lighter line in it — the picture had no edge at all from three metres. What
-        // a framed photograph reads as is a dark rebate, a light mount and then the print, in that order
-        // and with a step between each.
-        // <b>Forty millimetres deep and not sixty, and the three layers no longer share a millimetre.</b>
-        // The mount was set at fifty-eight with a twenty-millimetre body, which put it straddling the
-        // frame's own front face — two surfaces crossing inside each other along the top rail, which is a
-        // speckled band under a cove light and is the same fault as everything else on this list. Frame,
-        // mount, print: nought to forty, forty-five to sixty-five, seventy to eighty-two, with five clear
-        // millimetres between each.
+        // Dark, and it was brushed metal, and then it was moulded plastic. A bright frame round a bright
+        // mount is not a frame, it is a white border with a lighter line in it — the picture had no edge
+        // at all from three metres. And a plastic one under a cove light was a crumpled one: four tenths
+        // of a millimetre of orange peel is the right relief for a chair shell and the wrong one for the
+        // calmest object on a wall. What a framed photograph reads as is a dark stained rebate, a light
+        // mount and then the print, in that order and with a step between each — so the frame is two
+        // steps itself, a wider back and a narrower face, which is the cheapest moulding profile there is
+        // and reads as one from the walking circle.
+        // <b>Forty millimetres deep and not sixty, and the layers do not share a millimetre.</b> The
+        // mount was set at fifty-eight with a twenty-millimetre body, which put it straddling the frame's
+        // own front face — two surfaces crossing inside each other along the top rail, which is a
+        // speckled band under a cove light and is the same fault as everything else on this list. Back,
+        // face, mount, print: nought to eighteen, eighteen to forty, forty-five to sixty-five, seventy to
+        // eighty-two, with five clear millimetres between each pair that is not one piece of wood.
         mount.Children.Add(Fabric.Slab(
-            new Vector3(1.30f, 1.00f, 0.04f), new Vector3(0f, 0f, 0.02f), moulded, "frame", Finish.Close));
+            new Vector3(1.36f, 1.06f, 0.018f), new Vector3(0f, 0f, 0.009f), stained, "frame.back", Finish.Close));
+
+        mount.Children.Add(Fabric.Slab(
+            new Vector3(1.30f, 1.00f, 0.022f), new Vector3(0f, 0f, 0.029f), stained, "frame", Finish.Close));
 
         // The mount board: rag paper, all but white, and matte enough to have no highlight of its own. It
         // is the piece that makes a print read as a print — a photograph that runs to the edge of its frame
@@ -1144,6 +1215,221 @@ internal sealed class Planetarium
         }
 
         return Mesh.Merge(parts);
+    }
+
+    /// <summary>
+    /// The town round the foot of the dome: a ring of black card standing on the cornice, cut into
+    /// rooftops, chimneys, a church with a spire and clumps of trees, which is what every planetarium
+    /// ever built has had round the bottom of its sky and is the thing that makes the show a sky over a
+    /// town rather than a picture on a ceiling. From a seat it is a jagged black horizon against the
+    /// lowest band of the dome; with the coves up it is a silhouette against a grey wall and reads the
+    /// same.
+    ///
+    /// Laid out by walking round the ring: each piece takes its width in degrees at the cornice's radius
+    /// and hands the angle on, with a gap now and then so the skyline has some sky in it. Seeded, so the
+    /// town is the same town on every run. Every gable is a square stood on its corner with its lower
+    /// half sunk into the cornice, which is a cheaper triangle than any mesh.
+    /// </summary>
+    private static Node Skyline()
+    {
+        var town = new Node { Name = "skyline" };
+
+        var card = new Material
+        {
+            BaseColor = new Vector4(0.018f, 0.018f, 0.022f, 1f),
+            Metallic = 0f,
+            Roughness = 0.96f,
+            Name = "skyline"
+        };
+
+        const float radius = 4.72f;
+        const float foot = 2.71f;
+        const float thick = 0.025f;
+        var perDegree = MathF.Tau * radius / 360f;
+
+        var random = new Random(41);
+        var angle = 0f;
+        var church = 26f + random.NextSingle() * 20f;
+        var built = false;
+
+        // A tangential piece of card, positioned by its left-hand edge along the ring and its bottom.
+        MeshNode Piece(float from, float width, float height, float bottom, float roll = 0f)
+        {
+            var piece = Tangential(width, height, radius, bottom + height / 2f, from + width / 2f / perDegree, card, thick);
+            piece.Name = "skyline.card";
+
+            if (roll != 0f)
+                piece.RotationDegrees = piece.RotationDegrees with { Z = roll };
+
+            return piece;
+        }
+
+        while (angle < 360f)
+        {
+            float width;
+
+            if (!built && angle >= church)
+            {
+                // The church: a tower with a spire, and the nave beside it.
+                width = 0.66f;
+                town.Children.Add(Piece(angle, 0.24f, 0.36f, foot));
+
+                town.Children.Add(new MeshNode(Primitives.Cylinder(0.002f, 0.105f, 0.24f, 8), card)
+                {
+                    Name = "skyline.spire",
+                    Position = Ring(angle + 0.12f / perDegree, radius, foot + 0.36f + 0.12f)
+                });
+
+                town.Children.Add(Piece(angle + 0.24f / perDegree, 0.40f, 0.17f, foot));
+                built = true;
+            }
+            else
+            {
+                switch (random.Next(6))
+                {
+                    case 0 or 1 or 2:
+                    {
+                        // A house, some with a gable and some with a chimney.
+                        width = 0.30f + random.NextSingle() * 0.34f;
+                        var height = 0.11f + random.NextSingle() * 0.14f;
+
+                        town.Children.Add(Piece(angle, width, height, foot));
+
+                        if (random.Next(2) == 0)
+                        {
+                            var side = width * 0.60f;
+                            var half = side * 0.7071f;
+                            town.Children.Add(Piece(angle + (width / 2f - half) / perDegree, side, side, foot + height - half, 45f));
+                        }
+
+                        if (random.Next(3) == 0)
+                            town.Children.Add(Piece(angle + (width - 0.10f) / perDegree, 0.05f, 0.08f, foot + height - 0.01f));
+
+                        break;
+                    }
+
+                    case 3 or 4:
+                    {
+                        // Trees, two to four of them.
+                        var trees = 2 + random.Next(3);
+                        width = trees * 0.20f;
+
+                        for (var i = 0; i < trees; i++)
+                        {
+                            var crown = 0.07f + random.NextSingle() * 0.05f;
+                            var stem = 0.06f + random.NextSingle() * 0.08f;
+                            var at = angle + (0.10f + i * 0.20f) / perDegree;
+
+                            town.Children.Add(new MeshNode(Primitives.Cylinder(0.012f, 0.012f, stem + crown, 6), card)
+                            {
+                                Name = "skyline.trunk",
+                                Position = Ring(at, radius, foot + (stem + crown) / 2f)
+                            });
+
+                            town.Children.Add(new MeshNode(Primitives.Sphere(crown, 12, 8), card)
+                            {
+                                Name = "skyline.crown",
+                                Position = Ring(at, radius, foot + stem + crown * 0.85f)
+                            });
+                        }
+
+                        break;
+                    }
+
+                    default:
+                        // A gap of sky.
+                        width = 0.15f + random.NextSingle() * 0.35f;
+                        break;
+                }
+            }
+
+            angle += width / perDegree;
+        }
+
+        return town;
+    }
+
+    /// <summary>
+    /// The presenter's lectern, off to the side with a reading lamp on it: the one piece of furniture in
+    /// the room that says somebody talks here, and the one warm light in a blackout. Stood on the blank
+    /// side of the room at a hundred and twenty degrees, which no walk crosses, and turned to face the
+    /// projector the way the presenter does.
+    /// </summary>
+    private static Node Lectern(Material brushed, Material moulded, Material stained)
+    {
+        const float angle = 120f;
+
+        var lectern = new Node
+        {
+            Name = "lectern",
+            Position = Ring(angle, 2.75f),
+            RotationDegrees = new Vector3(0f, Yaw(angle), 0f)
+        };
+
+        lectern.Children.Add(new MeshNode(Primitives.Cylinder(0.22f, 0.25f, 0.03f, 32), moulded)
+        {
+            Name = "lectern.foot",
+            Position = new Vector3(0f, 0.015f, 0f)
+        });
+
+        lectern.Children.Add(new MeshNode(Primitives.Cylinder(0.035f, 0.045f, 1.02f, 24), brushed)
+        {
+            Name = "lectern.post",
+            Position = new Vector3(0f, 0.54f, 0f)
+        });
+
+        // The top, sloped down towards the presenter on the wall side, with a lip along the low edge so
+        // the notes stay where they were put.
+        var top = new Node
+        {
+            Name = "lectern.top",
+            Position = new Vector3(0f, 1.10f, 0f),
+            RotationDegrees = new Vector3(-14f, 0f, 0f)
+        };
+
+        top.Children.Add(Fabric.Slab(
+            new Vector3(0.52f, 0.035f, 0.40f), Vector3.Zero, stained, "lectern.board", Finish.Close));
+
+        top.Children.Add(Fabric.Slab(
+            new Vector3(0.52f, 0.045f, 0.018f), new Vector3(0f, 0.012f, -0.191f), stained, "lectern.lip", Finish.Close));
+
+        var paper = new Material
+        {
+            BaseColor = new Vector4(0.92f, 0.91f, 0.87f, 1f),
+            Metallic = 0f,
+            Roughness = 0.90f,
+            Name = "paper"
+        };
+
+        top.Children.Add(Fabric.Slab(
+            new Vector3(0.21f, 0.004f, 0.297f), new Vector3(0.03f, 0.0195f, -0.02f), paper, "lectern.notes"));
+
+        // The lamp: an arm up from the high edge, a shade turned back towards the notes, and a bulb in
+        // it that is unlit and warm, because a light here would be a fifth light in a room that has
+        // spent its four.
+        top.Children.Add(new MeshNode(Primitives.Cylinder(0.007f, 0.007f, 0.34f, 8), Fabric.DarkMetal)
+        {
+            Name = "lamp.arm",
+            Position = new Vector3(-0.16f, 0.16f, 0.15f),
+            RotationDegrees = new Vector3(-24f, 0f, 0f)
+        });
+
+        top.Children.Add(new MeshNode(Primitives.Cylinder(0.022f, 0.052f, 0.075f, 16, capped: false), Fabric.DarkMetal)
+        {
+            Name = "lamp.shade",
+            Position = new Vector3(-0.16f, 0.33f, 0.07f),
+            RotationDegrees = new Vector3(-58f, 0f, 0f)
+        });
+
+        top.Children.Add(new MeshNode(Primitives.Sphere(0.014f, 12, 8), Fabric.Emissive(1f, 0.84f, 0.60f))
+        {
+            Name = "lamp.bulb",
+            Position = new Vector3(-0.16f, 0.315f, 0.085f)
+        });
+
+        lectern.Children.Add(top);
+
+        return lectern;
     }
 
     /// <summary>Red and white, vertically, which is the only livery a popcorn cup has ever had.</summary>

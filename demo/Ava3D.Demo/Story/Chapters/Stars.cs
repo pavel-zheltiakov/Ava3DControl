@@ -27,7 +27,16 @@ namespace Ava3D.Demo.Story;
 internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, ScreenRoom lounge) : Chapter
 {
     /// <summary>How long it runs, as a constant the contents table can add up.</summary>
-    public const float Length = 72.5f;
+    /// <summary>
+    /// How long it runs, as a constant the contents table can add up.
+    ///
+    /// <b>It was seventy-two and a half and it is sixty-four and a half</b>, and the eight seconds are the
+    /// clock room. This chapter used to walk him all the way from the chair to an armchair in the lounge;
+    /// the tower is a doorway off the corridor between the two, so it now hands him over at the link's
+    /// corner and <see cref="Hours"/> takes him the rest of the way. Nothing about the dome changed — the
+    /// show is the same length and starts at the same second — and everything removed was corridor.
+    /// </summary>
+    public const float Length = 64.5f;
 
     /// <summary>
     /// When he is in the chair and the show's own clock starts.
@@ -50,8 +59,6 @@ internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, Scree
     /// when he stands up.</summary>
     private const float Leaves = 59.5f;
 
-    private const float Ahead = 66.5f;
-    private const float Doorstep = 69.5f;
 
     private int _bank = -1;
 
@@ -164,13 +171,11 @@ internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, Scree
         // half a metre away that is being closed on swings faster than the walker moves, which
         // <c>Ground.Audit</c> read as sixty-three degrees a second, the chapter's own worst. Aimed a
         // couple of metres down the leg he is about to be in, it is two turns of forty.
-        new Step(64.5f, Link.Along(5.7f, 2.2f), Link.Along(3.2f)),
-        new Step(Ahead, Link.Along(5.4f, 0.3f), Link.Along(1.2f)),
-
-        // And five metres seven of corridor at a metre and three, which is a man leaving a show rather
-        // than a man being shown out.
-        new Step(Doorstep, Link.Along(1.5f), ScreenRoom.Sitting),
-        new Step(Length, ScreenRoom.Entrance + new Vector3(0.35f, 0f, -1.3f), ScreenRoom.Sitting));
+        // And it ends here, on the corner, still walking south with the leg to the lounge ahead of him —
+        // which is a chapter that stops mid-stride rather than at a door, and is deliberate. What is
+        // waiting one second later is a lit doorway on his right that he has not noticed yet. See
+        // <see cref="Hours"/>.
+        new Step(Length, Link.Along(5.7f, 2.2f), Link.Along(3.2f)));
 
     public override void Enter(Hall hall)
     {
@@ -211,9 +216,7 @@ internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, Scree
         var bank =
             seconds < 12f ? 0 :
             seconds < 41f ? 1 :
-            seconds < Leaves ? 2 :
-            seconds < Ahead ? 3 :
-            seconds < Doorstep ? 4 : 5;
+            seconds < Leaves ? 2 : 3;
 
         if (bank != _bank)
         {
@@ -284,7 +287,7 @@ internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, Scree
         // other room here. That second term is not decoration: chapter 7's first frame asserts 0.062, and a
         // chapter that hands a room over has to hand it over at the light it is going to have or the join
         // is a step.
-        var arriving = Ramp(seconds, Doorstep - 8f, 11f);
+        var arriving = Ramp(seconds, 56f, 8f);
 
         hall.Ambient(
             0.050f - 0.0489f * down + 0.012f * arriving,
@@ -296,16 +299,15 @@ internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, Scree
         // What covers it is the cove by the exit, which is two metres from the doorway and throws enough
         // through it that the opening is not a black rectangle for the second and a half it takes him to
         // get up.
-        link.Turn.Dim(Ramp(seconds, Leaves, 3.5f) * (1f - Ramp(seconds, Length - 3f, 3f)));
-        link.Run.Dim(Ramp(seconds, Ahead - 4f, 4f) * (1f - Ramp(seconds, Length - 1f, 2f)));
-
-        // And the lounge, coming up through its own doorway in the order chapter 7 expects to find it in.
-        // Its four lamps are at exactly what that chapter's first frame sets them to, which is why the join
-        // has nothing in it.
-        lounge.Doorway.Dim(Ramp(seconds, Doorstep - 4f, 4f));
-        lounge.Lounge.Dim(Ramp(seconds, Doorstep - 2f, 4f));
-        lounge.Bench[0].Dim(Ramp(seconds, Doorstep, 3.5f));
-        lounge.Bench[1].Dim(Ramp(seconds, Doorstep, 3.5f) * 0.92f);
+        // Up and left up. The corner lamp is what the next chapter opens holding, so it is handed over at
+        // full rather than faded out under a boundary — a lamp that goes to nought on the last frame of one
+        // chapter and comes back on the first frame of the next is a lamp that blinks.
+        //
+        // The one down the leg stays dark. It used to come up here for the walk to the lounge; that walk
+        // belongs to <see cref="Hours"/> now, and lighting the way to a room he is not going to yet is
+        // lighting the wrong door.
+        link.Turn.Dim(Ramp(seconds, Leaves, 3.5f));
+        link.Run.Dim(0f);
 
         hall.Scene.Invalidate();
     }
@@ -362,23 +364,10 @@ internal sealed class Stars(PatternShop shop, Planetarium dome, Link link, Scree
                     dome.Cove[0].Light, dome.Cove[1].Light, dome.Cove[2].Light, dome.Show.Star);
                 break;
 
-            case 3:
-                hall.Occupy(Deck.PlanetariumRoom, Deck.LinkRoom, Deck.ScreensRoom);
+            default:
+                hall.Occupy(Deck.PlanetariumRoom, Deck.LinkRoom);
                 hall.Use(
                     dome.Cove[0].Light, dome.Cove[1].Light, link.Turn.Light, link.Run.Light);
-                break;
-
-            case 4:
-                hall.Occupy(Deck.LinkRoom, Deck.ScreensRoom);
-                hall.Use(
-                    link.Turn.Light, link.Run.Light, lounge.Doorway.Light, lounge.Lounge.Light);
-                break;
-
-            default:
-                hall.Occupy(Deck.LinkRoom, Deck.ScreensRoom);
-                hall.Use(
-                    lounge.Doorway.Light, lounge.Lounge.Light,
-                    lounge.Bench[0].Light, lounge.Bench[1].Light);
                 break;
         }
     }

@@ -23,6 +23,7 @@ public partial class MainView : UserControl
     /// <summary>The steppers either side of the scene list. Held because they are disabled with it.</summary>
     private Button _prevButton = null!, _nextButton = null!;
     private ToggleSwitch _autoToggle = null!, _storyToggle = null!, _soundToggle = null!;
+    private ToggleSwitch _shadowsToggle = null!;
 
     /// <summary>
     /// Whether the next build of the film should start at the beginning rather than at the selected
@@ -63,6 +64,9 @@ public partial class MainView : UserControl
     /// listening — which is the other half of the same fix.
     /// </summary>
     private readonly HashSet<Key> _walking = [];
+
+    /// <summary>The top level the walk keys are currently taken from. See <see cref="AttachWalkKeys"/>.</summary>
+    private TopLevel? _walkTop;
 
     /// <summary>Whether the shell has already given the current scene the controls, so the handover is done
     /// once rather than on every frame.</summary>
@@ -260,6 +264,7 @@ public partial class MainView : UserControl
         _autoToggle = this.FindControl<ToggleSwitch>("AutoToggle")!;
         _storyToggle = this.FindControl<ToggleSwitch>("StoryToggle")!;
         _soundToggle = this.FindControl<ToggleSwitch>("SoundToggle")!;
+        _shadowsToggle = this.FindControl<ToggleSwitch>("ShadowsToggle")!;
         _sceneTitle = this.FindControl<TextBlock>("SceneTitle")!;
         _sceneNotes = this.FindControl<TextBlock>("SceneNotes")!;
         _notesPanel = this.FindControl<Border>("NotesPanel")!;
@@ -330,6 +335,11 @@ public partial class MainView : UserControl
         _soundToggle.IsChecked = DemoSettings.Sound;
         _soundToggle.IsCheckedChanged += (_, _) => OnSoundToggled();
 
+        // Same shape again, and before the first selection for the same reason: Select applies this to the
+        // scene it builds, so the switch has to already know its answer.
+        _shadowsToggle.IsChecked = DemoSettings.Shadows;
+        _shadowsToggle.IsCheckedChanged += (_, _) => OnShadowsToggled();
+
         // AVA3D_THREADS=0 holds the CPU renderer to one core, so the comparison the picker offers can also
         // be made from a probe run — which is the only way to put a number on it that anyone can check.
         if (Environment.GetEnvironmentVariable("AVA3D_THREADS") == "0")
@@ -382,24 +392,10 @@ public partial class MainView : UserControl
         AttachedToVisualTree += (_, _) =>
         {
             RequestFrame();
-
-            // The walk keys, taken at the top level and on the way down. See OnWalkKey.
-            if (TopLevel.GetTopLevel(this) is { } top)
-            {
-                top.AddHandler(KeyDownEvent, OnWalkKey, RoutingStrategies.Tunnel);
-                top.AddHandler(KeyUpEvent, OnWalkKey, RoutingStrategies.Tunnel);
-
-                // And let go of everything the moment this window stops being the one the keyboard is
-                // talking to. A key-up is only ever delivered to whoever had the focus when it happened,
-                // so a window that loses the focus mid-stride never hears the release — and what that
-                // looks like is a visitor walking into a wall and unable to stop. See Release.
-                top.LostFocus += (_, _) => Release();
-                top.PointerExited += (_, _) => Release();
-
-                if (top is Window window)
-                    window.Deactivated += (_, _) => Release();
-            }
+            AttachWalkKeys();
         };
+
+        DetachedFromVisualTree += (_, _) => DetachWalkKeys();
 
         // Once warm, say what happened. This is how the browser, Android and iOS heads get verified.
         //
@@ -434,7 +430,7 @@ public partial class MainView : UserControl
     /// <summary>
     /// Freezes every scene at a fixed number of seconds, so a captured frame is the same picture twice.
     ///
-    /// <c>AVA3D_STORY_AT</c> for the ordinary scenes, and it exists for the same reason a capture does:
+    /// <c>AVA3D_SCENE_AT</c> for the ordinary scenes, and it exists for the same reason a capture does:
     /// the only way to say a renderer change moved no pixel is to photograph the same thing before and
     /// after. Scene time is normally the compositor's clock, so <c>AVA3D_CAPTURE_FRAME=30</c> lands on
     /// frame thirty at whatever moment frame thirty happened to arrive — which is a different moment on
@@ -706,6 +702,27 @@ public partial class MainView : UserControl
     }
 
     /// <summary>
+    /// Turns the shadow pass off and on, on the scene that is already on screen.
+    ///
+    /// No rebuild. <see cref="Scene.ShadowsEnabled"/> is a property of the scene the renderer is already
+    /// holding, and changing it ticks the version the control watches — so the next frame is drawn without
+    /// the pass and the one after it with, and the frame time in the stats panel moves while somebody is
+    /// looking at it. Rebuilding would work and would also throw away the turntable's angle, which is the
+    /// one thing that has to stay still if the two pictures are to be compared.
+    /// </summary>
+    private void OnShadowsToggled()
+    {
+        // The switch's own value rather than the setting read back, for the reason spelled out in
+        // OnSoundToggled: AVA3D_SHADOWS wins over the file, so resolving through the setting would make a
+        // click in a forced-on run turn shadows off and straight back on.
+        var on = _shadowsToggle.IsChecked == true;
+        DemoSettings.Shadows = on;
+
+        if (_currentScene is not null)
+            _currentScene.ShadowsEnabled = on;
+    }
+
+    /// <summary>
     /// Builds the current entry again, when what it should build has changed rather than which entry it is.
     ///
     /// <see cref="Select"/> refuses to rebuild what is already shown, which is right — it is what stops
@@ -879,6 +896,15 @@ public partial class MainView : UserControl
             if (bake.Length > 2 && float.TryParse(bake[2], out var fov))
                 camera.FieldOfView = fov;
         }
+        // Before the scene is handed over, so the first frame is already the one that was asked for rather
+        // than one drawn with shadows and corrected on the next tick.
+        _currentScene.ShadowsEnabled = _shadowsToggle.IsChecked == true;
+
+        // Dead where there is nothing to switch. A scene with no casting light draws the same picture
+        // either way, and a control that visibly does nothing is one people stop believing — the same
+        // argument as the sound switch beside it, and disabled rather than hidden for the same reason.
+        _shadowsToggle.IsEnabled = _currentScene.Lights.Any(light => light.CastsShadows);
+
         _view.Scene = _currentScene;
         _view.IsPickingEnabled = _current.WantsPicking;
         _view.InvalidateCamera();
@@ -1270,12 +1296,72 @@ public partial class MainView : UserControl
     }
 
     /// <summary>
+    /// Points the walk keys at this view's top level, moving them if it has changed.
+    ///
+    /// Guarded rather than run blind because <c>AttachedToVisualTree</c> fires again on every re-parent,
+    /// and what used to be here registered a fresh set of handlers each time: <see cref="OnWalkKey"/> ran
+    /// once per attach per key event, and the top level held a reference to this view for each cycle. The
+    /// handlers are named methods for the same reason — a lambda cannot be handed back to
+    /// <c>RemoveHandler</c>, so the old ones could not have been removed even deliberately.
+    /// </summary>
+    private void AttachWalkKeys()
+    {
+        var top = TopLevel.GetTopLevel(this);
+        if (ReferenceEquals(top, _walkTop))
+            return;
+
+        DetachWalkKeys();
+
+        if (top is null)
+            return;
+
+        _walkTop = top;
+
+        // The walk keys, taken at the top level and on the way down. See OnWalkKey.
+        top.AddHandler(KeyDownEvent, OnWalkKey, RoutingStrategies.Tunnel);
+        top.AddHandler(KeyUpEvent, OnWalkKey, RoutingStrategies.Tunnel);
+
+        // And let go of everything the moment this window stops being the one the keyboard is talking to.
+        // A key-up is only ever delivered to whoever had the focus when it happened, so a window that
+        // loses the focus mid-stride never hears the release — and what that looks like is a visitor
+        // walking into a wall and unable to stop. See Release.
+        top.LostFocus += OnWalkLostFocus;
+
+        if (top is Window window)
+            window.Deactivated += OnWalkDeactivated;
+    }
+
+    /// <summary>Lets go of the top level the walk keys were taken from.</summary>
+    private void DetachWalkKeys()
+    {
+        if (_walkTop is null)
+            return;
+
+        _walkTop.RemoveHandler(KeyDownEvent, OnWalkKey);
+        _walkTop.RemoveHandler(KeyUpEvent, OnWalkKey);
+        _walkTop.LostFocus -= OnWalkLostFocus;
+
+        if (_walkTop is Window window)
+            window.Deactivated -= OnWalkDeactivated;
+
+        _walkTop = null;
+    }
+
+    private void OnWalkLostFocus(object? sender, RoutedEventArgs e) => Release();
+
+    private void OnWalkDeactivated(object? sender, EventArgs e) => Release();
+
+    /// <summary>
     /// Let go of every key, because the window is no longer the one hearing them.
     ///
-    /// It is called on lost focus, on the pointer leaving the window and on the window being deactivated,
-    /// and all three are the same event as far as the keyboard is concerned: something else is about to
-    /// receive the key-up that this control is waiting for. Missing it is the difference between a walk
-    /// that stops and a walk that does not.
+    /// It is called on lost focus and on the window being deactivated, and both are the same event as far
+    /// as the keyboard is concerned: something else is about to receive the key-up that this control is
+    /// waiting for. Missing it is the difference between a walk that stops and a walk that does not.
+    ///
+    /// The pointer leaving the window used to call it too, and that was wrong. The mouse is not what is
+    /// being read — a visitor walking with W held down and the pointer nudged over a window edge, onto a
+    /// second monitor or across a popup keeps the keyboard the whole time, and stopping there strands the
+    /// walk mid-stride with the key still down and no key-down left to come to restart it.
     /// </summary>
     private void Release()
     {

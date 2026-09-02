@@ -189,6 +189,16 @@
                 <ToggleSwitch x:Name="SoundToggle" OnContent="Sound" OffContent="Sound"
                               ToolTip.Tip="The film's soundtrack: air, lamps, footsteps, an alarm. Generated, like the textures — there is not an audio file in the repository" />
 
+                <!--
+                    Shadows, and the only switch here that changes what the renderer does rather than what
+                    the demo shows. It is next to the stats panel on purpose: the pass it turns off is the
+                    one with a number attached, and watching that number move is the demonstration. Dead
+                    next to a scene with nothing casting, for the same reason the sound switch is dead next
+                    to a scene with no soundtrack.
+                -->
+                <ToggleSwitch x:Name="ShadowsToggle" OnContent="Shadows" OffContent="Shadows"
+                              ToolTip.Tip="The second pass, from the light's point of view. Off costs nothing and draws what this scene drew before shadows existed — watch ms/render" />
+
                 <Border Width="1" Background="#262B36" Margin="4,0" />
 
                 <!--

@@ -1,6 +1,6 @@
-# Ava3DControl · 12.1.0-preview.7
+# Ava3DControl · 12.1.0-preview.9
 
-A 3D viewport control for [Avalonia](https://avaloniaui.net/). Metallic-roughness PBR, glTF loading and
+A 3D viewport control for [Avalonia](https://avaloniaui.net/). Metallic-roughness PBR, shadows, glTF loading and
 triangle-accurate picking, in one binary that renders through Metal, Vulkan, OpenGL, WebGL 2 or the CPU —
 chosen at runtime from whatever the host can offer.
 
@@ -24,7 +24,7 @@ needs neither.
 ## In this repository
 
 - `docs/` — the documentation site, and the browser demo it hosts.
-- `demo/` — the demo application in full: thirty-four scenes and five platform heads. It restores
+- `demo/` — the demo application in full: forty-nine scenes and five platform heads. It restores
   Ava3DControl from nuget.org, exactly as your own project would.
 - `LICENSE.md`, `THIRD-PARTY-NOTICES.md`.
 
@@ -87,7 +87,9 @@ call:
 
 ## Limits
 
-- No shadows, no animation or skinning.
+- One light casts shadows. A point light shadows a cone aimed at the scene rather than all around
+  itself, and there are no cascades, so one map covers the casting geometry.
+- No animation or skinning.
 - Transparency is ordered per object, not per triangle.
 - Binary .glb only.
 - Android builds but has not been run on a device.

@@ -150,6 +150,31 @@ internal static class Deck
     public static readonly Vector3 Link = new(4.2f, 0f, 34.5f);
 
     /// <summary>
+    /// The clock room, north of the link's turn, and the only room on this deck you leave by the door you
+    /// came in through.
+    ///
+    /// <b>That is the room and not a compromise.</b> Everything else here is walked through — the plan's
+    /// whole argument is a route, and a route does not double back. A tower does. You climb it because
+    /// there is one thing at the top, you stand in it, and you come back down past everything you already
+    /// passed; a clock chamber with a second door would be a corridor with a clock in it. So the one dead
+    /// end in the building is the one room whose subject is standing still and watching something move.
+    ///
+    /// Its south wall is six hundred millimetres thick and centred on the link's north one, which is a
+    /// quarter of that — the engine room's bulkhead trick a third time, and for the third time because two
+    /// walls that meet face to face are two coplanar surfaces the depth test cannot choose between. The
+    /// thin wall ends up entirely inside the thick one with two hundred millimetres to spare either side,
+    /// and the doorway anybody walks through is one opening cut through both.
+    ///
+    /// <b>x is 2.6 and not 4.2, so the tower is not square to the corridor that reaches it.</b> The
+    /// doorway is on the link's centre line because a door has to be; the room is a metre and six west of
+    /// it because east of that is the planetarium's wall ring, which comes to x 6.8 at this latitude and
+    /// which nothing may touch. What it buys is rule 2 for free: he comes through the opening on the room's
+    /// east side and the window is in the east wall behind him, so the beam is across the floor in front of
+    /// him before the thing casting it is anywhere in frame.
+    /// </summary>
+    public static readonly Vector3 ClockTower = new(2.6f, 0f, 44.52f);
+
+    /// <summary>
     /// The alarm corridor, and like the gallery it does not get to choose where it is.
     ///
     /// Its origin is the outer face of the lounge's north wall, on the centre line of the lounge's exit —
@@ -221,6 +246,7 @@ internal static class Deck
     public const string StudioRoom = "studio";
     public const string PatternRoom = "patterns";
     public const string PlanetariumRoom = "planetarium";
+    public const string ClockRoom = "clock";
     public const string LinkRoom = "link";
     public const string ScreensRoom = "screens";
     public const string CorridorRoom = "corridor";
