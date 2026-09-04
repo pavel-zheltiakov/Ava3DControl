@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.9 · beta</span>
+  <span class="tag">12.1.0-preview.10 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -31,7 +31,7 @@
 </nav></header>
 <div class="shell">
 <aside class="side">
-<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a class="current" aria-current="page" href="surfaces-and-light.html">5 · Surfaces and light</a><ul class="sub"><li><a href="#shaders">What a shader is, and why you are not writing one</a></li><li><a href="#normals">Normals: which way a surface faces</a></li><li><a href="#metallic-roughness">The two dials</a></li><li><a href="#maps">Maps: varying it across the surface</a></li><li><a href="#lights">Lights</a></li><li><a href="#shadows">Shadows</a></li><li><a href="#extra-terms">Four terms that are not physics</a></li></ul></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li><li><a href="Ava3D.RenderTrigger.html">RenderTrigger</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li><li><a href="Ava3D.TextureFilter.html">TextureFilter</a></li><li><a href="Ava3D.ShadingModel.html">ShadingModel</a></li><li><a href="Ava3D.MatcapTextureMode.html">MatcapTextureMode</a></li><li><a href="Ava3D.VertexAlphaMode.html">VertexAlphaMode</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.MissingComponent.html">MissingComponent</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li><li><a href="Ava3D.SelfTest.html">SelfTest</a></li><li><a href="Ava3D.OfflineRenderer.html">OfflineRenderer</a></li></ul></details></nav>
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a class="current" aria-current="page" href="surfaces-and-light.html">5 · Surfaces and light</a><ul class="sub"><li><a href="#shaders">What a shader is, and why you are not writing one</a></li><li><a href="#normals">Normals: which way a surface faces</a></li><li><a href="#metallic-roughness">The two dials</a></li><li><a href="#maps">Maps: varying it across the surface</a></li><li><a href="#uv-transform">Moving a map around the surface</a></li><li><a href="#projection">Coordinates that do not come from the mesh</a></li><li><a href="#detail">The layer underneath everything</a></li><li><a href="#lights">Lights</a></li><li><a href="#shadows">Shadows</a></li><li><a href="#extra-terms">Four terms that are not physics</a></li></ul></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a href="making-it-fast.html">8 · Making it fast</a></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li><li><a href="Ava3D.RenderTrigger.html">RenderTrigger</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.MeshInstance.html">MeshInstance</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li><li><a href="Ava3D.Batching.html">Batching</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li><li><a href="Ava3D.TextureFilter.html">TextureFilter</a></li><li><a href="Ava3D.TextureFormat.html">TextureFormat</a></li><li><a href="Ava3D.UvSource.html">UvSource</a></li><li><a href="Ava3D.MappingSpace.html">MappingSpace</a></li><li><a href="Ava3D.DetailLayer.html">DetailLayer</a></li><li><a href="Ava3D.ShadingModel.html">ShadingModel</a></li><li><a href="Ava3D.MatcapTextureMode.html">MatcapTextureMode</a></li><li><a href="Ava3D.VertexAlphaMode.html">VertexAlphaMode</a></li></ul></details><details class="group"><summary>Loading files</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li><li><a href="Ava3D.Ktx2Loader.html">Ktx2Loader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.MissingComponent.html">MissingComponent</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li><li><a href="Ava3D.SelfTest.html">SelfTest</a></li><li><a href="Ava3D.OfflineRenderer.html">OfflineRenderer</a></li></ul></details></nav>
 </aside>
 <main>
 <p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>5 · Surfaces and light</h1><p class="lede">
@@ -197,6 +197,19 @@
 <pre><code><span class="k">var</span> ready = mesh.WithGeneratedNormals().WithGeneratedTangents();</code></pre>
 
 <p>
+  And if what you have is a height field rather than a normal map — which is usually what a procedural
+  surface produces — convert it once rather than authoring the directions by hand:
+</p>
+
+<pre><code>material.NormalTexture = Texture.NormalFromHeight(height, strength: 2.4f);</code></pre>
+
+<p>
+  It reads the height as a linear value, takes the slope across each <a class="term-link" href="glossary.html#g-texture">texel</a> and writes the direction that slope
+  implies. <code>strength</code> scales the slope, so the same field can be a hint or a relief; wrapping is on
+  by default, because a tiling height field with a seam down one edge is worse than no relief at all.
+</p>
+
+<p>
   Textures do not have to come from files. <a href="Ava3D.Texture.html">Texture.FromPixels</a> takes raw
   RGBA, which for a map generated in code saves encoding a PNG only to decode it again — over a second of
   stall for four large maps in a browser:
@@ -208,7 +221,7 @@ material.BaseColorTexture = Texture.FromPixels(pixels, 256, 256, name: <span cla
 
 <p>
   Both factories take a filter, and the default is right nearly always.
-  <a href="Ava3D.TextureFilter.html">TextureFilter.Linear</a> blends the four nearest <a class="term-link" href="glossary.html#g-texture">texels</a>, which is what a
+  <a href="Ava3D.TextureFilter.html">TextureFilter.Linear</a> blends the four nearest texels, which is what a
   photograph, a normal map or a generated gradient wants — the image is a continuous thing that happens to be
   stored as a grid. <code>Nearest</code> takes the one texel the coordinate lands in and does no <a class="term-link" href="glossary.html#g-blending">blending</a>, so
   a texel magnified across many pixels stays a hard-edged square:
@@ -240,6 +253,166 @@ texture.Refresh();</code></pre>
   screen right up to the moment the new pixels replace it, and allocates nothing. It applies to raw pixels
   only: encoded bytes are a file, and a file that changed is a different texture.
 </p>
+
+<h2 id="uv-transform">Moving a map around the surface</h2>
+
+<p>
+  A mesh's UV coordinates are fixed when the mesh is built, and they are rarely the coordinates you want. So
+  the material carries a transform applied to them before anything is sampled:
+</p>
+
+<table class="members">
+  <tbody>
+    <tr>
+      <td><code>UvScale</code></td>
+      <td>How many times the map repeats. <code>(4, 4)</code> is sixteen tiles where there was one.</td>
+    </tr>
+    <tr>
+      <td><code>UvOffset</code></td>
+      <td>Where it starts. Move it every frame and the surface scrolls — a conveyor, a waterfall, a
+          starfield.</td>
+    </tr>
+    <tr>
+      <td><code>UvRotation</code></td>
+      <td>Radians, turning the map on the surface. Grain along the plank rather than across it.</td>
+    </tr>
+    <tr>
+      <td><code>UvPivot</code></td>
+      <td>The point the rotation turns about, in tile units. <code>(0.5, 0.5)</code> — the middle — by
+          default.</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code>material.UvScale = <span class="k">new</span> Vector2(6f, 2f);
+material.UvRotation = MathF.PI / 4f;</code></pre>
+
+<p>
+  <strong>The pivot applies to the rotation and not to the scale</strong>, and that is worth a sentence
+  because it is the one thing here that surprises people. A scale is a <em>density</em> — it says how tightly
+  the pattern is packed, and a density is measured from the origin, not from the middle of a tile. A rotation
+  is a turn, and a turn needs a centre. Apply the pivot to both and doubling a tiling also slides it, which is
+  never what anyone meant.
+</p>
+
+<p>
+  The same four properties are on <a href="Ava3D.MeshNode.html">MeshNode</a>, and they compose on top of the
+  material's. That is what lets one material dress a whole scene while every copy of it looks different:
+</p>
+
+<pre><code><span class="k">foreach</span> (<span class="k">var</span> (crate, i) <span class="k">in</span> crates.Select((c, i) =&gt; (c, i)))
+    crate.UvRotation = i * MathF.Tau / crates.Count;   <span class="c">// one material, a phase each</span></code></pre>
+
+<div class="tip">
+  <p>
+    <strong>Rotating the coordinates rotates the frame a normal map is read in</strong>, and the renderer
+    corrects for it — with the rotation alone, not the scale. A normal map's texels hold directions in
+    tangent space, and stretching the domain a map is read from does not tilt the surface it describes.
+    (A height map is the other way about, which is why the two are not corrected the same.) Applying the
+    scale to that correction turns a rope tiled thirty-nine times round a post into corrugated iron.
+  </p>
+</div>
+
+<h2 id="projection">Coordinates that do not come from the mesh</h2>
+
+<p>
+  Every complaint anyone has about a texture on a model comes from one place: the coordinates were decided
+  when the mesh was made. A sphere wears a sunburst at its poles because the whole top row of texels is
+  crushed into a point. A cylinder has a seam because a map has to stop somewhere. A box unwrapped carelessly
+  has a face at a different scale from its neighbour. And geometry generated in code frequently has no
+  coordinates at all.
+</p>
+
+<p>
+  <a href="Ava3D.UvSource.html">UvSource</a> takes the coordinates from a projection instead, which removes
+  all of those at once — there is no unwrap to be wrong:
+</p>
+
+<table class="members">
+  <tbody>
+    <tr><td><code>Mesh</code></td><td>The mesh's own coordinates. The default, and what a normal map's tangents assume.</td></tr>
+    <tr><td><code>PlanarX</code>, <code>PlanarY</code>, <code>PlanarZ</code></td><td>Projected down one axis: one sample, no blend. A floor, a ceiling, a wall that faces one way.</td></tr>
+    <tr><td><code>Triplanar</code></td><td>Projected down all three and blended by the surface normal. Three samples a map, which is the honest price — worth it on anything that faces more than one way.</td></tr>
+  </tbody>
+</table>
+
+<pre><code>material.UvSource = UvSource.Triplanar;
+material.UvDensity = 2f;        <span class="c">// repeats per metre</span>
+material.UvSharpness = 4f;      <span class="c">// how hard the three projections switch</span></code></pre>
+
+<p>
+  Under a projection, scale stops meaning repeats-per-surface and starts meaning
+  <strong><code>UvDensity</code>: repeats per metre</strong>. That is the quiet win. The same number on a bolt
+  and on a bulkhead gives both the same texel size, so texture density comes out right by construction
+  instead of by a line of arithmetic at every call site. <code>UvScale</code> still applies on top, so a
+  projected material can be stretched as well.
+</p>
+
+<p>
+  <code>UvSharpness</code> is the exponent the surface normal is raised to before the three <a class="term-link" href="glossary.html#g-triplanar">triplanar</a> weights
+  are normalised: one is a wide soft blend showing all three projections across most of a curve, eight is
+  nearly a hard switch at each forty-five degree line. Four suits hard-surface geometry; go lower for
+  something organic.
+</p>
+
+<p>
+  <a href="Ava3D.MappingSpace.html">UvSpace</a> decides what the projection is measured in.
+  <code>Object</code> is the default: the texture sticks to the geometry and does not swim when the object
+  moves. <code>World</code> makes two identical objects at two positions read different parts of the texture,
+  which breaks up a repeat for free — and makes anything that moves swim, which is exactly why it is not the
+  default.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>A projected normal map has no tangents to use, so the shader builds a frame from the surface
+    normal instead.</strong> That is exact on a planar projection and has a seam on a ball where the dominant
+    axis changes. It is the trade that buys you a normal map on geometry that was never unwrapped.
+  </p>
+</div>
+
+<h2 id="detail">The layer underneath everything</h2>
+
+<p>
+  There is a resolution a tiling map cannot reach, and it is not a shading problem — it is a memory one. A
+  map has to carry a surface's colour, its pattern and its identity at whatever resolution the budget allows.
+  Raise every material far enough to also carry the grain of the metal and you have multiplied the whole
+  texture budget to add something that is the same on every surface in the scene.
+</p>
+
+<p>
+  So carry that end of the range once, for the whole scene:
+</p>
+
+<pre><code>scene.Detail.Texture = Texture.DetailField(512, octaves: 5, persistence: 0.55f, seed: 1);
+scene.Detail.Density = 200f;    <span class="c">// repeats per metre — a fifth of a millimetre a repeat</span>
+
+material.DetailNormal = 0.6f;   <span class="c">// how much it perturbs the normal</span>
+material.DetailRough  = 0.3f;   <span class="c">// and the roughness</span></code></pre>
+
+<p>
+  One texture, bound once, sampled at a frequency taken from position rather than from any mesh's
+  coordinates, perturbing the normal and the roughness underneath whatever the base maps already say. The base
+  maps go back to doing what they are good at. <a href="Ava3D.DetailLayer.html">Scene.Detail</a> holds the
+  field and the default density; each material says how much of it it wants, through
+  <code>DetailNormal</code>, <code>DetailRough</code>, <code>DetailTint</code> and its own
+  <code>DetailScale</code>.
+</p>
+
+<p>
+  A <a class="term-link" href="glossary.html#g-detail-map">detail layer</a> has to fade, because a fifth of a millimetre seen from ten metres is smaller than a pixel and
+  a feature smaller than a pixel is noise. <code>DetailFade</code> is the distance over which it goes away —
+  and where it does, the strength moves into roughness rather than simply vanishing, so a surface does not
+  turn glassy as you walk backwards.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>It is per scene, not per material</strong>, and that is the whole economy of it. A detail map on
+    every material would put back the memory this exists to remove and spend a sampler unit per material
+    rather than one for the lot.
+  </p>
+</div>
 
 <h2 id="lights">Lights</h2>
 
@@ -416,6 +589,13 @@ AVA3D_SCENE=<span class="s">"Full PBR"</span> dotnet run --project samples/Ava3D
 AVA3D_SCENE=<span class="s">"Four lights"</span> dotnet run --project samples/Ava3D.Demo.Desktop
 AVA3D_SCENE=<span class="s">Shadows</span> dotnet run --project samples/Ava3D.Demo.Desktop
 AVA3D_SCENE=<span class="s">"Clock tower"</span> dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+  <p>
+    And the three scenes for this half of the chapter: the same material on the mesh and projected, the
+    detail layer fading with distance, and forty crates wearing one material forty ways.
+  </p>
+  <pre><code>AVA3D_SCENE=Projection   dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=Detail       dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_SCENE=UvVariation  dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
 </div>
 
 <p class="chapter-nav">
@@ -426,7 +606,7 @@ AVA3D_SCENE=<span class="s">"Clock tower"</span> dotnet run --project samples/Av
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.9 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.10 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

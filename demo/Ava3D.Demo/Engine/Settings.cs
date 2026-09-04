@@ -180,6 +180,19 @@ public static class DemoSettings
     }
 
     /// <summary>
+    /// Whether the renderer skips geometry the camera cannot see. On unless a run says otherwise.
+    ///
+    /// Not a setting anybody would want to change while looking at the demo — culling is meant to be
+    /// invisible, and a switch for an invisible thing is clutter. It exists for one job: capturing the
+    /// same scene twice from one build, with the feature on and off, so that "this moved no pixel" is a
+    /// comparison of two pictures rather than a comparison against a picture somebody took last week.
+    /// </summary>
+    /// <remarks><c>AVA3D_CULL=0</c> switches it off.</remarks>
+    public static bool Culling =>
+        Environment.GetEnvironmentVariable("AVA3D_CULL") is not { Length: > 0 } asked
+        || asked is not ("0" or "off" or "false");
+
+    /// <summary>
     /// Whether this process is being measured rather than used.
     ///
     /// A probe or capture run measures the configuration it was handed, and its whole value is that

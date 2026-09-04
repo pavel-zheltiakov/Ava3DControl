@@ -163,6 +163,15 @@ public partial class MainView : UserControl
     public static RenderInfo? LastInfo { get; private set; }
 
     /// <summary>
+    /// The title of the scene actually on screen, for the probe's report.
+    ///
+    /// Printed rather than assumed, because the two are not the same question: <c>AVA3D_SCENE</c> says what
+    /// was asked for and this says what arrived. A harness that compares them cannot report a number for a
+    /// scene that did not run — see <see cref="StartingScene"/>, which is where that happened.
+    /// </summary>
+    public static string OpenedScene { get; private set; } = "(none)";
+
+    /// <summary>
     /// The same summary on every platform. Printed to the console, which is a terminal on desktop, the
     /// devtools console in a browser, logcat on Android and the device log on iOS — so one line of code
     /// gives every head a verifiable result without anyone watching a screen.
@@ -186,7 +195,8 @@ public partial class MainView : UserControl
            host      : {HostPlatform.Describe(info.Device)}, {RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant()}, {Cores()}
            size      : {info.Size}
            perf      : {info.FramesPerSecond:F1} fps, {info.FrameMilliseconds:F2} ms/frame, {info.RenderMilliseconds:F2} ms/render, {info.FramesRendered} frames
-           geometry  : {info.DrawCalls} draws, {info.Triangles:N0} triangles
+           scene     : {OpenedScene}
+           geometry  : {info.DrawCalls} draws, {info.Triangles:N0} triangles{(info.CullingSummary is { } c ? $" · culled {c}" : "")}
            snapshot  : {info.SceneRebuildSummary ?? "not rebuilt — the scene is static"}
            textures  : {info.Textures ?? "(none)"}
            backends  : {string.Join(", ", info.AvailableBackends.Select(b => b.ToString()))}
@@ -448,6 +458,16 @@ public partial class MainView : UserControl
     /// <summary>
     /// The scene to open on. Accepts an index or a case-insensitive title prefix, because a probe script
     /// reads better as AVA3D_SCENE=pbr than as AVA3D_SCENE=11.
+    ///
+    /// <b>A name that matches nothing is a failure, not a default.</b> This used to return 0, and what
+    /// that produced was a measurement of the wrong scene under the right label: <c>AVA3D_SCENE=ClockTower</c>
+    /// does not prefix-match the title "Clock tower", so <c>tools/bench.sh --scenes ClockTower</c> reported
+    /// one draw and twelve triangles — <c>HelloCube</c>, measured and labelled as something else. A release
+    /// gated on draw counts cannot be gated by a harness that can do that, so this throws, and the process
+    /// dies with the list of titles it would have accepted.
+    ///
+    /// Spaces are ignored on both sides of the comparison for the same reason the match is a prefix: a
+    /// script naming a scene should not have to quote it.
     /// </summary>
     private int StartingScene()
     {
@@ -455,15 +475,25 @@ public partial class MainView : UserControl
         if (string.IsNullOrWhiteSpace(wanted))
             return 0;
 
-        if (int.TryParse(wanted, out var index) && index >= 0 && index < _catalog.Count)
-            return index;
+        if (int.TryParse(wanted, out var index))
+            return index >= 0 && index < _catalog.Count
+                ? index
+                : throw new ArgumentOutOfRangeException(
+                    "AVA3D_SCENE", wanted,
+                    $"there are {_catalog.Count} scenes, numbered 0 to {_catalog.Count - 1}");
 
         for (var i = 0; i < _catalog.Count; i++)
-            if (_catalog[i].Title.StartsWith(wanted, StringComparison.OrdinalIgnoreCase))
+            if (Squashed(_catalog[i].Title).StartsWith(Squashed(wanted), StringComparison.OrdinalIgnoreCase))
                 return i;
 
-        return 0;
+        throw new ArgumentException(
+            $"AVA3D_SCENE=\"{wanted}\" matches no scene. The titles are: " +
+            string.Join(", ", _catalog.Select(s => s.Title)),
+            "AVA3D_SCENE");
     }
+
+    /// <summary>A title with its spaces taken out, so AVA3D_SCENE=ClockTower finds "Clock tower".</summary>
+    private static string Squashed(string text) => text.Replace(" ", string.Empty);
 
     /// <summary>
     /// One animation frame: advance the scene, hand it the camera, and show whatever it has to say.
@@ -763,6 +793,7 @@ public partial class MainView : UserControl
         _wanted = index;
         _onScreen.Restart();
 
+        OpenedScene = _catalog[index].Title;
         _sceneTitle.Text = $"{index + 1}/{_catalog.Count}  ·  {_catalog[index].Title}";
         _sceneNotes.Text = Reflow(_catalog[index].Described.Notes);
         Dress(_catalog[index].Described.Look);
@@ -819,6 +850,12 @@ public partial class MainView : UserControl
         _current = _storyToggle.IsChecked == true && entry.Cue is { } cue
             ? new StoryScene(StoryAt ?? (_storyFromTop ? 0f : cue))
             : entry.Standalone();
+
+        // What the probe will print. The film is one scene wearing every room's name in turn, so it says so
+        // rather than naming whichever room the clock happens to be in when the report is written.
+        OpenedScene = _current is StoryScene
+            ? $"the film · {entry.Title}"
+            : entry.Title;
 
         _storyFromTop = false;
 
@@ -899,6 +936,10 @@ public partial class MainView : UserControl
         // Before the scene is handed over, so the first frame is already the one that was asked for rather
         // than one drawn with shadows and corrected on the next tick.
         _currentScene.ShadowsEnabled = _shadowsToggle.IsChecked == true;
+
+        // Off only when a measured run asks, so that "culling moved no pixel" can be two captures from one
+        // build rather than a comparison against a picture taken before it existed.
+        _currentScene.FrustumCulling = DemoSettings.Culling;
 
         // Dead where there is nothing to switch. A scene with no casting light draws the same picture
         // either way, and a control that visibly does nothing is one people stop believing — the same

@@ -10,7 +10,7 @@
 <body>
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="../index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.9 · beta</span>
+  <span class="tag">12.1.0-preview.10 · beta</span>
   <div class="links">
     <a href="../index.html">Home</a>
     <a href="a-scene-from-nothing.html">3D Guide</a>
@@ -31,7 +31,7 @@
 </nav></header>
 <div class="shell">
 <aside class="side">
-<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a class="current" aria-current="page" href="making-it-fast.html">8 · Making it fast</a><ul class="sub"><li><a href="#draw-calls">Draw calls, not triangles</a></li><li><a href="#share">Share meshes; do not copy them</a></li><li><a href="#merge">Merge what never moves apart</a></li><li><a href="#textures">Textures</a></li><li><a href="#snapshot">The per-frame snapshot</a></li><li><a href="#measure">Measure your own scene</a></li><li><a href="#pixels">How many pixels it draws</a></li><li><a href="#cpu">When there is no GPU</a></li><li><a href="#checklist">The short version</a></li></ul></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li><li><a href="Ava3D.RenderTrigger.html">RenderTrigger</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li><li><a href="Ava3D.TextureFilter.html">TextureFilter</a></li><li><a href="Ava3D.ShadingModel.html">ShadingModel</a></li><li><a href="Ava3D.MatcapTextureMode.html">MatcapTextureMode</a></li><li><a href="Ava3D.VertexAlphaMode.html">VertexAlphaMode</a></li></ul></details><details class="group"><summary>Loading glTF</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.MissingComponent.html">MissingComponent</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li><li><a href="Ava3D.SelfTest.html">SelfTest</a></li><li><a href="Ava3D.OfflineRenderer.html">OfflineRenderer</a></li></ul></details></nav>
+<nav class="toc" aria-label="Documentation"><a class="toc-top" href="index.html">Overview</a><details class="group" open><summary>3D Guide</summary><ul><li><a href="a-scene-from-nothing.html">1 · A scene from nothing</a></li><li><a href="moving-things-about.html">2 · Moving things about</a></li><li><a href="the-camera.html">3 · The camera</a></li><li><a href="turning-things.html">4 · Turning things</a></li><li><a href="surfaces-and-light.html">5 · Surfaces and light</a></li><li><a href="past-triangles.html">6 · Past triangles</a></li><li><a href="making-it-move.html">7 · Making it move</a></li><li><a class="current" aria-current="page" href="making-it-fast.html">8 · Making it fast</a><ul class="sub"><li><a href="#draw-calls">Draw calls, not triangles</a></li><li><a href="#share">Share meshes; do not copy them</a></li><li><a href="#instances">One node, many copies</a></li><li><a href="#merge">Merge what never moves apart</a></li><li><a href="#culling">What the camera cannot see</a></li><li><a href="#textures">Textures</a></li><li><a href="#snapshot">The per-frame snapshot</a></li><li><a href="#measure">Measure your own scene</a></li><li><a href="#pixels">How many pixels it draws</a></li><li><a href="#cpu">When there is no GPU</a></li><li><a href="#checklist">The short version</a></li></ul></li><li><a href="glossary.html">Glossary</a></li></ul></details><details class="group"><summary>Concepts</summary><ul><li><a href="how-a-frame-happens.html">How a frame happens</a></li><li><a href="choosing-a-renderer.html">How the renderer is chosen</a></li><li><a href="gltf-mapping.html">From a .glb file to these types</a></li></ul></details><details class="group"><summary>The control</summary><ul><li><a href="Ava3D.Ava3DView.html">Ava3DView</a></li><li><a href="Ava3D.RenderTrigger.html">RenderTrigger</a></li></ul></details><details class="group"><summary>The scene</summary><ul><li><a href="Ava3D.Scene.html">Scene</a></li><li><a href="Ava3D.Node.html">Node</a></li><li><a href="Ava3D.MeshNode.html">MeshNode</a></li><li><a href="Ava3D.MeshInstance.html">MeshInstance</a></li><li><a href="Ava3D.NodeCollection.html">NodeCollection</a></li><li><a href="Ava3D.Camera.html">Camera</a></li></ul></details><details class="group"><summary>Lights</summary><ul><li><a href="Ava3D.Light.html">Light</a></li><li><a href="Ava3D.DirectionalLight.html">DirectionalLight</a></li><li><a href="Ava3D.PointLight.html">PointLight</a></li><li><a href="Ava3D.LightCollection.html">LightCollection</a></li><li><a href="Ava3D.EnvironmentLight.html">EnvironmentLight</a></li></ul></details><details class="group"><summary>Sprites, lines and points</summary><ul><li><a href="Ava3D.SpriteNode.html">SpriteNode</a></li><li><a href="Ava3D.LineNode.html">LineNode</a></li><li><a href="Ava3D.PointsNode.html">PointsNode</a></li></ul></details><details class="group"><summary>Geometry</summary><ul><li><a href="Ava3D.Mesh.html">Mesh</a></li><li><a href="Ava3D.Primitives.html">Primitives</a></li><li><a href="Ava3D.BoundingBox.html">BoundingBox</a></li><li><a href="Ava3D.Batching.html">Batching</a></li></ul></details><details class="group"><summary>Maths</summary><ul><li><a href="Ava3D.Rotations.html">Rotations</a></li><li><a href="Ava3D.Spline.html">Spline</a></li><li><a href="Ava3D.Ease.html">Ease</a></li><li><a href="Ava3D.Scatter.html">Scatter</a></li></ul></details><details class="group"><summary>Materials and textures</summary><ul><li><a href="Ava3D.Material.html">Material</a></li><li><a href="Ava3D.BlendMode.html">BlendMode</a></li><li><a href="Ava3D.CullMode.html">CullMode</a></li><li><a href="Ava3D.Texture.html">Texture</a></li><li><a href="Ava3D.TextureWrap.html">TextureWrap</a></li><li><a href="Ava3D.TextureFilter.html">TextureFilter</a></li><li><a href="Ava3D.TextureFormat.html">TextureFormat</a></li><li><a href="Ava3D.UvSource.html">UvSource</a></li><li><a href="Ava3D.MappingSpace.html">MappingSpace</a></li><li><a href="Ava3D.DetailLayer.html">DetailLayer</a></li><li><a href="Ava3D.ShadingModel.html">ShadingModel</a></li><li><a href="Ava3D.MatcapTextureMode.html">MatcapTextureMode</a></li><li><a href="Ava3D.VertexAlphaMode.html">VertexAlphaMode</a></li></ul></details><details class="group"><summary>Loading files</summary><ul><li><a href="Ava3D.GltfLoader.html">GltfLoader</a></li><li><a href="Ava3D.Ktx2Loader.html">Ktx2Loader</a></li></ul></details><details class="group"><summary>Picking</summary><ul><li><a href="Ava3D.PickResult.html">PickResult</a></li><li><a href="Ava3D.PickEventArgs.html">PickEventArgs</a></li></ul></details><details class="group"><summary>Renderers</summary><ul><li><a href="Ava3D.RenderInfo.html">RenderInfo</a></li><li><a href="Ava3D.RendererFeature.html">RendererFeature</a></li><li><a href="Ava3D.RenderBackendKind.html">RenderBackendKind</a></li><li><a href="Ava3D.BackendOption.html">BackendOption</a></li><li><a href="Ava3D.BackendAvailability.html">BackendAvailability</a></li><li><a href="Ava3D.MissingComponent.html">MissingComponent</a></li><li><a href="Ava3D.Rendering.Gl.PlatformSupport.html">Rendering.Gl.PlatformSupport</a></li></ul></details><details class="group"><summary>Diagnostics</summary><ul><li><a href="Ava3D.Diagnostics.FrameCapture.html">Diagnostics.FrameCapture</a></li><li><a href="Ava3D.SelfTest.html">SelfTest</a></li><li><a href="Ava3D.OfflineRenderer.html">OfflineRenderer</a></li></ul></details></nav>
 </aside>
 <main>
 <p class="crumb"><a href="index.html">Documentation</a> · 3D Guide</p><h1>8 · Making it fast</h1><p class="lede">
@@ -62,6 +62,13 @@
   budget against.
 </p>
 
+<p>
+  It is a budget, not a law, and three things break it in your favour. A node can carry many copies of its
+  mesh and still be one draw (<a href="#instances">instances</a>). A tree of static nodes can be folded into
+  a handful (<a href="#merge">merging</a>). And anything the camera cannot see is never submitted at all
+  (<a href="#culling">culling</a>), which happens whether you ask for it or not.
+</p>
+
 <h2 id="share">Share meshes; do not copy them</h2>
 
 <p>
@@ -79,6 +86,64 @@
   Build a fresh <code>Primitives.Sphere(0.5f)</code> inside that loop and you get 125 identical buffers, 125
   uploads, and a cache full of things that will never be reused. It is the single easiest large mistake to
   make here, and it does not announce itself — the picture is identical.
+</p>
+
+<h2 id="instances">One node, many copies</h2>
+
+<p>
+  Sharing a mesh saves the upload. It does not save the draw call — a hundred nodes holding one mesh is still
+  a hundred times the CPU stops and tells the GPU to start. When the copies differ only in where they are and
+  what colour they are, say that instead of building a node each:
+</p>
+
+<pre><code><span class="k">var</span> crate = Primitives.Box(0.34f, 0.34f, 0.34f, chamfer: 0.02f);
+
+<span class="k">var</span> shelf = <span class="k">new</span> MeshNode(crate, material)
+{
+    Instances = [.. places.Select(p =&gt; MeshInstance.At(p.Position, p.Rotation))]
+};</code></pre>
+
+<p>
+  A <a href="Ava3D.MeshInstance.html">MeshInstance</a> is a transform and a tint, and nothing else. They go to
+  the card as a second vertex buffer that advances once per <em>copy</em> rather than once per vertex, so the
+  whole node draws in one call. The transform is relative to the node, which is what keeps the shelf a thing
+  that can be moved.
+</p>
+
+<p>
+  The demo's <a class="term-link" href="glossary.html#g-instancing">instancing</a> scene is the same four hundred crates twice — as separate nodes on the left, as
+  instances on the right, same mesh and same material on both sides:
+</p>
+
+<pre><code>800 crates · 402 draw calls · 9,602 triangles · 0.98 ms/render</code></pre>
+
+<p>
+  Four hundred of those draws are the left half. The right half is <strong>one</strong>. The two halves look
+  identical, which is the point: nothing about the picture says which is which.
+</p>
+
+<p>
+  The tint is what stops four hundred of a thing reading as one thing drawn four hundred times. It is linear
+  RGBA multiplied into the material's base colour, so the material's own colour, its base-colour map and the
+  mesh's vertex colours all still mean what they meant — and the alpha multiplies too, so a copy can fade out
+  without the material knowing.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>An instance is not a node.</strong> It has no name, no children, no visibility of its own, and
+    nothing can pick it or light it individually. That is the trade, and it is the right one for a crate, a
+    bolt or a blade of grass and the wrong one for a door somebody has to open. If you need any of those
+    things, it wants to be a node.
+  </p>
+</div>
+
+<p>
+  Instanced drawing is a renderer feature, so it is reported as one rather than assumed. Metal and OpenGL make
+  the instanced call and the scene above is 402 draws. Vulkan draws each copy with its own call and reports
+  801. The CPU renderer has no draw call to save either way — it shades and rasterises the copies in a loop,
+  which costs what drawing them that many times has always cost. <strong>The picture is identical on all
+  four</strong>, and <code>RenderInfo.Features</code> says which you got and why.
 </p>
 
 <h2 id="merge">Merge what never moves apart</h2>
@@ -103,6 +168,99 @@ scene.Children.Add(<span class="k">new</span> MeshNode(whole, sharedMaterial)); 
   <p>
     <strong>Merging only helps if the parts share a material.</strong> Different materials cannot be one
     draw call, so merging across them just makes a big mesh that still needs several passes over it.
+  </p>
+</div>
+
+<p>
+  Doing that by hand means finding the parts, checking they agree on every material property, and baking each
+  one's world transform yourself. <a href="Ava3D.Batching.html">Batching.Fold</a> does the finding:
+</p>
+
+<pre><code><span class="k">var</span> saved = Batching.Fold(room);   <span class="c">// returns how many draw calls it removed</span></code></pre>
+
+<p>
+  It groups a node's children by everything a material can differ in, bakes each group's placement into its
+  vertices, and replaces the group with one node per material. Tiling is baked too — <code>UvScale</code> and
+  <code>UvOffset</code> are the two properties deliberately <em>not</em> in the grouping key, because
+  fourteen floor plates that differ only in where their panelling starts are fourteen draws that did not
+  need to be.
+</p>
+
+<p>
+  What it will not touch is as much of the design as what it will. A node keeps its own draw call if it has a
+  <strong>name</strong>, if it has children, if it is hidden, if it carries instances, or if you passed it as
+  <code>pinned</code>:
+</p>
+
+<pre><code>Batching.Fold(room, pinned: [door, lamp]);</code></pre>
+
+<p>
+  Naming is the rule worth remembering. A named node is something somebody refers to — looks up, animates,
+  opens — so folding leaves it alone, and the way to keep a part addressable is simply to give it a name. The
+  fold reaches one level down into unnamed groups of plain geometry, so a room made of furniture groups still
+  collapses to a few draws, but it stops at anything with a group inside it: a lid still turns on its hinge.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>Fold once, when the scenery is finished — never in the frame loop.</strong> The result is a mesh,
+    and a mesh rebuilt every frame is an upload every frame. A group that would pass
+    <code>Batching.MostVertices</code> (60,000) or <code>MostTriangles</code> (120,000) is split rather than
+    merged past the ceiling, because a sixteen-bit <a class="term-link" href="glossary.html#g-indices">index buffer</a> stops at 65,536 and the CPU renderer drops
+    whatever runs past its budget without saying so.
+  </p>
+</div>
+
+<h2 id="culling">What the camera cannot see</h2>
+
+<p>
+  Everything above is work you do. This one is done for you and it is on by default: before the draw list
+  reaches the renderer, every mesh and sprite whose <a class="term-link" href="glossary.html#g-bounding-box">bounding box</a> lies entirely outside the camera's
+  <a href="glossary.html#g-frustum">frustum</a> is dropped. Here is the demo's film at four moments, each one
+  measured twice from the same build with the feature off and then on:
+</p>
+
+<pre><code>              culling off                 culling on          dropped
+ 60 s     303 draws,  81,676 tri      39 draws,   7,004 tri       87%
+150 s     298 draws, 112,742 tri      23 draws,  12,376 tri       92%
+240 s   1,046 draws, 106,766 tri     967 draws,  72,652 tri        8%
+300 s   1,017 draws,  81,942 tri     342 draws,  26,744 tri       66%</code></pre>
+
+<p>
+  Read the 240-second row against the others. <strong><a class="term-link" href="glossary.html#g-culling">Culling</a> pays where the camera stands inside the
+  scene</strong> — a room in a building, a cockpit, a street — and pays almost nothing when the camera is
+  outside looking at the whole thing, because then there is nothing outside the view to skip. It is not a
+  setting you tune; it is a saving that appears exactly when your shot needs it.
+</p>
+
+<p>
+  Where it pays, it pays in time as well as in submission. The 60-second shot again, with the clock on it:
+</p>
+
+<pre><code>culling off · 2592×1302 · 303 draws · 81,676 triangles · 0.35 ms/render
+culling on  · 2592×1302 ·  39 draws ·  7,162 triangles · 0.20 ms/render</code></pre>
+
+<p>
+  <code>RenderInfo</code> reports what it dropped, which is the only honest way to know whether it is doing
+  anything for you:
+</p>
+
+<pre><code>geometry : 39 draws, 7,004 triangles · culled 264 of 303 outside the view (87%)</code></pre>
+
+<p>
+  The two knobs are on the scene. <code>FrustumCulling</code> switches it off, which is worth doing once when
+  measuring so that the two numbers come from the same build rather than from your memory of last week.
+  <code>CullingMargin</code> widens the test in world units, for geometry drawn somewhere its bounds do not
+  describe — a vertex <a class="term-link" href="glossary.html#g-shader">shader</a> that displaces, a sprite grown after its bounds were computed. Nothing in this
+  library needs it, which is why it is zero.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>Lines and points are never culled, and that is not an oversight.</strong> They measure their width
+    in device pixels, so a segment's bounding box does not describe the ribbon actually painted for it — a
+    line whose box is just off screen can still put pixels on screen. Meshes and sprites have bounds that mean
+    what they say, so those are the two kinds that get dropped.
   </p>
 </div>
 
@@ -139,8 +297,35 @@ scene.Children.Add(<span class="k">new</span> MeshNode(whole, sharedMaterial)); 
   moves between a 256×128 source and a 2048×1024 one, because the work happens after the image has been
   reduced to a fixed working size. So there is no performance argument for feeding it a small sky. Swapping
   the texture at runtime pays the cost again; rotating it with <code>Rotation</code> does not, because that
-  is a number the <a class="term-link" href="glossary.html#g-shader">shader</a> reads and not a rebuild.
+  is a number the shader reads and not a rebuild.
 </p>
+
+<p>
+  A map can also arrive already compressed, and stay that way.
+  <a href="Ava3D.Ktx2Loader.html">Ktx2Loader</a> reads a <code>.ktx2</code> file — the container <a class="term-link" href="glossary.html#g-gltf">glTF</a>'s own
+  compressed-texture extension uses, and what <code>toktx</code> writes from a PNG — with its format, its
+  size and its whole mip chain in the header:
+</p>
+
+<pre><code>material.BaseColorTexture = Ktx2Loader.Load(File.ReadAllBytes(<span class="s">"hull.ktx2"</span>));</code></pre>
+
+<p>
+  The saving is memory rather than time, and it is large: a 2048×2048 RGBA map is 16 MB decoded and 2.7 MB as
+  BC1, and it stays compressed all the way into the card rather than being expanded on the way. It also stays
+  compressed <em>in</em> the card, which is the part that matters on a device where texture memory is the
+  budget. <a href="Ava3D.TextureFormat.html">TextureFormat</a> names the ten it understands: BC1, BC3, BC4 and
+  BC5 for desktop, BC7 for better desktop, ETC2 for GL ES and WebGL 2, ASTC for mobile.
+</p>
+
+<div class="tip">
+  <p>
+    <strong>A card that cannot take the format still draws the picture.</strong> Where there is no compressed
+    upload path, BC1, BC3, BC4 and BC5 are decoded to RGBA8 and uploaded that way — the same image, at the
+    size compression existed to avoid. BC7, ETC2 and ASTC have no decoder here and are reported as not drawn
+    rather than drawn wrong. So ship one of those four, or an uncompressed map, if one file has to work
+    everywhere; check <code>RenderInfo.Features</code> for what the renderer you got will actually take.
+  </p>
+</div>
 
 <h2 id="snapshot">The per-frame snapshot</h2>
 
@@ -152,15 +337,34 @@ scene.Children.Add(<span class="k">new</span> MeshNode(whole, sharedMaterial)); 
 <table class="members">
   <tbody>
     <tr><td><code>SceneRebuildsPerSecond</code></td><td>How often the walk actually happened. It only runs when something changed.</td></tr>
-    <tr><td><code>SceneRebuildBytes</code></td><td>What one walk allocated. For the demo's film, 105 draws: <strong>27,192 bytes</strong>.</td></tr>
+    <tr><td><code>SceneRebuildBytes</code></td><td>What one walk allocated, averaged over the window. For the demo's film: <strong>496 bytes</strong>.</td></tr>
   </tbody>
 </table>
 
 <p>
-  At 120 rebuilds a second that is about three megabytes a second of managed allocation, all of it
-  short-lived. The walk itself is an explicit stack and a reusable scratch list — for a 60-node scene, 6.8 µs
-  and 14.4 KB, which is the draw-item array and nothing else. If your rebuild figure is high and your scene is
-  not changing, something is calling <code>Invalidate</code> that need not be.
+  Nearly all of a walk used to be one allocation: a fresh array of draw items, every frame, sized to the
+  scene. That array now comes from a small pool of exact-length arrays and goes back when the renderer is
+  finished with it, so a scene whose shape is not changing allocates almost nothing per frame. The same two
+  scenes, before and after:
+</p>
+
+<table class="members">
+  <tbody>
+    <tr><td>the film</td><td>27,192 bytes a walk → <strong>496</strong>; 3.3 MB/s → <strong>58 KB/s</strong></td></tr>
+    <tr><td>the motherboard</td><td>611 draws, 392 bytes a walk, <strong>46 KB/s</strong> at 120 rebuilds a second</td></tr>
+  </tbody>
+</table>
+
+<p>
+  That 496 is the same figure at 39 draws and at 1,046, which is the point of a pool: what a walk allocates
+  stopped being a function of how big the scene is.
+</p>
+
+<p>
+  The walk itself is an explicit stack and a reusable scratch list — for a 60-node scene, 6.8 µs. If your
+  rebuild figure is high and your scene is not changing, something is calling <code>Invalidate</code> that
+  need not be; that is the number to chase, because a rebuild you did not need is the one cost on this page
+  that buys nothing at all.
 </p>
 
 <h2 id="measure">Measure your own scene</h2>
@@ -230,14 +434,23 @@ Console.WriteLine($<span class="s">"{info.Renderer} · {info.FramesPerSecond:0.0
 <p>
   On a host that offers no GPU context the CPU fallback takes over, and it is a different machine rather than
   a slower one: it lights per vertex instead of per pixel, carries only the base-colour map, and fills every
-  pixel in managed code — against its own <a class="term-link" href="glossary.html#g-depth-buffer">depth buffer</a>, in horizontal bands across every core. The same film
-  that runs at 120 fps on Metal runs at 61.7 there.
+  pixel in managed code — against its own <a class="term-link" href="glossary.html#g-depth-buffer">depth buffer</a>, in horizontal bands across every core. The demo's
+  Contact scene, the same moment and the same window, the two renderers side by side:
+</p>
+
+<pre><code>Metal · 2592×1302 · 68 draws · 15,798 triangles ·  0.22 ms/render
+Skia  · 2592×1302 · 68 draws ·  6,872 triangles · 11.45 ms/render</code></pre>
+
+<p>
+  Compare the milliseconds and not the frame rate: both of those runs report over eighty frames a second,
+  which says only that both kept up with the display. The render time says one of them did it with fifty
+  times the headroom.
 </p>
 
 <p>
-  It also counts differently — it reports the 6,561 triangles it actually rasterised for the frame the GPU
-  backends describe as 17,358 submitted — so compare it against itself over time and never against a GPU row.
-  Everything it cannot do is in <code>RenderInfo.Features</code>, eight crosses out of fifteen, each with the
+  It also counts differently — 6,872 triangles actually rasterised against the 15,798 the GPU backends
+  describe as submitted — so compare it against itself over time and never against a GPU row. Everything it
+  cannot do is in <code>RenderInfo.Features</code>, sixteen crosses out of twenty-eight, each with the
   sentence for why, and one of them is a triangle budget: past it, the rest of the frame is dropped rather
   than drawn late. <a href="choosing-a-renderer.html">How the renderer is chosen</a> is the rest of that
   story.
@@ -246,9 +459,14 @@ Console.WriteLine($<span class="s">"{info.Renderer} · {info.FramesPerSecond:0.0
 <h2 id="checklist">The short version</h2>
 
 <ul>
-  <li><strong>Reuse <code>Mesh</code> instances.</strong> Sharing one is how <a class="term-link" href="glossary.html#g-instancing">instancing</a> happens here.</li>
+  <li><strong>Reuse <code>Mesh</code> instances.</strong> One shared mesh is one upload, however many nodes
+      hold it.</li>
   <li><strong>Count nodes, not triangles.</strong> One <code>MeshNode</code> is one draw call.</li>
-  <li><strong>Merge static assemblies</strong> that share a material, and nothing else.</li>
+  <li><strong>Give a node <code>Instances</code></strong> when the copies differ only by transform and tint —
+      four hundred of them, one draw.</li>
+  <li><strong>Merge static assemblies</strong> that share a material, and nothing else. <code>Batching.Fold</code>
+      finds them; name or pin whatever must stay separate.</li>
+  <li><strong>Leave culling on</strong>, and read <code>RenderInfo</code> to see what it is dropping.</li>
   <li><strong>Write into arrays and call <code>InvalidateGeometry</code></strong> rather than building a new
       <code>Mesh</code> when geometry changes.</li>
   <li><strong>Hide idle things with <code>IsVisible = false</code></strong> — the <a class="term-link" href="glossary.html#g-snapshot">snapshot</a> skips the whole
@@ -264,6 +482,11 @@ Console.WriteLine($<span class="s">"{info.Renderer} · {info.FramesPerSecond:0.0
   <h3>Run it</h3>
   <p>One mesh, 125 nodes, 126 draw calls — and the probe line that produced the numbers above.</p>
   <pre><code>AVA3D_SCENE=<span class="s">"Stress test"</span> AVA3D_PROBE=8 dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+  <p>The same four hundred crates as nodes and as instances, side by side:</p>
+  <pre><code>AVA3D_SCENE=Instancing AVA3D_PROBE=8 dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
+  <p>And the culling pair — one build, one shot of the film, the feature off and then on:</p>
+  <pre><code>AVA3D_STORY=1 AVA3D_STORY_AT=300 AVA3D_CULL=0 AVA3D_PROBE=8 dotnet run --project samples/Ava3D.Demo.Desktop
+AVA3D_STORY=1 AVA3D_STORY_AT=300             AVA3D_PROBE=8 dotnet run --project samples/Ava3D.Demo.Desktop</code></pre>
 </div>
 
 <p class="chapter-nav">
@@ -274,7 +497,7 @@ Console.WriteLine($<span class="s">"{info.Renderer} · {info.FramesPerSecond:0.0
 </main>
 </div>
 <footer>
-  <p>Ava3DControl 12.1.0-preview.9 · the reference is generated from the XML documentation comments in the source.</p>
+  <p>Ava3DControl 12.1.0-preview.10 · the reference is generated from the XML documentation comments in the source.</p>
   <p>
     <a href="../index.html">Home</a> ·
     <a href="https://github.com/pavel-zheltiakov/Ava3DControl">GitHub</a> ·

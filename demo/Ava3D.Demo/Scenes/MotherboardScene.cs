@@ -248,11 +248,13 @@ public sealed class MotherboardScene : DemoScene
             // Half a radian was right when the model ended at the board's edge. The panel is two units
             // out from the axis this turns about, so the same angle swings it a full unit sideways and
             // out of frame; less angle, same look, everything stays on screen.
+            // Setting Rotation invalidates the scene on its own. There used to be an unconditional
+            // scene.Invalidate() below this block as well, which asked for a second rebuild of six hundred
+            // draw items every frame to say the same thing — 196 KB at 120 rebuilds a second, on a scene
+            // that is a motherboard.
             _root.Rotation =
                 Quaternion.CreateFromAxisAngle(Vector3.UnitY, MathF.Sin((float)elapsed * 0.22f) * 0.32f);
         }
-
-        scene.Invalidate();
     }
 
     private void Show(Scene? scene)
