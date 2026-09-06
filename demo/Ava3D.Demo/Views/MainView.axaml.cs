@@ -198,6 +198,8 @@ public partial class MainView : UserControl
            scene     : {OpenedScene}
            geometry  : {info.DrawCalls} draws, {info.Triangles:N0} triangles{(info.CullingSummary is { } c ? $" · culled {c}" : "")}
            snapshot  : {info.SceneRebuildSummary ?? "not rebuilt — the scene is static"}
+           shadow    : {info.ShadowSummary ?? "none"}
+           sampling  : {info.SampleCount} sample/pixel at {info.RenderScale:F2}x render scale{(info.NormalMapsDropped > 0 ? $" · {info.NormalMapsDropped} normal maps dropped for want of tangents" : "")}
            textures  : {info.Textures ?? "(none)"}
            backends  : {string.Join(", ", info.AvailableBackends.Select(b => b.ToString()))}
            features  : {Features(info)}
@@ -333,6 +335,18 @@ public partial class MainView : UserControl
         // which is the control's own decision, and putting the picker on what was asked for.
         if (DemoSettings.Engine is { } saved)
             _view.PreferredBackend = saved;
+
+        // AVA3D_SAMPLES and AVA3D_RENDER_SCALE, so the two anti-aliasing levers can be measured from a
+        // script rather than judged from a window. Both are read here and nowhere else; neither is
+        // remembered in the settings file, because they are a measurement rather than a preference.
+        if (int.TryParse(Environment.GetEnvironmentVariable("AVA3D_SAMPLES"), out var samples))
+            _view.SampleCount = samples;
+
+        if (double.TryParse(
+                Environment.GetEnvironmentVariable("AVA3D_RENDER_SCALE"),
+                System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out var overSample))
+            _view.RenderScale = overSample;
 
         // Before the first selection, because Select reads it to decide what to build. Assigned without
         // the handler attached, so restoring the setting is not itself a change to be acted on.

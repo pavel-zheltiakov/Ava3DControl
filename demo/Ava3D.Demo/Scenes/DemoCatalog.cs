@@ -36,6 +36,7 @@ public static class DemoCatalog
         () => new ShadowsScene(),
         () => new ClockTowerScene(),
         () => new ShadowProbeScene(),
+        () => new SpotlightScene(),
         () => new BloomScene(),
         () => new TextureKitScene(),
         () => new RenderToTextureScene(),

@@ -22,7 +22,7 @@
 -->
 <header class="bar"><nav class="nav" aria-label="Site">
   <a class="brand" href="index.html" title="Home">Ava3D<span>Control</span></a>
-  <span class="tag">12.1.0-preview.10 · beta</span>
+  <span class="tag">12.1.0-preview.11 · beta</span>
   <div class="links">
     <a href="index.html" data-i18n="nav.home">Home</a>
     <a href="api/a-scene-from-nothing.html" data-i18n="nav.guide">3D Guide</a>
@@ -92,7 +92,7 @@
     </p>
 
     <p class="beta-note" data-i18n-html="hero.beta">
-      <strong>This is a beta.</strong> <code>12.1.0-preview.10</code> is a NuGet prerelease, which is why the
+      <strong>This is a beta.</strong> <code>12.1.0-preview.11</code> is a NuGet prerelease, which is why the
       flag is there. Everything below was measured on the code you would install; the suffix is there because
       the API may still move in response to the first people to use it.
     </p>
@@ -594,7 +594,7 @@
       <h3 data-i18n="start.s1.h">1 · Add the package</h3>
       <pre><code>dotnet add package Ava3DControl --prerelease</code></pre>
       <p data-i18n-html="start.s1.p">
-        The flag is required while this is a preview. Pin <code>12.1.0-preview.10</code> exactly if you would
+        The flag is required while this is a preview. Pin <code>12.1.0-preview.11</code> exactly if you would
         rather nothing moved under you.
       </p>
 
@@ -652,9 +652,12 @@ View.Scene = scene;</code></pre>
   </p>
   <ul>
     <li data-i18n-html="limits.l1"><strong>One light casts shadows.</strong> As many lights as you like plus an environment, forward-shaded,
-        single pass — but only the first light that asks for shadows gets a map, a point light shadows a cone
-        aimed at the scene rather than all around itself, and there are no cascades. More than sixteen lights
+        single pass — but only the first light that asks for shadows gets a map, and there are no cascades,
+        so a sun through a window and a lamp in the hand compete for the same one. More than sixteen lights
         is not advised either way, because the CPU renderer pays for each one per vertex.</li>
+    <li data-i18n-html="limits.l1b"><strong>Multisampling is not everywhere.</strong> <code>SampleCount</code> smooths edges on Metal and on
+        OpenGL, which includes the browser; Vulkan and the software renderer take <code>RenderScale</code>
+        instead, which renders larger and averages down and costs more to do it.</li>
     <li data-i18n-html="limits.l2"><strong>No high-dynamic-range environments.</strong> An environment map is eight bits a channel, so it
         cannot carry a sun ten thousand times brighter than the sky. Put the sun in a light.</li>
     <li data-i18n-html="limits.l3"><strong>No animation or skinning.</strong> glTF node transforms are read; animation channels are not.</li>
@@ -673,7 +676,7 @@ View.Scene = scene;</code></pre>
 
 <footer>
   <p data-i18n-html="footer.p1">
-    <strong>Ava3DControl 12.1.0-preview.10</strong> — a 3D viewport control for
+    <strong>Ava3DControl 12.1.0-preview.11</strong> — a 3D viewport control for
     <a href="https://avaloniaui.net/">Avalonia</a>.
     Freeware; see the licence in the repository for the exact terms.
   </p>
